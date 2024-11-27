@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
     {
         if(user == null) 
         {
-            throw new ArgumentException(nameof(user));
+            throw new ArgumentException($"User can not be null. User: {nameof(user)}");
         }
 
         _context.Users.Add(user);
