@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Repositories", "HAN.Rep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Domain", "HAN.Domain\HAN.Domain.csproj", "{30724E6F-6204-4944-ACA5-28B5A14BC795}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Tests", "HAN.Tests\HAN.Tests.csproj", "{A51946BE-4091-4F3F-B226-E860F19DD7F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{30724E6F-6204-4944-ACA5-28B5A14BC795}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30724E6F-6204-4944-ACA5-28B5A14BC795}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30724E6F-6204-4944-ACA5-28B5A14BC795}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A51946BE-4091-4F3F-B226-E860F19DD7F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A51946BE-4091-4F3F-B226-E860F19DD7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A51946BE-4091-4F3F-B226-E860F19DD7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A51946BE-4091-4F3F-B226-E860F19DD7F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
