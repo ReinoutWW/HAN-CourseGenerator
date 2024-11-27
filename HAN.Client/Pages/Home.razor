@@ -1,4 +1,10 @@
 ﻿@page "/"
+@using HAN.Data.Entities
+@using HAN.Repositories
+@inject IUserRepository UserRepository
+
+@* This page is garbage, but needed to demonstrate the logic. *@
+@* Normally, you'd never have a UserRepository injected in the presenation layer *@
 
 <PageTitle>Home</PageTitle>
 
@@ -8,6 +14,51 @@
     Before authentication will function correctly, you must configure your provider details in <code>Program.cs</code>
 </div>
 
-<RadzenButton Text="Hi"></RadzenButton>
+<ul>
+@foreach (var user in _users)
+{
+    <li>@user.Id - @user.Name</li>
+}
+</ul>
+    
+<RadzenTextBox Placeholder="name" @bind-Value="@_userName"></RadzenTextBox>
+<RadzenButton Text="Click me!" Click="TestRepository"></RadzenButton>
 
-Welcome to your new app.
+@code {
+    // Demo code
+    private string _userName = string.Empty;
+    private List<User> _users = new();
+
+    // Demo code
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        GetAllUsers();
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    // Demo code
+    private void GetAllUsers()
+    {
+        _users = UserRepository.GetAllUsers().ToList();
+    }
+    
+    // Demo code
+    private void TestRepository()
+    {
+        UserRepository.CreateUser(
+            new User()
+            {
+                Name = _userName
+            }    
+        );
+
+        UserRepository.SaveChanges();
+
+        var getAgain = UserRepository.GetUserById(1);
+        
+        Console.WriteLine(getAgain.Name);
+
+        InvokeAsync(StateHasChanged);
+    }
+
+}
