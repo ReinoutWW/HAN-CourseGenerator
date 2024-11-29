@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HAN.Data;
+﻿using HAN.Data;
 using HAN.Data.Entities;
 using HAN.Repositories;
 using Microsoft.Extensions.DependencyInjection;
