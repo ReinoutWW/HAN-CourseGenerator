@@ -16,7 +16,7 @@ public class UserRepositoryTests
         return new AppDbContext(options);
     }
     
-    private void SeedDatabase(AppDbContext context)
+    private static void SeedDatabase(AppDbContext context)
     {
         var repository = new UserRepository(context);
         
@@ -48,6 +48,7 @@ public class UserRepositoryTests
 
         // Assert
         Assert.NotNull(result);
+        // Assert.Null(result);
         Assert.Equal(2, result.Count());
     }
 
@@ -79,7 +80,7 @@ public class UserRepositoryTests
         // Act
         try
         {
-            var result = repository.GetUserById(99);
+            repository.GetUserById(99);
         }
         catch (Exception exception)
         {

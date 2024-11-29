@@ -9,5 +9,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Data\HAN.Data.csproj" />
   </ItemGroup>
-
+  
 </Project>
