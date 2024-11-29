@@ -23,9 +23,10 @@ public class UserRepositoryTests : TestBase, IDisposable
     [Fact]
     public void ShouldGetAllUsers()
     {
-        var users = _context.Users.ToList();
-        Assert.NotEmpty(users);
-        Assert.Equal(SeedUserCount, users.Count);
+        var getUsers = _userRepository.GetAllUsers().ToList();
+        
+        Assert.NotEmpty(getUsers);
+        Assert.Equal(SeedUserCount, getUsers.Count);
     }
     
     [Fact]
