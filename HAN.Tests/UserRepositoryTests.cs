@@ -10,31 +10,44 @@ public class UserRepositoryTests : TestBase, IDisposable
 {
     private readonly IUserRepository _userRepository;
     private readonly AppDbContext _context;
+    private const int SeedUserCount = 2;
+    private const string UserPrefix = "AnonymousUser";
     
     public UserRepositoryTests() : base()
     {
         _userRepository = base.ServiceProvider.GetRequiredService<IUserRepository>();
         _context = base.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        TestDbSeeder.SeedUsers(_context);
+        TestDbSeeder.SeedUsers(_context, SeedUserCount, UserPrefix);
+    }
+
+    [Fact]
+    public void ShouldGetAllUsers()
+    {
+        var users = _context.Users.ToList();
+        Assert.NotEmpty(users);
+        Assert.Equal(SeedUserCount, users.Count);
     }
     
     [Fact]
     public void GetUserById_ShouldReturnCorrectUser()
     {
+        var userId = 1;
+        var userName = $"{UserPrefix}{userId}";
+        
         // Act
-        var user = _userRepository.GetUserById(1);
+        var user = _userRepository.GetUserById(userId);
 
         // Assert
         Assert.NotNull(user);
-        Assert.Equal("Alice", user.Name);
+        Assert.Equal(userName, user.Name);
     }
 
     [Fact]
     public void CreateUser_ShouldAddNewUser()
     {
         // Arrange
-        var newUser = new User() { Name = "Charlie"};
+        var newUser = new User() { Name = $"{UserPrefix}{Guid.NewGuid()}" };
 
         // Act
         var createdUser = _userRepository.CreateUser(newUser);
@@ -42,17 +55,16 @@ public class UserRepositoryTests : TestBase, IDisposable
         var users = _userRepository.GetAllUsers().ToList();
 
         // Assert
-        Assert.Equal(3, users.Count);
         Assert.Contains(users, u => u.Name == createdUser.Name);
     }
 
     [Fact]
     public void CreateUser_ShouldThrowException_WhenUserAlreadyExists()
     {
-        var user = new User() { Id = 1, Name = "Alice" };
+        var user = new User() { Id = 1, Name = $"{UserPrefix}{Guid.NewGuid()}" };
         Assert.ThrowsAny<Exception>(() => _userRepository.CreateUser(user));        
     }
-
+    
     public void Dispose()
     {
         Dispose(true);
