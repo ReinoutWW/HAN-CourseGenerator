@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests;
 
-public class TestServiceProvider
+public static class TestServiceProvider
 {
     private const string InMemoryDbName = "TestDb";
     

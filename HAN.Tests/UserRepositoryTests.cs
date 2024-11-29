@@ -2,7 +2,6 @@
 using HAN.Data;
 using HAN.Data.Entities;
 using HAN.Repositories;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests;
@@ -14,10 +13,10 @@ public class UserRepositoryTests : TestBase, IDisposable
     private const int SeedUserCount = 2;
     private const string UserPrefix = "AnonymousUser";
     
-    public UserRepositoryTests() : base()
+    public UserRepositoryTests()
     {
-        _userRepository = base.ServiceProvider.GetRequiredService<IUserRepository>();
-        _context = base.ServiceProvider.GetRequiredService<AppDbContext>();
+        _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
+        _context = ServiceProvider.GetRequiredService<AppDbContext>();
 
         TestDbSeeder.SeedUsers(_context, SeedUserCount, UserPrefix);
     }
@@ -68,7 +67,7 @@ public class UserRepositoryTests : TestBase, IDisposable
     [Theory]
     [InlineData("")]
     [InlineData("123")]
-    [InlineData("PasswordIsWayTooLongBecauseSecurityExcectedUsToCreateAPasswordThatExcceedsTheLimitedPasswordLength")]
+    [InlineData("PasswordIsWayTooLongBecauseSecurityExpectedUsToCreateAPasswordThatExceedsTheLimitedPasswordLength")]
     public void CreateUser_ShouldThrowException_PasswordIsNotCorrect(string password)
     {
         var newUser = new User()
