@@ -1,6 +1,7 @@
 ﻿using HAN.Data;
 using HAN.Data.Entities;
 using HAN.Repositories;
+using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests;

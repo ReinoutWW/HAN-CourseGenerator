@@ -4,7 +4,7 @@ using HAN.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HAN.Tests;
+namespace HAN.Tests.Base;
 
 public static class TestServiceProvider
 {

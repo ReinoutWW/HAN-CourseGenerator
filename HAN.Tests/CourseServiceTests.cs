@@ -1,5 +1,6 @@
 ﻿using HAN.Services;
 using HAN.Services.DTOs;
+using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests;

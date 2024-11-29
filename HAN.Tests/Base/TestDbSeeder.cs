@@ -1,7 +1,7 @@
 ﻿using HAN.Data;
 using HAN.Data.Entities;
 
-namespace HAN.Tests;
+namespace HAN.Tests.Base;
 
 public static class TestDbSeeder
 {

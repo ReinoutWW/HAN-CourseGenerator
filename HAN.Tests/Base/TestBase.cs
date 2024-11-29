@@ -1,7 +1,7 @@
 ﻿using HAN.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HAN.Tests;
+namespace HAN.Tests.Base;
 
 public abstract class TestBase : IDisposable
 {
