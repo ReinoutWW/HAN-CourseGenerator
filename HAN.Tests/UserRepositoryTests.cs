@@ -112,6 +112,19 @@ public class UserRepositoryTests : TestBase, IDisposable
         var user = new User() { Id = 1, Name = $"{UserPrefix}{Guid.NewGuid()}" };
         Assert.ThrowsAny<Exception>(() => _userRepository.CreateUser(user));        
     }
+
+    [Fact]
+    public void CreateUser_ShouldThrowException_WhenUserIsNull()
+    {
+        Exception? expectedException = Record.Exception(() =>
+        {
+            _userRepository.CreateUser(null!);
+            _userRepository.SaveChanges();
+        });
+
+        Assert.NotNull(expectedException);
+        Assert.IsType<ArgumentException>(expectedException);
+    }
     
     public void Dispose()
     {
