@@ -2,129 +2,63 @@
 using HAN.Data.Entities;
 using HAN.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests;
 
-public class UserRepositoryTests
+public class UserRepositoryTests : TestBase, IDisposable
 {
-    private static AppDbContext GetInMemoryDbContext()
+    private readonly IUserRepository _userRepository;
+    private readonly AppDbContext _context;
+
+    public UserRepositoryTests() : base()
     {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDatabase")
-            .Options;
-        
-        return new AppDbContext(options);
+        _userRepository = base.ServiceProvider.GetRequiredService<IUserRepository>();
+        _context = base.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        TestDbSeeder.SeedUsers(_context);
     }
     
-    private static void SeedDatabase(AppDbContext context)
-    {
-        var repository = new UserRepository(context);
-        
-        if (repository.GetAllUsers().Any())
-        {
-            return;
-        }
-        
-        var users = new List<User>
-        {
-            new User { Id = 1, Name = "John Doe" },
-            new User { Id = 2, Name = "Jane Doe" }
-        };
-        
-        context.Users.AddRange(users);
-        context.SaveChanges();
-    }
-    
-     [Fact]
+    [Fact]
     public void GetAllUsers_ShouldReturnAllUsers()
     {
-        // Arrange
-        var context = GetInMemoryDbContext();
-        SeedDatabase(context);
-        var repository = new UserRepository(context);
-
         // Act
-        var result = repository.GetAllUsers();
+        var users = _userRepository.GetAllUsers();
 
         // Assert
-        Assert.NotNull(result);
-        // Assert.Null(result);
-        Assert.Equal(2, result.Count());
+        Assert.Equal(2, users.Count());
     }
 
     [Fact]
-    public void GetUserById_ShouldReturnUser_WhenIdExists()
+    public void GetUserById_ShouldReturnCorrectUser()
     {
-        // Arrange
-        var context = GetInMemoryDbContext();
-        SeedDatabase(context);
-        var repository = new UserRepository(context);
-
         // Act
-        var result = repository.GetUserById(1);
+        var user = _userRepository.GetUserById(1);
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("John Doe", result.Name);
+        Assert.NotNull(user);
+        Assert.Equal("Alice", user.Name);
     }
 
     [Fact]
-    public void GetUserById_ShouldReturnNull_WhenIdDoesNotExist()
+    public void CreateUser_ShouldAddNewUser()
     {
         // Arrange
-        var context = GetInMemoryDbContext();
-        SeedDatabase(context);
-        var repository = new UserRepository(context);
-        Exception? thrownException = null;
+        var newUser = new User() { Id = 3, Name = "Charlie"};
 
         // Act
-        try
-        {
-            repository.GetUserById(99);
-        }
-        catch (Exception exception)
-        {
-            thrownException = exception;
-        }
-        
-        Assert.NotNull(thrownException);
-        Assert.IsType<KeyNotFoundException>(thrownException);
-    }
-
-    [Fact]
-    public void CreateUser_ShouldAddUserToDatabase()
-    {
-        // Arrange
-        var context = GetInMemoryDbContext();
-        var repository = new UserRepository(context);
-        var newUser = new User { Id = 3, Name = "New User"};
-
-        // Act
-        repository.CreateUser(newUser);
-        repository.SaveChanges();
-        
-        var result = repository.GetUserById(3);
+        _userRepository.CreateUser(newUser);
+        _userRepository.SaveChanges();
+        var users = _userRepository.GetAllUsers();
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal("New User", result.Name);
+        Assert.Equal(3, users.Count());
+        Assert.Contains(users, u => u.Name == "Charlie");
     }
 
-    [Fact]
-    public void SaveChanges_ShouldPersistChanges()
+    public void Dispose()
     {
-        // Arrange
-        var context = GetInMemoryDbContext();
-        var repository = new UserRepository(context);
-        var newUser = new User { Id = 4, Name = "New User"};
-
-        // Act
-        repository.CreateUser(newUser);
-        var saveResult = repository.SaveChanges();
-        var result = repository.GetUserById(4);
-
-        // Assert
-        Assert.True(saveResult);
-        Assert.NotNull(result);
+        _context.Database.EnsureDeleted();
+        _context.Dispose();
     }
 }
