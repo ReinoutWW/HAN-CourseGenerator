@@ -24,4 +24,4 @@ jobs:
         run: dotnet restore
 
       - name: Run HAN.Tests
-        run: dotnet test HAN.Tests/HAN.Tests.csproj --no-build --verbosity normal --configuration Release
+        run: dotnet test HAN.Tests/HAN.Tests.csproj --verbosity normal --configuration Release
