@@ -1,12 +1,13 @@
 ﻿using HAN.Domain.Entities;
 using HAN.Domain.Entities.CourseComponents;
+using HAN.Services.DTOs;
 
 namespace HAN.Services;
 
 public interface ICourseService
 {
     // Create
-    Course CreateCourse(Course course);
+    CourseResponseDto CreateCourse(CreateCourseDto course);
     EVL CreateEVL(EVL evl);
     CourseComponent CreateCourseComponent(CourseComponent component);
     
