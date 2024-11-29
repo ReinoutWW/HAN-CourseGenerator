@@ -1,5 +1,6 @@
 ﻿using HAN.Data;
 using HAN.Repositories;
+using HAN.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,8 @@ public static class TestServiceProvider
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ICourseRepository, CourseRepository>();
+        services.AddScoped<ICourseService, CourseService>();
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         return services.BuildServiceProvider();
     }
