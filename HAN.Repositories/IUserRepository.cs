@@ -8,5 +8,5 @@ public interface IUserRepository
     
     IEnumerable<User> GetAllUsers();
     User GetUserById(int id);
-    void CreateUser(User user);
+    User CreateUser(User user);
 }

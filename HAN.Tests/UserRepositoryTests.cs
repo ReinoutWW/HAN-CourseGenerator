@@ -10,7 +10,7 @@ public class UserRepositoryTests : TestBase, IDisposable
 {
     private readonly IUserRepository _userRepository;
     private readonly AppDbContext _context;
-
+    
     public UserRepositoryTests() : base()
     {
         _userRepository = base.ServiceProvider.GetRequiredService<IUserRepository>();
@@ -19,16 +19,6 @@ public class UserRepositoryTests : TestBase, IDisposable
         TestDbSeeder.SeedUsers(_context);
     }
     
-    [Fact]
-    public void GetAllUsers_ShouldReturnAllUsers()
-    {
-        // Act
-        var users = _userRepository.GetAllUsers();
-
-        // Assert
-        Assert.Equal(2, users.Count());
-    }
-
     [Fact]
     public void GetUserById_ShouldReturnCorrectUser()
     {
@@ -44,16 +34,23 @@ public class UserRepositoryTests : TestBase, IDisposable
     public void CreateUser_ShouldAddNewUser()
     {
         // Arrange
-        var newUser = new User() { Id = 3, Name = "Charlie"};
+        var newUser = new User() { Name = "Charlie"};
 
         // Act
-        _userRepository.CreateUser(newUser);
+        var createdUser = _userRepository.CreateUser(newUser);
         _userRepository.SaveChanges();
-        var users = _userRepository.GetAllUsers();
+        var users = _userRepository.GetAllUsers().ToList();
 
         // Assert
-        Assert.Equal(3, users.Count());
-        Assert.Contains(users, u => u.Name == "Charlie");
+        Assert.Equal(3, users.Count);
+        Assert.Contains(users, u => u.Name == createdUser.Name);
+    }
+
+    [Fact]
+    public void CreateUser_ShouldThrowException_WhenUserAlreadyExists()
+    {
+        var user = new User() { Id = 1, Name = "Alice" };
+        Assert.ThrowsAny<Exception>(() => _userRepository.CreateUser(user));        
     }
 
     public void Dispose()

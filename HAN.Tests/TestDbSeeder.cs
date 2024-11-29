@@ -8,8 +8,8 @@ public static class TestDbSeeder
     public static void SeedUsers(AppDbContext context)
     {
         context.Users.AddRange(
-            new User() { Id = 1, Name = "Alice" },
-            new User { Id = 2, Name = "Bob" }
+            new User { Name = "Alice" },
+            new User { Name = "Bob" }
         );
         context.SaveChanges();
     }

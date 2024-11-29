@@ -13,14 +13,14 @@ public class UserRepository : IUserRepository
         _context = context;
     }
     
-    public void CreateUser(User user)
+    public User CreateUser(User user)
     {
         if(user == null) 
         {
             throw new ArgumentException($"User can not be null. User: {nameof(user)}");
         }
 
-        _context.Users.Add(user);
+        return _context.Users.Add(user).Entity;
     }
 
     public IEnumerable<User> GetAllUsers()
