@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HAN.Data.Entities;
+﻿using HAN.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HAN.Data;
@@ -18,22 +17,19 @@ public class AppDbContext : DbContext
     
     private void ValidateEntities()
     {
-        var entities = ChangeTracker.Entries()
+        var entities = GetChangedEntities();
+        var validationExceptions = EntityValidator.GetValidationExceptionsForEntities(entities);
+
+        if (validationExceptions.Any())
+        {
+            throw new AggregateException("Validation failed for one or more entities.", validationExceptions);
+        }
+    }
+
+    private IEnumerable<object> GetChangedEntities()
+    {
+        return ChangeTracker.Entries()
             .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
             .Select(e => e.Entity);
-
-        foreach (var entity in entities)
-        {
-            var validationResults = new List<ValidationResult>();
-            var context = new ValidationContext(entity);
-
-            if (!Validator.TryValidateObject(entity, context, validationResults, true))
-            {
-                foreach (var validationResult in validationResults)
-                {
-                    throw new ValidationException(validationResult.ErrorMessage);
-                }
-            }
-        }
     }
 }
