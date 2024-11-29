@@ -8,15 +8,22 @@ namespace HAN.Tests;
 public class CourseRepositoryTests : TestBase
 {
     private readonly ICourseRepository _repository;
-    private readonly AppDbContext _context;
     private const int SeedCourseCount = 2;
     
     public CourseRepositoryTests()
     {
         _repository = ServiceProvider.GetRequiredService<ICourseRepository>();    
-        _context = ServiceProvider.GetRequiredService<AppDbContext>();
         
-        TestDbSeeder.SeedCourses(_context, SeedCourseCount);
+        TestDbSeeder.SeedCourses(Context, SeedCourseCount);
+    }
+    
+    [Fact]
+    public void ShouldGetAllCourses()
+    {
+        var courses = _repository.GetAllCourses().ToList();
+        
+        Assert.NotEmpty(courses);
+        Assert.Equal(SeedCourseCount, courses.Count);
     }
 
     [Fact]
@@ -39,25 +46,16 @@ public class CourseRepositoryTests : TestBase
     public void CreateCourse_ShouldReturnCourse()
     {
         var courseId = 1;
-        Course course = _repository.GetCourseById(courseId);
+        var course = _repository.GetCourseById(courseId);
         
         Assert.NotNull(course);
         Assert.Equal(courseId, course.Id);
     }
     
-    [Fact]
-    public void ShouldGetAllCourses()
-    {
-        var CreateCourses = _repository.GetAllCourses().ToList();
-        
-        Assert.NotEmpty(CreateCourses);
-        Assert.Equal(SeedCourseCount, CreateCourses.Count);
-    }
-    
     [Theory]
-    [InlineData("CourseName1")]
-    [InlineData("CourseName2")]
-    public void CreateCourse_ShouldAddnewCourse(string courseName)
+    [InlineData("TestCourse1")]
+    [InlineData("TestCourse2")]
+    public void CreateCourse_ShouldAddNewCourse(string courseName)
     {
         var newCourse = new Course()
         {
@@ -67,11 +65,10 @@ public class CourseRepositoryTests : TestBase
         // Act
         var createdCourse = _repository.CreateCourse(newCourse);
         _repository.SaveChanges();
-        
-        var Courses = _repository.GetAllCourses().ToList();
+        var courses = _repository.GetAllCourses().ToList();
 
         // Assert
-        Assert.Contains(Courses, u => u.Name == createdCourse.Name);
+        Assert.Contains(courses, u => u.Name == createdCourse.Name);
     }
 
     [Theory]
@@ -85,18 +82,6 @@ public class CourseRepositoryTests : TestBase
         };
        
         AddCourseExpectValidationException(newCourse);
-    }
-    
-    private void AddCourseExpectValidationException(Course newCourse)
-    {
-        Exception? expectedException = Record.Exception(() =>
-        {
-            _repository.CreateCourse(newCourse);
-            _repository.SaveChanges();
-        });
-
-        Assert.NotNull(expectedException);
-        Assert.IsType<AggregateException>(expectedException);
     }
 
     [Fact]
@@ -117,5 +102,17 @@ public class CourseRepositoryTests : TestBase
 
         Assert.NotNull(expectedException);
         Assert.IsType<ArgumentException>(expectedException);
+    }
+    
+    private void AddCourseExpectValidationException(Course newCourse)
+    {
+        Exception? expectedException = Record.Exception(() =>
+        {
+            _repository.CreateCourse(newCourse);
+            _repository.SaveChanges();
+        });
+
+        Assert.NotNull(expectedException);
+        Assert.IsType<AggregateException>(expectedException);
     }
 }

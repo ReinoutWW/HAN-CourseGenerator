@@ -7,8 +7,8 @@ public static class TestDbSeeder
 {
     public static void SeedUsers(AppDbContext context, int seedUserCount, string userPrefix)
     {
-        List<User> users = new();
-        for (int i = 0; i < seedUserCount; i++)
+        List<User> users = [];
+        for (var i = 0; i < seedUserCount; i++)
         {
             users.Add(
                 new User()
@@ -26,13 +26,13 @@ public static class TestDbSeeder
 
     public static void SeedCourses(AppDbContext context, int seedCourseCount)
     {
-        List<Course> courses = new();
-        for (int i = 0; i < seedCourseCount; i++)
+        List<Course> courses = [];
+        for (var i = 0; i < seedCourseCount; i++)
         {
             courses.Add(
                 new Course()
                 {
-                    Name = $"Course {i+1}",
+                    Name = $"GeneratedCourse{i+1}",
                     Description = $"Description {i+1}",
                 }
             );

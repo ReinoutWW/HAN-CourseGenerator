@@ -1,10 +1,36 @@
-﻿namespace HAN.Tests;
+﻿using HAN.Data;
+using Microsoft.Extensions.DependencyInjection;
 
-public abstract class TestBase
+namespace HAN.Tests;
+
+public abstract class TestBase : IDisposable
 {
-    public readonly IServiceProvider ServiceProvider;
+    private readonly IServiceScope _scope;
+    protected readonly IServiceProvider ServiceProvider;
+    protected readonly AppDbContext Context;
+
     protected TestBase()
     {
-        ServiceProvider = TestServiceProvider.BuildServiceProvider();
+        _scope = TestServiceProvider.BuildServiceProvider().CreateScope();
+        
+        ServiceProvider = _scope.ServiceProvider;
+        Context = ServiceProvider.GetRequiredService<AppDbContext>();
+        
+        Context.Database.EnsureDeleted();
+        Context.Database.EnsureCreated();
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _scope?.Dispose(); // Dispose scope and associated resources
+        }
     }
 }

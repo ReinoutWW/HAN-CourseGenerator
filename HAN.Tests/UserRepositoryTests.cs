@@ -5,19 +5,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests;
 
-public class UserRepositoryTests : TestBase, IDisposable
+public class UserRepositoryTests : TestBase
 {
     private readonly IUserRepository _userRepository;
-    private readonly AppDbContext _context;
     private const int SeedUserCount = 2;
     private const string UserPrefix = "AnonymousUser";
     
     public UserRepositoryTests()
     {
         _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
-        _context = ServiceProvider.GetRequiredService<AppDbContext>();
 
-        TestDbSeeder.SeedUsers(_context, SeedUserCount, UserPrefix);
+        TestDbSeeder.SeedUsers(Context, SeedUserCount, UserPrefix);
     }
 
     [Fact]
@@ -94,18 +92,7 @@ public class UserRepositoryTests : TestBase, IDisposable
         AddUserExpectValidationException(newUser);
     }
     
-    private void AddUserExpectValidationException(User newUser)
-    {
-        Exception? expectedException = Record.Exception(() =>
-        {
-            _userRepository.CreateUser(newUser);
-            _userRepository.SaveChanges();
-        });
-
-        Assert.NotNull(expectedException);
-        Assert.IsType<AggregateException>(expectedException);
-    }
-
+  
     [Fact]
     public void CreateUser_ShouldThrowException_WhenUserAlreadyExists()
     {
@@ -126,15 +113,16 @@ public class UserRepositoryTests : TestBase, IDisposable
         Assert.IsType<ArgumentException>(expectedException);
     }
     
-    public void Dispose()
+    private void AddUserExpectValidationException(User newUser)
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        Exception? expectedException = Record.Exception(() =>
+        {
+            _userRepository.CreateUser(newUser);
+            _userRepository.SaveChanges();
+        });
+
+        Assert.NotNull(expectedException);
+        Assert.IsType<AggregateException>(expectedException);
     }
-    
-    protected virtual void Dispose(bool disposing)
-    {
-        _context.Database.EnsureDeleted();
-        _context.Dispose();
-    }
+
 }
