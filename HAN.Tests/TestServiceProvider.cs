@@ -7,12 +7,14 @@ namespace HAN.Tests;
 
 public class TestServiceProvider
 {
+    private const string InMemoryDbName = "TestDb";
+    
     public static IServiceProvider BuildServiceProvider()
     {
         var services = new ServiceCollection();
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseInMemoryDatabase("TestDb"));
+            options.UseInMemoryDatabase(InMemoryDbName));
 
         services.AddScoped<IUserRepository, UserRepository>();
 
