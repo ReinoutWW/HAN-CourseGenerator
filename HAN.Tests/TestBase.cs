@@ -1,7 +1,4 @@
-﻿using HAN.Data;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace HAN.Tests;
+﻿namespace HAN.Tests;
 
 public abstract class TestBase
 {

@@ -1,6 +1,5 @@
 ﻿using HAN.Data;
 using HAN.Data.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace HAN.Repositories;
 
