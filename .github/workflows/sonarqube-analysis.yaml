@@ -1,4 +1,4 @@
-name: Build
+name: SonarQube Build
 
 on:
   workflow_dispatch:
