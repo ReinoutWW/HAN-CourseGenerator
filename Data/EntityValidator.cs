@@ -7,12 +7,9 @@ public static class EntityValidator
     public static List<ValidationException> GetValidationExceptionsForEntities(IEnumerable<object> entities)
     {
         var validationExceptions = new List<ValidationException>();
-
         foreach (var entity in entities)
         {
-            validationExceptions.AddRange(
-                AddValidationExceptionsForEntity(entity)
-            );
+            validationExceptions.AddRange(AddValidationExceptionsForEntity(entity));
         }
 
         return validationExceptions;
@@ -22,16 +19,19 @@ public static class EntityValidator
     {
         var validationExceptions = new List<ValidationException>();
         var validationResults = new List<ValidationResult>();
-        var context = new ValidationContext(entity);
+
+        if (Validator.TryValidateObject(
+                entity, 
+                new ValidationContext(entity), 
+                validationResults, true)
+        ) return validationExceptions;
         
-        if (!Validator.TryValidateObject(entity, context, validationResults, true))
-        {
-            foreach (var validationResult in validationResults)
-            {
-                validationExceptions.Add(new ValidationException(validationResult.ErrorMessage));
-            }
-        }
-        
+        validationExceptions.AddRange(
+            validationResults.Select(
+                validationResult => new ValidationException(validationResult.ErrorMessage)
+            )
+        );
+
         return validationExceptions;
     }
 }

@@ -103,7 +103,7 @@ public class UserRepositoryTests : TestBase, IDisposable
         });
 
         Assert.NotNull(expectedException);
-        Assert.IsType<ValidationException>(expectedException);
+        Assert.IsType<AggregateException>(expectedException);
     }
 
     [Fact]

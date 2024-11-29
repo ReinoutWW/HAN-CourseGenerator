@@ -20,16 +20,14 @@ public class AppDbContext : DbContext
         var entities = GetChangedEntities();
         var validationExceptions = EntityValidator.GetValidationExceptionsForEntities(entities);
 
-        if (validationExceptions.Any())
-        {
+        if (validationExceptions.Count != 0)
             throw new AggregateException("Validation failed for one or more entities.", validationExceptions);
-        }
     }
 
     private IEnumerable<object> GetChangedEntities()
     {
         return ChangeTracker.Entries()
-            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+            .Where(e => e.State is EntityState.Added or EntityState.Modified)
             .Select(e => e.Entity);
     }
 }
