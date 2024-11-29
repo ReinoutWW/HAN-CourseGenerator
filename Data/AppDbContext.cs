@@ -8,11 +8,19 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Course> Courses { get; set; }
     
     public override int SaveChanges()
     {
         ValidateEntities();
         return base.SaveChanges();
+    }
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Course>()
+            .Property(c => c.CreatedAt)
+            .ValueGeneratedOnAdd();
     }
     
     private void ValidateEntities()

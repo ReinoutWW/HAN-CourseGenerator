@@ -23,4 +23,22 @@ public static class TestDbSeeder
         context.Users.AddRange(users);
         context.SaveChanges();
     }
+
+    public static void SeedCourses(AppDbContext context, int seedCourseCount)
+    {
+        List<Course> courses = new();
+        for (int i = 0; i < seedCourseCount; i++)
+        {
+            courses.Add(
+                new Course()
+                {
+                    Name = $"Course {i+1}",
+                    Description = $"Description {i+1}",
+                }
+            );
+        }
+        
+        context.Courses.AddRange(courses);
+        context.SaveChanges();
+    }
 }
