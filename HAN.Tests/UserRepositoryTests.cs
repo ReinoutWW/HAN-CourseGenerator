@@ -1,4 +1,5 @@
-﻿using HAN.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using HAN.Data;
 using HAN.Data.Entities;
 using HAN.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -42,12 +43,18 @@ public class UserRepositoryTests : TestBase, IDisposable
         Assert.NotNull(user);
         Assert.Equal(userName, user.Name);
     }
-
-    [Fact]
-    public void CreateUser_ShouldAddNewUser()
+    
+    [Theory]
+    [InlineData("UserName1")]
+    [InlineData("UserName2")]
+    public void CreateUser_ShouldAddNewUser(string userName)
     {
-        // Arrange
-        var newUser = new User() { Name = $"{UserPrefix}{Guid.NewGuid()}" };
+        var newUser = new User()
+        {
+            Name = userName,
+            Email = $"{userName}@example.com",
+            Password = "password"
+        };
 
         // Act
         var createdUser = _userRepository.CreateUser(newUser);
@@ -56,6 +63,48 @@ public class UserRepositoryTests : TestBase, IDisposable
 
         // Assert
         Assert.Contains(users, u => u.Name == createdUser.Name);
+    }
+    
+    [Theory]
+    [InlineData("")]
+    [InlineData("123")]
+    [InlineData("PasswordIsWayTooLongBecauseSecurityExcectedUsToCreateAPasswordThatExcceedsTheLimitedPasswordLength")]
+    public void CreateUser_ShouldThrowException_PasswordIsNotCorrect(string password)
+    {
+        var newUser = new User()
+        {
+            Name = "username",
+            Email = "username@example.com",
+            Password = password
+        };
+
+        AddUserExpectValidationException(newUser);
+    }
+
+
+    [Theory]
+    [InlineData("UserName11111111111111111111111111111111111111111111111111111111111111111111111111111UserName11111111111111111111111111111111111111111111111111111111111111111111111111111")]
+    [InlineData("")]
+    public void CreateUser_ShouldThrowException_WhenWrongUserName(string userName)
+    {
+        var newUser = new User()
+        {
+            Name = userName
+        };
+       
+        AddUserExpectValidationException(newUser);
+    }
+    
+    private void AddUserExpectValidationException(User newUser)
+    {
+        Exception? expectedException = Record.Exception(() =>
+        {
+            _userRepository.CreateUser(newUser);
+            _userRepository.SaveChanges();
+        });
+
+        Assert.NotNull(expectedException);
+        Assert.IsType<ValidationException>(expectedException);
     }
 
     [Fact]
