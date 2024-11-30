@@ -20,4 +20,9 @@ public class EvlRepostory(AppDbContext context) : RepositoryBase(context), IEvlR
     {
         return Context.Evls.FirstOrDefault(p => p.Id == evlId) ?? throw new KeyNotFoundException();
     }
+
+    public bool EvlExists(int id)
+    {
+        return Context.Evls.Any(p => p.Id == id);
+    }
 }

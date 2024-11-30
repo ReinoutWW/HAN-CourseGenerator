@@ -9,4 +9,7 @@ public interface ICourseRepository
     Course CreateCourse(Course course);
     Course GetCourseById(int id);
     IEnumerable<Course> GetAllCourses();
+    IEnumerable<Evl> GetEvlsByCourseId(int id);
+    bool CourseExists(int courseId);
+    void AddEvlToCourse(int courseId, int evlId);
 }

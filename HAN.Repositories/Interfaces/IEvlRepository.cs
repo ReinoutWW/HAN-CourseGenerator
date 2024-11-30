@@ -8,4 +8,5 @@ public interface IEvlRepository
     
     Evl CreateEvl(Evl evl);
     Evl GetEvlById(int evlId);
+    bool EvlExists(int id);
 }

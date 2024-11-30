@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using HAN.Data.Entities;
 using HAN.Services;
 using HAN.Services.DTOs;
 using HAN.Tests.Base;
@@ -9,10 +10,17 @@ namespace HAN.Tests;
 public class CourseServiceTests : TestBase
 {
     private readonly ICourseService _courseService;
+    private readonly IEvlService _evlService;
+    private const int SeedCourseAmount = 2;
+    private const int SeedEvlAmount = 2;
     
     public CourseServiceTests()
     {
         _courseService = ServiceProvider.GetRequiredService<ICourseService>();
+        _evlService = ServiceProvider.GetRequiredService<IEvlService>();
+        
+        TestDbSeeder.SeedCourses(Context, SeedCourseAmount);
+        TestDbSeeder.SeedEvls(Context, SeedEvlAmount);
     }
 
     [Fact]
@@ -62,6 +70,20 @@ public class CourseServiceTests : TestBase
         CreateCourseExpectValidationException(course);
     }
 
+    [Fact]
+    public void AddEvlToCourse_ShouldAddEvl()
+    {
+        var evl = _evlService.GetEvlById(1);
+        var course = _courseService.GetCourseById(1);
+
+        Exception? exception = Record.Exception(() =>
+        {
+            _courseService.AddEVLToCourse(evl.Id, course.Id);
+        });
+        
+        Assert.Null(exception);
+    }
+    
     private void CreateCourseExpectValidationException(CreateCourseDto course)
     {
         Exception? expectedException = Record.Exception(() =>

@@ -14,7 +14,14 @@ public class EvlService(IEvlRepository evlRepostory, IMapper mapper) : IEvlServi
         var evlResult = evlRepostory.CreateEvl(
             mapper.Map<HAN.Data.Entities.Evl>(evl)
         );
+        evlRepostory.SaveChanges();
         
         return mapper.Map<EvlResponseDto>(evlResult);
+    }
+
+    public EvlResponseDto GetEvlById(int id)
+    {
+        var evl = evlRepostory.GetEvlById(id);
+        return mapper.Map<EvlResponseDto>(evl);
     }
 }
