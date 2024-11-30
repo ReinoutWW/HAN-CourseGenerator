@@ -1,10 +1,11 @@
-﻿using FluentValidation.Results;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace HAN.Services.Exceptions;
 
-public class ValidationException(string message, List<ValidationFailure> validationErrors) : Exception(message)
+public class ValidationException(string message, List<ValidationResult> validationErrors) : Exception(message)
 {
-    public List<ValidationFailure> ValidationErrors { get; } = validationErrors ?? [];
+    public List<ValidationResult> ValidationErrors { get; } = validationErrors ?? [];
 
     public override string ToString()
     {
