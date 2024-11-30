@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HAN.Data.Entities;
-using HAN.Services;
+﻿using HAN.Services;
 using HAN.Services.DTOs;
 using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HAN.Tests;
+namespace HAN.Tests.Services;
 
 public class CourseServiceTests : TestBase
 {

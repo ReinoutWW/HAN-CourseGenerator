@@ -1,11 +1,9 @@
-﻿using HAN.Data;
-using HAN.Data.Entities;
-using HAN.Repositories;
+﻿using HAN.Data.Entities;
 using HAN.Repositories.Interfaces;
 using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace HAN.Tests;
+namespace HAN.Tests.Persistence;
 
 public class UserRepositoryTests : TestBase
 {

@@ -1,8 +1,6 @@
 ﻿using HAN.Data;
 using HAN.Repositories;
 using HAN.Repositories.Interfaces;
-using HAN.Services;
-using HAN.Services.DTOs;
 using HAN.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
