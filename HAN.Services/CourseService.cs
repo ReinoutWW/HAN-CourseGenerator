@@ -46,9 +46,4 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
     {
         throw new NotImplementedException();
     }
-
-    public void AddCourseComponentToCourse(int courseId, int componentId)
-    {
-        throw new NotImplementedException();
-    }
 }
