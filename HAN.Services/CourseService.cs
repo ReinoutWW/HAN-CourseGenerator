@@ -26,11 +26,11 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
         return mapper.Map<CourseResponseDto>(course);
     }
 
-    public IEnumerable<CourseResponseDto> GetEvls(int courseId)
+    public IEnumerable<EvlResponseDto> GetEvls(int courseId)
     {
         var evls = courseRepository.GetEvlsByCourseId(courseId);
         
-        return mapper.Map<IEnumerable<CourseResponseDto>>(evls);
+        return mapper.Map<IEnumerable<EvlResponseDto>>(evls);
     }
 
     public void AddEVLToCourse(int courseId, int evlId)

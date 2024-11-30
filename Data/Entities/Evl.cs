@@ -11,7 +11,7 @@ public class Evl
     
     [Required(ErrorMessage = "Name is required.")] 
     [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")] 
-    [MinLength(5, ErrorMessage = "Name cannot exceed 5 characters.")]
+    [MinLength(2, ErrorMessage = "Name cannot exceed 2 characters.")]
     [DataType(DataType.Text)]
     public string Name { get; set; } = string.Empty;
     
