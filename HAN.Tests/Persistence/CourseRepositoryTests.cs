@@ -9,16 +9,16 @@ namespace HAN.Tests;
 
 public class CourseRepositoryTests : TestBase
 {
-    private readonly ICourseRepository _repository;
     private const int SeedCourseCount = 2;
-    
+    private readonly ICourseRepository _repository;
+
     public CourseRepositoryTests()
     {
         _repository = ServiceProvider.GetRequiredService<ICourseRepository>();
         
         TestDbSeeder.SeedCourses(Context, SeedCourseCount);
     }
-    
+
     [Fact]
     public void ShouldGetAllCourses()
     {
@@ -53,7 +53,7 @@ public class CourseRepositoryTests : TestBase
         Assert.NotNull(course);
         Assert.Equal(courseId, course.Id);
     }
-    
+
     [Theory]
     [InlineData("TestCourse1")]
     [InlineData("TestCourse2")]
@@ -105,7 +105,7 @@ public class CourseRepositoryTests : TestBase
         Assert.NotNull(expectedException);
         Assert.IsType<ArgumentException>(expectedException);
     }
-    
+
     private void AddCourseExpectValidationException(Course newCourse)
     {
         Exception? expectedException = Record.Exception(() =>

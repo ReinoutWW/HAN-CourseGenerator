@@ -9,10 +9,10 @@ namespace HAN.Tests;
 
 public class UserRepositoryTests : TestBase
 {
-    private readonly IUserRepository _userRepository;
     private const int SeedUserCount = 2;
     private const string UserPrefix = "AnonymousUser";
-    
+    private readonly IUserRepository _userRepository;
+
     public UserRepositoryTests()
     {
         _userRepository = ServiceProvider.GetRequiredService<IUserRepository>();
@@ -28,7 +28,7 @@ public class UserRepositoryTests : TestBase
         Assert.NotEmpty(getUsers);
         Assert.Equal(SeedUserCount, getUsers.Count);
     }
-    
+
     [Fact]
     public void GetUserById_ShouldReturnCorrectUser()
     {
@@ -42,7 +42,7 @@ public class UserRepositoryTests : TestBase
         Assert.NotNull(user);
         Assert.Equal(userName, user.Name);
     }
-    
+
     [Theory]
     [InlineData("UserName1")]
     [InlineData("UserName2")]
@@ -63,7 +63,7 @@ public class UserRepositoryTests : TestBase
         // Assert
         Assert.Contains(users, u => u.Name == createdUser.Name);
     }
-    
+
     [Theory]
     [InlineData("")]
     [InlineData("123")]
@@ -93,8 +93,8 @@ public class UserRepositoryTests : TestBase
        
         AddUserExpectValidationException(newUser);
     }
-    
-  
+
+
     [Fact]
     public void CreateUser_ShouldThrowException_WhenUserAlreadyExists()
     {
@@ -114,7 +114,7 @@ public class UserRepositoryTests : TestBase
         Assert.NotNull(expectedException);
         Assert.IsType<ArgumentException>(expectedException);
     }
-    
+
     private void AddUserExpectValidationException(User newUser)
     {
         var expectedException = Record.Exception(() =>
@@ -126,5 +126,4 @@ public class UserRepositoryTests : TestBase
         Assert.NotNull(expectedException);
         Assert.IsType<AggregateException>(expectedException);
     }
-
 }

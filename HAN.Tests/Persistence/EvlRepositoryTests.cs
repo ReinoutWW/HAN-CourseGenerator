@@ -9,16 +9,16 @@ namespace HAN.Tests;
 
 public class EvlRepositoryTests : TestBase
 {
-    private readonly IEvlRepository _repository;
     private const int SeedEvlCount = 2;
-    
+    private readonly IEvlRepository _repository;
+
     public EvlRepositoryTests()
     {
         _repository = ServiceProvider.GetRequiredService<IEvlRepository>();
 
         TestDbSeeder.SeedEvls(Context, SeedEvlCount);
     }
-    
+
     [Fact]
     public void AddEvl_ShouldAddEvl()
     {
@@ -44,7 +44,7 @@ public class EvlRepositoryTests : TestBase
         Assert.NotNull(evl);
         Assert.Equal(evlId, evl.Id);
     }
-    
+
     [Theory]
     [InlineData("EvlName11111111111111111111111111111111111111111111111111111111111111111111111111111EvlName11111111111111111111111111111111111111111111111111111111111111111111111111111")]
     [InlineData("")]
@@ -77,7 +77,7 @@ public class EvlRepositoryTests : TestBase
         Assert.NotNull(expectedException);
         Assert.IsType<ArgumentException>(expectedException);
     }
-    
+
     private void AddEvlExpectValidationException(Evl newEvl)
     {
         var expectedException = Record.Exception(() =>

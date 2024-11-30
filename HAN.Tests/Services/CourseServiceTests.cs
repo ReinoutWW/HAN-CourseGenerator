@@ -134,6 +134,24 @@ public class CourseServiceTests : TestBase
         Assert.NotNull(expectedException);
         Assert.IsType<InvalidOperationException>(expectedException);
     }
+
+    [Fact]
+    private void GetAllEvls_ShouldReturnAllEvls()
+    {
+        var evl = _evlService.GetEvlById(1);
+        var course = _courseService.GetCourseById(1);
+        
+        var expectedExceptionNull = Record.Exception(() =>
+        {
+            _courseService.AddEVLToCourse(course.Id, evl.Id);
+        });
+
+        var evls = _courseService.GetEvls(course.Id).ToList();
+        
+        Assert.Null(expectedExceptionNull);
+        Assert.NotNull(evls);
+        Assert.Single(evls);
+    }
     
     private void CreateCourseExpectValidationException(CreateCourseDto course)
     {
