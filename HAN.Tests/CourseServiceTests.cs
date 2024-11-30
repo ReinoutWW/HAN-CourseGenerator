@@ -34,7 +34,7 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void CreateCourse_ShouldThrowException_WhenNameIsNull()
     {   
-        Assert.Throws<ArgumentNullException>(() => _courseService.CreateCourse(null));
+        Assert.Throws<ArgumentException>(() => _courseService.CreateCourse(null!));
     }
 
     [Theory]
