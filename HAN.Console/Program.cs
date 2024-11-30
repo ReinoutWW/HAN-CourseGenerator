@@ -1,3 +1,56 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-Console.WriteLine("Hello, World!");
+using HAN.Console;
+using HAN.Services;
+using HAN.Services.DTOs;
+using HAN.Tests.Base;
+using Microsoft.Extensions.DependencyInjection;
+
+// For demo purposes, we use the Test serviceprovider
+var serviceProvider = TestServiceProvider.BuildServiceProvider();
+var scope = serviceProvider.CreateScope();
+
+var courseService = scope.ServiceProvider.GetRequiredService<ICourseService>();
+var evlService = scope.ServiceProvider.GetRequiredService<IEvlService>();
+
+var course = new CreateCourseDto
+{
+    Name = "HAN I-OOSE",
+    Description = "The magical course "
+};
+
+List<CreateEvlDto> evls = new()
+{
+    new CreateEvlDto
+    {
+        Name = "GP",
+        Description = "Structured programming"
+    },
+    new CreateEvlDto {
+        Name = "OOP",
+        Description = "Object Oriented Design"
+    },
+    new CreateEvlDto {
+        Name = "Databases",
+        Description = "Advanced Database"
+    }
+};
+
+var createdCourse = courseService.CreateCourse(course);
+
+foreach (var createdEvl in evls.Select(evl => evlService.CreateEvl(evl)))
+{
+    courseService.AddEVLToCourse(createdCourse.Id, createdEvl.Id);
+}
+
+Console.WriteLine("Course created!");
+DemoCourseLogger.LogCourse(createdCourse);
+
+var createdEvls = courseService.GetEvls(createdCourse.Id);
+
+Console.WriteLine("----- Total EVLS ------");
+for(var i = 0; i < evls.Count; i++)
+{
+    var evl = createdEvls.ElementAt(i);
+    DemoCourseLogger.LogEvl(evl);
+}
