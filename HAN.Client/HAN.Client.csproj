@@ -25,21 +25,4 @@
     <Target Name="RunTestsAfterBuild" AfterTargets="Build">
         <Exec Command="dotnet test" />
     </Target>
-
-    <!-- Define PreBuild Target -->
-    <Target Name="PreBuild" BeforeTargets="Build" Condition="'$(RunSonarScan)' == 'true'">
-        <Exec Command="echo Running Pre-Build Command for SonarScan..." />
-        <!-- Replace with your actual pre-build command -->
-        <Exec Command='dotnet sonarscanner begin /k:"ReinoutWW_HAN-CourseGenerator_6e062695-950c-462b-892c-607a5f25b12d" /d:sonar.host.url="http://fraction1.local:30007"  /d:sonar.token="sqp_2a8ecbfd319def4d8e0abd3a9963f8446fb611da"
-' />
-    </Target>
-
-    <!-- Define AfterBuild Target -->
-    <Target Name="AfterBuild" AfterTargets="Build" Condition="'$(RunSonarScan)' == 'true'">
-        <Exec Command="echo Running Post-Build Command for SonarScan..." />
-        <!-- Replace with your actual post-build command -->
-        <Exec Command='dotnet sonarscanner end /d:sonar.token="sqp_2a8ecbfd319def4d8e0abd3a9963f8446fb611da"' />
-    </Target>
-
-
 </Project>
