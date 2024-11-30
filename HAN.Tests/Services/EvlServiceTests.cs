@@ -67,7 +67,7 @@ public class EvlServiceTests: TestBase
 
     private void CreateEvlExpectValidationException(CreateEvlDto evl)
     {
-        Exception? expectedException = Record.Exception(() =>
+        var expectedException = Record.Exception(() =>
         {
             _evlService.CreateEvl(evl);
         });

@@ -76,11 +76,11 @@ public class CourseRepositoryTests : TestBase
     [Theory]
     [InlineData("CourseName11111111111111111111111111111111111111111111111111111111111111111111111111111CourseName11111111111111111111111111111111111111111111111111111111111111111111111111111")]
     [InlineData("")]
-    public void CreateCourse_ShouldThrowException_WhenWrongCourseName(string CourseName)
+    public void CreateCourse_ShouldThrowException_WhenWrongCourseName(string courseName)
     {
         var newCourse = new Course()
         {
-            Name = CourseName
+            Name = courseName
         };
        
         AddCourseExpectValidationException(newCourse);

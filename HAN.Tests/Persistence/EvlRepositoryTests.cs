@@ -68,7 +68,7 @@ public class EvlRepositoryTests : TestBase
     [Fact]
     public void CreateEvl_ShouldThrowException_WhenEvlIsNull()
     {
-        Exception? expectedException = Record.Exception(() =>
+        var expectedException = Record.Exception(() =>
         {
             _repository.CreateEvl(null!);
             _repository.SaveChanges();
@@ -80,7 +80,7 @@ public class EvlRepositoryTests : TestBase
     
     private void AddEvlExpectValidationException(Evl newEvl)
     {
-        Exception? expectedException = Record.Exception(() =>
+        var expectedException = Record.Exception(() =>
         {
             _repository.CreateEvl(newEvl);
             _repository.SaveChanges();

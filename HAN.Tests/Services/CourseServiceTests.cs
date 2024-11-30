@@ -76,17 +76,68 @@ public class CourseServiceTests : TestBase
         var evl = _evlService.GetEvlById(1);
         var course = _courseService.GetCourseById(1);
 
-        Exception? exception = Record.Exception(() =>
+        var exception = Record.Exception(() =>
         {
             _courseService.AddEVLToCourse(evl.Id, course.Id);
         });
         
         Assert.Null(exception);
     }
+
+    [Fact]
+    public void AddEvlToCourse_ShouldThrowException_EvlNotFound()
+    {
+        var course = _courseService.GetCourseById(1);
+        const int nonExistentEvilId = 100000;
+        
+        var expectedException = Record.Exception(() =>
+        {
+            _courseService.AddEVLToCourse(course.Id, nonExistentEvilId);
+        });
+        
+        Assert.NotNull(expectedException);
+        Assert.IsType<KeyNotFoundException>(expectedException);
+    }
+    
+    [Fact]
+    public void AddEvlToCourse_ShouldThrowException_CourseNotFound()
+    {
+        const int nonExistentCourseId = 100000;
+        var evl = _evlService.GetEvlById(1);
+
+        var expectedException = Record.Exception(() =>
+        {
+            _courseService.AddEVLToCourse(nonExistentCourseId, evl.Id);
+        });
+        
+        Assert.NotNull(expectedException);
+        Assert.IsType<KeyNotFoundException>(expectedException);
+    }
+
+    [Fact]
+    public void AddEvlToCourse_ShouldThrowException_EvlAlreadyAdded()
+    {
+        var evl = _evlService.GetEvlById(1);
+        var course = _courseService.GetCourseById(1);
+        
+        var expectedExceptionNull = Record.Exception(() =>
+        {
+            _courseService.AddEVLToCourse(course.Id, evl.Id);
+        });
+        
+        var expectedException = Record.Exception(() =>
+        {
+            _courseService.AddEVLToCourse(course.Id, evl.Id);
+        });
+        
+        Assert.Null(expectedExceptionNull);
+        Assert.NotNull(expectedException);
+        Assert.IsType<InvalidOperationException>(expectedException);
+    }
     
     private void CreateCourseExpectValidationException(CreateCourseDto course)
     {
-        Exception? expectedException = Record.Exception(() =>
+        var expectedException = Record.Exception(() =>
         {
             _courseService.CreateCourse(course);
         });

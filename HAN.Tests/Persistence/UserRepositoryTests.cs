@@ -32,7 +32,7 @@ public class UserRepositoryTests : TestBase
     [Fact]
     public void GetUserById_ShouldReturnCorrectUser()
     {
-        var userId = 1;
+        const int userId = 1;
         var userName = $"{UserPrefix}{userId}";
         
         // Act
@@ -105,7 +105,7 @@ public class UserRepositoryTests : TestBase
     [Fact]
     public void CreateUser_ShouldThrowException_WhenUserIsNull()
     {
-        Exception? expectedException = Record.Exception(() =>
+        var expectedException = Record.Exception(() =>
         {
             _userRepository.CreateUser(null!);
             _userRepository.SaveChanges();
@@ -117,7 +117,7 @@ public class UserRepositoryTests : TestBase
     
     private void AddUserExpectValidationException(User newUser)
     {
-        Exception? expectedException = Record.Exception(() =>
+        var expectedException = Record.Exception(() =>
         {
             _userRepository.CreateUser(newUser);
             _userRepository.SaveChanges();
