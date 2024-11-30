@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HAN.Repositories;
 using HAN.Repositories.Interfaces;
 using HAN.Services.Attributes;
 using HAN.Services.DTOs;
@@ -12,7 +11,7 @@ public class EvlService(IEvlRepository evlRepostory, IMapper mapper) : IEvlServi
     public EvlResponseDto CreateEvl(CreateEvlDto evl)
     {
         var evlResult = evlRepostory.CreateEvl(
-            mapper.Map<HAN.Data.Entities.Evl>(evl)
+            mapper.Map<Data.Entities.Evl>(evl)
         );
         evlRepostory.SaveChanges();
         

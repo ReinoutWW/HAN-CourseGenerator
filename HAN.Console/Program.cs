@@ -51,6 +51,7 @@ var createdEvls = courseService.GetEvls(createdCourse.Id);
 Console.WriteLine("----- Total EVLS ------");
 for(var i = 0; i < evls.Count; i++)
 {
+    // ReSharper disable once PossibleMultipleEnumeration
     var evl = createdEvls.ElementAt(i);
     DemoCourseLogger.LogEvl(evl);
 }

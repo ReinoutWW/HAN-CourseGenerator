@@ -1,5 +1,4 @@
-﻿using HAN.Domain.Entities;
-using HAN.Services.DTOs;
+﻿using HAN.Services.DTOs;
 
 namespace HAN.Services;
 

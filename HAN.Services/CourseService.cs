@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using HAN.Domain.Entities;
 using HAN.Domain.Entities.CourseComponents;
-using HAN.Repositories;
 using HAN.Repositories.Interfaces;
 using HAN.Services.Attributes;
 using HAN.Services.DTOs;
@@ -14,7 +12,7 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
     public CourseResponseDto CreateCourse(CreateCourseDto course)
     {
         var courseResult = courseRepository.CreateCourse(
-                mapper.Map<HAN.Data.Entities.Course>(course)
+                mapper.Map<Data.Entities.Course>(course)
             );
         
         return mapper.Map<CourseResponseDto>(courseResult);

@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
     
+    // ReSharper disable once UnusedMethodReturnValue.Local
     private static IServiceCollection AddProxiedValidation<TInterface, TImplementation>(
         this IServiceCollection services
     )

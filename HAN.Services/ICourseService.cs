@@ -1,5 +1,4 @@
-﻿using HAN.Domain.Entities;
-using HAN.Domain.Entities.CourseComponents;
+﻿using HAN.Domain.Entities.CourseComponents;
 using HAN.Services.DTOs;
 
 namespace HAN.Services;
@@ -14,5 +13,4 @@ public interface ICourseService
     
     // Assign
     void AddEVLToCourse(int courseId, int evlId);
-    void AddCourseComponentToCourse(int courseId, int componentId);
 }

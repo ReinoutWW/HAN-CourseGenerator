@@ -26,11 +26,12 @@ public abstract class TestBase : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    // ReSharper disable once VirtualMemberNeverOverridden.Global
     protected virtual void Dispose(bool disposing)
     {
         if (disposing)
         {
-            _scope?.Dispose(); // Dispose scope and associated resources
+            _scope.Dispose(); // Dispose scope and associated resources
         }
     }
 }
