@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
 using HAN.Services.DTOs;
+using DbEntityEvl = HAN.Data.Entities.Evl;
+using DbCourseEvl = HAN.Data.Entities.Course;
+using Evl = HAN.Domain.Entities.Evl;
+using Course = HAN.Domain.Entities.Course;
 
 namespace HAN.Services.Mappers;
 
@@ -10,11 +14,12 @@ public class CourseProfile : Profile
         // From - To (Easy to f* up)
         
         // Persistence
-        CreateMap<CreateCourseDto, Data.Entities.Course>();
-        CreateMap<Data.Entities.Course, Domain.Entities.Course>();
-        CreateMap<Data.Entities.Course, CourseResponseDto>();
-
-        // Domain
-        CreateMap<Domain.Entities.Course, CourseResponseDto>();
+        CreateMap<CreateCourseDto, DbCourseEvl>();
+        CreateMap<DbCourseEvl, Course>();
+        CreateMap<DbCourseEvl, CourseResponseDto>();
+        
+        CreateMap<CreateEvlDto, DbEntityEvl>();
+        CreateMap<DbEntityEvl, Evl>();
+        CreateMap<DbEntityEvl, EvlResponseDto>();
     }
 }

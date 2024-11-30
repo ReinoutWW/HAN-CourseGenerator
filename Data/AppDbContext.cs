@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Course> Courses { get; set; }
+    public DbSet<Evl> Evls { get; set; }
     
     public override int SaveChanges()
     {

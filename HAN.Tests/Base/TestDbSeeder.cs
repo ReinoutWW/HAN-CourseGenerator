@@ -41,4 +41,22 @@ public static class TestDbSeeder
         context.Courses.AddRange(courses);
         context.SaveChanges();
     }
+    
+    public static void SeedEvls(AppDbContext context, int seedEvlCount)
+    {
+        List<Evl> evls = [];
+        for (var i = 0; i < seedEvlCount; i++)
+        {
+            evls.Add(
+                new Evl()
+                {
+                    Name = $"GeneratedEvl{i+1}",
+                    Description = $"Description {i+1}",
+                }
+            );
+        }
+        
+        context.Evls.AddRange(evls);
+        context.SaveChanges();
+    }
 }

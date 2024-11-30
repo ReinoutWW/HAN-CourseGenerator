@@ -1,6 +1,6 @@
 ﻿using HAN.Data.Entities;
 
-namespace HAN.Repositories;
+namespace HAN.Repositories.Interfaces;
 
 public interface IUserRepository
 {

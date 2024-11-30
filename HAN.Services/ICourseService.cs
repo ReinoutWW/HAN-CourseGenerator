@@ -8,7 +8,6 @@ public interface ICourseService
 {
     // Create
     CourseResponseDto CreateCourse(CreateCourseDto course);
-    EVL CreateEVL(EVL evl);
     CourseComponent CreateCourseComponent(CourseComponent component);
     
     // Assign

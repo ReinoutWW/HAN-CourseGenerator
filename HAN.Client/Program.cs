@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using HAN.Client;
 using HAN.Data;
 using HAN.Repositories;
+using HAN.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 

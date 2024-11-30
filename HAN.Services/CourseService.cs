@@ -2,6 +2,7 @@
 using HAN.Domain.Entities;
 using HAN.Domain.Entities.CourseComponents;
 using HAN.Repositories;
+using HAN.Repositories.Interfaces;
 using HAN.Services.Attributes;
 using HAN.Services.DTOs;
 
@@ -17,11 +18,6 @@ public class CourseService(ICourseRepository courseRepository, IMapper mapper) :
             );
         
         return mapper.Map<CourseResponseDto>(courseResult);
-    }
-
-    public EVL CreateEVL(EVL evl)
-    {
-        throw new NotImplementedException();
     }
 
     public CourseComponent CreateCourseComponent(CourseComponent component)
