@@ -15,7 +15,7 @@ public interface ICourseService
     IEnumerable<EvlResponseDto> GetEvls(int courseId);
     
     // Assign
-    void AddEVLToCourse(int courseId, int evlId);
+    void AddEvlToCourse(int courseId, int evlId);
 }
 
 
@@ -44,7 +44,7 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
         return mapper.Map<IEnumerable<EvlResponseDto>>(evls);
     }
 
-    public void AddEVLToCourse(int courseId, int evlId)
+    public void AddEvlToCourse(int courseId, int evlId)
     {
         if (!courseRepository.CourseExists(courseId))
             throw new KeyNotFoundException($"Course with id {courseId} does not exist");

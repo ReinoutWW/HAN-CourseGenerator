@@ -40,7 +40,7 @@ var createdCourse = courseService.CreateCourse(course);
 
 foreach (var createdEvl in evls.Select(evl => evlService.CreateEvl(evl)))
 {
-    courseService.AddEVLToCourse(createdCourse.Id, createdEvl.Id);
+    courseService.AddEvlToCourse(createdCourse.Id, createdEvl.Id);
 }
 
 Console.WriteLine("Course created!");

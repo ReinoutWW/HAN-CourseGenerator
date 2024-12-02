@@ -76,7 +76,7 @@ public class CourseServiceTests : TestBase
 
         var exception = Record.Exception(() =>
         {
-            _courseService.AddEVLToCourse(evl.Id, course.Id);
+            _courseService.AddEvlToCourse(evl.Id, course.Id);
         });
         
         Assert.Null(exception);
@@ -90,7 +90,7 @@ public class CourseServiceTests : TestBase
         
         var expectedException = Record.Exception(() =>
         {
-            _courseService.AddEVLToCourse(course.Id, nonExistentEvilId);
+            _courseService.AddEvlToCourse(course.Id, nonExistentEvilId);
         });
         
         Assert.NotNull(expectedException);
@@ -105,7 +105,7 @@ public class CourseServiceTests : TestBase
 
         var expectedException = Record.Exception(() =>
         {
-            _courseService.AddEVLToCourse(nonExistentCourseId, evl.Id);
+            _courseService.AddEvlToCourse(nonExistentCourseId, evl.Id);
         });
         
         Assert.NotNull(expectedException);
@@ -120,12 +120,12 @@ public class CourseServiceTests : TestBase
         
         var expectedExceptionNull = Record.Exception(() =>
         {
-            _courseService.AddEVLToCourse(course.Id, evl.Id);
+            _courseService.AddEvlToCourse(course.Id, evl.Id);
         });
         
         var expectedException = Record.Exception(() =>
         {
-            _courseService.AddEVLToCourse(course.Id, evl.Id);
+            _courseService.AddEvlToCourse(course.Id, evl.Id);
         });
         
         Assert.Null(expectedExceptionNull);
@@ -141,7 +141,7 @@ public class CourseServiceTests : TestBase
         
         var expectedExceptionNull = Record.Exception(() =>
         {
-            _courseService.AddEVLToCourse(course.Id, evl.Id);
+            _courseService.AddEvlToCourse(course.Id, evl.Id);
         });
 
         var evls = _courseService.GetEvls(course.Id).ToList();
