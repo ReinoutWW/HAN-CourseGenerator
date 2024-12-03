@@ -19,22 +19,21 @@ var course = new CreateCourseDto
     Description = "The magical course "
 };
 
-List<CreateEvlDto> evls = new()
-{
-    new CreateEvlDto
-    {
+List<CreateEvlDto> evls =
+[
+    new() {
         Name = "GP",
         Description = "Structured programming"
     },
-    new CreateEvlDto {
+    new() {
         Name = "OOP",
         Description = "Object Oriented Design"
     },
-    new CreateEvlDto {
+    new()  {
         Name = "Databases",
         Description = "Advanced Database"
     }
-};
+];
 
 var createdCourse = courseService.CreateCourse(course);
 
