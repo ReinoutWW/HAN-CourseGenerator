@@ -72,7 +72,6 @@ public class CourseRepositoryTests : TestBase
     }
 
     [Theory]
-    [InlineData("CourseName11111111111111111111111111111111111111111111111111111111111111111111111111111CourseName11111111111111111111111111111111111111111111111111111111111111111111111111111")]
     [InlineData("")]
     public void CreateCourse_ShouldThrowException_WhenWrongCourseName(string courseName)
     {

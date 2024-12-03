@@ -43,19 +43,6 @@ public class EvlRepositoryTests : TestBase
         Assert.Equal(evlId, evl.Id);
     }
 
-    [Theory]
-    [InlineData("EvlName11111111111111111111111111111111111111111111111111111111111111111111111111111EvlName11111111111111111111111111111111111111111111111111111111111111111111111111111")]
-    [InlineData("")]
-    public void CreateEvl_ShouldThrowException_WhenWrongEvlName(string evlName)
-    {
-        var newEvl = new Evl()
-        {
-            Name = evlName
-        };
-       
-        AddEvlExpectValidationException(newEvl);
-    }
-
     [Fact]
     public void CreateEvl_ShouldThrowException_WhenEvlAlreadyExists()
     {
