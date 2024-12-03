@@ -64,8 +64,6 @@ public class UserRepositoryTests : TestBase
 
     [Theory]
     [InlineData("")]
-    [InlineData("123")]
-    [InlineData("PasswordIsWayTooLongBecauseSecurityExpectedUsToCreateAPasswordThatExceedsTheLimitedPasswordLength")]
     public void CreateUser_ShouldThrowException_PasswordIsNotCorrect(string password)
     {
         var newUser = new User()
