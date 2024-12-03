@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using HAN.Domain.Entities.User;
 using HAN.Services.DTOs;
 using DbEntityEvl = HAN.Data.Entities.Evl;
-using DbCourseEvl = HAN.Data.Entities.Course;
+using DbCourse = HAN.Data.Entities.Course;
+using DbUser = HAN.Data.Entities.User;
 using Evl = HAN.Domain.Entities.Evl;
 using Course = HAN.Domain.Entities.Course;
 
@@ -14,14 +16,19 @@ public class CourseProfile : Profile
         // From - To (Easy to f* up)
         
         // Persistence
-        CreateMap<CreateCourseDto, DbCourseEvl>();
+        CreateMap<CreateCourseDto, DbCourse>();
         CreateMap<CreateCourseDto, Course>();
-        CreateMap<DbCourseEvl, Course>();
-        CreateMap<DbCourseEvl, CourseResponseDto>();
+        CreateMap<DbCourse, Course>();
+        CreateMap<DbCourse, CourseResponseDto>();
         
         CreateMap<CreateEvlDto, DbEntityEvl>();
         CreateMap<CreateEvlDto, Evl>();
         CreateMap<DbEntityEvl, Evl>();
         CreateMap<DbEntityEvl, EvlResponseDto>();
+        
+        CreateMap<CreateUserDto, DbUser>();
+        CreateMap<CreateUserDto, User>();
+        CreateMap<DbUser, User>();
+        CreateMap<DbUser, UserResponseDto>();
     }
 }
