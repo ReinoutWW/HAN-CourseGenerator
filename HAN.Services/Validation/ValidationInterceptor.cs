@@ -27,11 +27,7 @@ public class ValidationInterceptor(IValidationService validationService) : IInte
 
     private void ValidateArguments(IInvocation invocation)
     {
-        foreach (var argument in invocation.Arguments)
-        {
-            if (argument == null) continue;
-                
-            validationService.Validate(argument);
-        }
+        invocation.Arguments.ToList()
+            .ForEach(argument => validationService.Validate(argument));
     }
 }

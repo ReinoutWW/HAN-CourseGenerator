@@ -33,7 +33,7 @@ public class EvlServiceTests: TestBase
     [Fact]
     public void CreateEvl_ShouldThrowException_WhenNameIsNull()
     {   
-        Assert.Throws<ArgumentException>(() => _evlService.CreateEvl(null!));
+        Assert.Throws<ArgumentNullException>(() => _evlService.CreateEvl(null!));
     }
 
     [Theory]
