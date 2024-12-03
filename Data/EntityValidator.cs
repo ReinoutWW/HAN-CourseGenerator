@@ -15,7 +15,7 @@ public static class EntityValidator
         return validationExceptions;
     }
 
-    public static List<ValidationException> AddValidationExceptionsForEntity(object entity)
+    private static List<ValidationException> AddValidationExceptionsForEntity(object entity)
     {
         var validationExceptions = new List<ValidationException>();
         var validationResults = new List<ValidationResult>();
