@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using HAN.Domain.Entities;
 using HAN.Repositories.Interfaces;
 using HAN.Services.Attributes;
 using HAN.Services.DTOs;
+using HAN.Services.Validation;
 
 namespace HAN.Services;
 
@@ -11,11 +13,14 @@ public interface IEvlService
     EvlResponseDto GetEvlById(int id);
 }
 
-public class EvlService(IEvlRepository evlRepostory, IMapper mapper) : IEvlService
+public class EvlService(IEvlRepository evlRepostory, IMapper mapper, IValidationService validationService) : IEvlService
 {
-    [ValidateEntities]
     public EvlResponseDto CreateEvl(CreateEvlDto evl)
     {
+        var evlDomainEntity = mapper.Map<Evl>(evl);
+        
+        validationService.Validate(evlDomainEntity);
+        
         var evlResult = evlRepostory.CreateEvl(
             mapper.Map<Data.Entities.Evl>(evl)
         );

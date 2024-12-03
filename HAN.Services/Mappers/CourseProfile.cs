@@ -15,10 +15,12 @@ public class CourseProfile : Profile
         
         // Persistence
         CreateMap<CreateCourseDto, DbCourseEvl>();
+        CreateMap<CreateCourseDto, Course>();
         CreateMap<DbCourseEvl, Course>();
         CreateMap<DbCourseEvl, CourseResponseDto>();
         
         CreateMap<CreateEvlDto, DbEntityEvl>();
+        CreateMap<CreateEvlDto, Evl>();
         CreateMap<DbEntityEvl, Evl>();
         CreateMap<DbEntityEvl, EvlResponseDto>();
     }
