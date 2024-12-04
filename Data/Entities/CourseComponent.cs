@@ -13,9 +13,8 @@ public class CourseComponent
     [DataType(DataType.Text)]
     public string Name { get; set; } = string.Empty;
     
-    [Required] 
     [DataType(DataType.Text)]
-    public string Desciption { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
     public List<Evl> Evls { get; set; } = [];
     public List<File> Files { get; set; } = [];

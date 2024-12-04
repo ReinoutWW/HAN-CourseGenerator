@@ -92,4 +92,14 @@ public static class TestDbSeeder
         
         context.SaveChanges();
     }
+    
+    public static void SeedCourseComponents(AppDbContext context, int seedCourseComponentCount)
+    {
+        var courseComponents = Enumerable.Range(0, seedCourseComponentCount)
+            .Select(_ => DbEntityCreator<CourseComponent>.CreateEntity())
+            .ToList();
+
+        context.CourseComponents.AddRange(courseComponents);
+        context.SaveChanges();
+    }
 }

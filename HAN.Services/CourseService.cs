@@ -11,14 +11,12 @@ public interface ICourseService
 {
     // Create
     CourseResponseDto CreateCourse(CreateCourseDto course);
-    CourseComponent CreateCourseComponent(CourseComponent component);
     CourseResponseDto GetCourseById(int id);
     IEnumerable<EvlResponseDto> GetEvls(int courseId);
     
     // Assign
     void AddEvlToCourse(int courseId, int evlId);
 }
-
 
 public class CourseService(ICourseRepository courseRepository, IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : ICourseService
 {
@@ -44,7 +42,6 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
     public IEnumerable<EvlResponseDto> GetEvls(int courseId)
     {
         var evls = courseRepository.GetEvlsByCourseId(courseId);
-        
         return mapper.Map<IEnumerable<EvlResponseDto>>(evls);
     }
 
@@ -59,8 +56,5 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
         courseRepository.AddEvlToCourse(courseId, evlId);
     }
 
-    public CourseComponent CreateCourseComponent(CourseComponent component)
-    {
-        throw new NotImplementedException();
-    }
+
 }

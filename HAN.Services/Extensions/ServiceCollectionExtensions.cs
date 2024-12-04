@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IValidationService, ValidationService>();
         services.AddScoped<ICourseService, CourseService>();
+        services.AddScoped<ICourseComponentService, CourseComponentService>();
         services.AddScoped<IEvlService, EvlService>();
         services.AddScoped<IUserService, UserService>();
         return services;
