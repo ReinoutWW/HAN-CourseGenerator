@@ -10,5 +10,5 @@ public interface ICourseComponentRepository
     IEnumerable<CourseComponent> GetAllCourseComponents();
     bool CourseComponentExists(int courseComponentId);
     IEnumerable<Evl> GetEvlsByCourseComponentId(int id);
-    void AddEvlToCourseComponent(int courseId, int evlId);
+    void AddEvlToCourseComponent(int courseComponentId, int evlId);
 }
