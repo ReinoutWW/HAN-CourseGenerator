@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using HAN.Data.Entities;
 using HAN.Services.DTOs;
-using DbEntityEvl = HAN.Data.Entities.Evl;
 using DbCourseComponent = HAN.Data.Entities.CourseComponent;
 using CourseComponent = HAN.Domain.Entities.CourseComponents.CourseComponent;
 
@@ -22,8 +21,8 @@ public class CourseProfile : Profile
         CreateMap<DbCourseComponent, CourseComponent>();
         CreateMap<DbCourseComponent, CourseComponentResponseDto>();
         
-        CreateMap<CreateEvlDto, DbEntityEvl>();
-        CreateMap<DbEntityEvl, EvlResponseDto>();
+        CreateMap<CreateEvlDto, Evl>();
+        CreateMap<Evl, EvlResponseDto>();
         
         CreateMap<CreateUserDto, User>();
         CreateMap<User, UserResponseDto>();
