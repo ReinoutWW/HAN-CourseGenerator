@@ -9,11 +9,14 @@ public class Evl
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     
-    [Required]
-    [DataType(DataType.Text)]
+    [Required(ErrorMessage = "Name is required.")] 
+    [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")] 
+    [MinLength(5, ErrorMessage = "Name should be at least 5 characters.")]
     public string Name { get; set; } = string.Empty;
     
-    [DataType(DataType.Text)]
+    [Required(ErrorMessage = "Description is required.")] 
+    [StringLength(450, ErrorMessage = "Description cannot exceed 450 characters.")] 
+    [MinLength(5, ErrorMessage = "Description should be at least 5 characters.")]
     public string? Description { get; set; }
     
     [Required]

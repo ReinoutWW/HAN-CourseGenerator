@@ -4,7 +4,6 @@ using DbEntityEvl = HAN.Data.Entities.Evl;
 using DbCourse = HAN.Data.Entities.Course;
 using DbCourseComponent = HAN.Data.Entities.CourseComponent;
 using DbUser = HAN.Data.Entities.User;
-using Evl = HAN.Domain.Entities.Evl;
 using Course = HAN.Domain.Entities.Course;
 using CourseComponent = HAN.Domain.Entities.CourseComponents.CourseComponent;
 
@@ -28,8 +27,6 @@ public class CourseProfile : Profile
         CreateMap<DbCourseComponent, CourseComponentResponseDto>();
         
         CreateMap<CreateEvlDto, DbEntityEvl>();
-        CreateMap<CreateEvlDto, Evl>();
-        CreateMap<DbEntityEvl, Evl>();
         CreateMap<DbEntityEvl, EvlResponseDto>();
         
         CreateMap<CreateUserDto, DbUser>();
