@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HAN.Domain.Entities.User;
 using HAN.Services.DTOs;
 using DbEntityEvl = HAN.Data.Entities.Evl;
 using DbCourse = HAN.Data.Entities.Course;
@@ -34,8 +33,6 @@ public class CourseProfile : Profile
         CreateMap<DbEntityEvl, EvlResponseDto>();
         
         CreateMap<CreateUserDto, DbUser>();
-        CreateMap<CreateUserDto, User>();
-        CreateMap<DbUser, User>();
         CreateMap<DbUser, UserResponseDto>();
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HAN.Domain.Entities.User;
+using HAN.Data.Entities;
 using HAN.Repositories.Interfaces;
 using HAN.Services.DTOs;
 using HAN.Services.Validation;
