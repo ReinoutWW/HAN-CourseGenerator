@@ -3,7 +3,6 @@ using HAN.Data.Entities;
 using HAN.Services.DTOs;
 using DbEntityEvl = HAN.Data.Entities.Evl;
 using DbCourseComponent = HAN.Data.Entities.CourseComponent;
-using DbUser = HAN.Data.Entities.User;
 using CourseComponent = HAN.Domain.Entities.CourseComponents.CourseComponent;
 
 namespace HAN.Services.Mappers;
@@ -26,7 +25,7 @@ public class CourseProfile : Profile
         CreateMap<CreateEvlDto, DbEntityEvl>();
         CreateMap<DbEntityEvl, EvlResponseDto>();
         
-        CreateMap<CreateUserDto, DbUser>();
-        CreateMap<DbUser, UserResponseDto>();
+        CreateMap<CreateUserDto, User>();
+        CreateMap<User, UserResponseDto>();
     }
 }
