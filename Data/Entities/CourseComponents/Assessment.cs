@@ -1,4 +1,4 @@
-﻿namespace HAN.Domain.Entities.CourseComponents;
+﻿namespace HAN.Data.Entities.CourseComponents;
 
 public abstract class Assessment : CourseComponent
 {

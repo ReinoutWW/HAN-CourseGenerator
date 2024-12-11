@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using HAN.Domain.Entities;
-using HAN.Domain.Entities.CourseComponents;
 using HAN.Repositories.Interfaces;
 using HAN.Services.DTOs;
 using HAN.Services.Validation;
