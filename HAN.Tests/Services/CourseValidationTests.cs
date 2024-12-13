@@ -16,12 +16,14 @@ public class CourseValidationTests : TestBase
     [Fact]
     public void ValidateCourse_ShouldReturnTrue()
     {
+        throw new NotImplementedException();
         // Arrange
         
         
         // Act
-
+        
         
         // Assert
+        Assert.True(true);
     }
 }
