@@ -1,6 +1,6 @@
 ﻿namespace HAN.Data.Entities;
 
-public class GenericTest : BaseEntity
+public class ExampleEntity : BaseEntity
 {
     public required string Name { get; set; }
 }
