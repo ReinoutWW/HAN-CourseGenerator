@@ -1,7 +1,9 @@
 ﻿using HAN.Data;
+using HAN.Data.Entities;
 using HAN.Repositories;
 using HAN.Repositories.Interfaces;
 using HAN.Services.Extensions;
+using HAN.Tests.Mocks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +24,7 @@ public static class TestServiceProvider
         services.AddScoped<IEvlRepository, EvlRepostory>();
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseComponentRepository, CourseComponentRepository>();
+        services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
         services.AddCourseServices();

@@ -14,6 +14,9 @@ public class AppDbContext : DbContext
     public DbSet<CourseComponent> CourseComponents { get; set; }
     public DbSet<File> Files { get; set; }
     
+    
+    public DbSet<ExampleEntity> GenericTests { get; set; }
+
     public override int SaveChanges()
     {
         ValidateEntities();
