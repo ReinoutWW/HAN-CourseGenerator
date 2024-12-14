@@ -21,20 +21,17 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
 {
     public CourseResponseDto CreateCourse(CreateCourseDto course)
     {
-        var courseDomainEntity = mapper.Map<Course>(course);
+        var courseEntity = mapper.Map<Course>(course);
+        validationService.Validate(courseEntity);
         
-        validationService.Validate(courseDomainEntity);
+        courseRepository.Add(courseEntity);
         
-        var courseResult = courseRepository.CreateCourse(
-                mapper.Map<Course>(course)
-            );
-        
-        return mapper.Map<CourseResponseDto>(courseResult);
+        return mapper.Map<CourseResponseDto>(courseEntity);
     }
 
     public CourseResponseDto GetCourseById(int id)
     {
-        var course = courseRepository.GetCourseById(id);
+        var course = courseRepository.GetById(id);
         return mapper.Map<CourseResponseDto>(course);
     }
 
@@ -46,7 +43,7 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
 
     public void AddEvlToCourse(int courseId, int evlId)
     {
-        if (!courseRepository.CourseExists(courseId))
+        if (!courseRepository.Exists(courseId))
             throw new KeyNotFoundException($"Course with id {courseId} does not exist");
 
         if (!evlRepository.EvlExists(evlId))

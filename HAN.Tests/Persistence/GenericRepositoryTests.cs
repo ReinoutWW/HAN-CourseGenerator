@@ -92,16 +92,31 @@ public class GenericRepositoryTests : TestBase
     {   
         var entities = new List<ExampleEntity>
         {
-            new ExampleEntity { Name = "TestName1" },
-            new ExampleEntity { Name = "TestName2" },
-            new ExampleEntity { Name = "TestName3" }
+            new()  { Name = "TestName1" },
+            new()  { Name = "TestName2" },
+            new()  { Name = "TestName3" }
         };
 
-        entities.ForEach(entity => _repository.Add(entity));
+        foreach (var entity in entities) _repository.Add(entity);
 
         var allEntities = _repository.GetAll().ToList();
         
         Assert.NotNull(allEntities);
         Assert.Equal(entities.Count, allEntities.Count);
+    }
+    
+    [Fact]
+    public void GetOne_ShouldExist()
+    {
+        var entity = new ExampleEntity()
+        {
+            Name = "TestName"
+        };
+
+        _repository.Add(entity);
+
+        var exists = _repository.Exists(entity.Id);
+        
+        Assert.True(exists);
     }
 }
