@@ -9,27 +9,24 @@ namespace HAN.Services;
 public interface IUserService
 {
     public UserResponseDto CreateUser(CreateUserDto userDto);
-    public UserResponseDto? GetUserById(string id);
+    public UserResponseDto? GetUserById(int id);
 }
 
 public class UserService(IUserRepository repository, IMapper mapper, IValidationService validationService) : IUserService
 {
     public UserResponseDto CreateUser(CreateUserDto userDto)
     {
-        var userDomainEntity = mapper.Map<User>(userDto);
+        var userEntity = mapper.Map<User>(userDto);
     
-        validationService.Validate(userDomainEntity);
+        validationService.Validate(userEntity);
+        repository.Add(userEntity);
     
-        var userResult = repository.CreateUser(
-            mapper.Map<Data.Entities.User>(userDto)
-        );
-        repository.SaveChanges();
-    
-        return mapper.Map<UserResponseDto>(userResult);
+        return mapper.Map<UserResponseDto>(userEntity);
     }
 
-    public UserResponseDto? GetUserById(string id)
+    public UserResponseDto? GetUserById(int id)
     {
-        throw new NotImplementedException();
+        var user = repository.GetById(id);
+        return mapper.Map<UserResponseDto>(user);
     }
 }
