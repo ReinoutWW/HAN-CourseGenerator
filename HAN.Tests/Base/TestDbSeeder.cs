@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Design;
 using HAN.Data;
 using HAN.Data.Entities;
+using HAN.Data.Entities.CourseComponents;
 using Microsoft.EntityFrameworkCore;
 
 namespace HAN.Tests.Base;
@@ -31,25 +32,6 @@ public static class TestDbSeeder
         context.Courses.AddRange(courses);
         context.SaveChanges();
     }
-    
-    public static void SeedCoursesForValidation(AppDbContext context, int seedCourseCount)
-    {
-        SeedCourses(context, seedCourseCount);
-
-        var courses = context.Courses
-            .Include(c => c.Evls)
-            .ToList();
-
-        courses.AddEvlsToCources(context, seedCourseCount);
-        
-        context.SaveChanges();
-    }
-
-    private static void AddEvlsToCources(this List<Course> courses, AppDbContext context, int seedEvlsCount) => 
-        courses.ForEach(course =>
-            SeedEvlsWithCourseComponents(context, seedEvlsCount)
-                .ForEach(ev => course.Evls.Add(ev)
-        ));
 
     public static List<Evl> SeedEvls(AppDbContext context, int seedEvlCount)
     {
@@ -73,6 +55,7 @@ public static class TestDbSeeder
 
         return evls;
     }
+    
 
     private static void SeedCourseComponentsForEvls(this List<Evl> evls, AppDbContext context)
     {
