@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HAN.Repositories;
 
-public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T>
-    where T : BaseEntity
+public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : BaseEntity
 {
     private DbSet<T> Entity => context.Set<T>();
 
@@ -31,6 +30,11 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T>
     {
         var entity = context.Find<T>(id);
         return entity;
+    }
+
+    public bool Exists(int id)
+    {
+        return GetById(id) != null;
     }
 
     public void Update(T entity)

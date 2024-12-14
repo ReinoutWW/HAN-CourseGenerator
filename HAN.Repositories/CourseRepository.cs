@@ -5,26 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HAN.Repositories;
 
-public class CourseRepository(AppDbContext context) : RepositoryBase(context), ICourseRepository
+public class CourseRepository(AppDbContext context) : GenericRepository<Course>(context), ICourseRepository
 {
-    public Course CreateCourse(Course course)
-    {
-        if(course == null) 
-        {
-            throw new ArgumentException($"Course can not be null. Course: {nameof(course)}");
-        }
-
-        return Context.Courses.Add(course).Entity;
-    }
-
-    public IEnumerable<Course> GetAllCourses()
-    {
-        return [.. Context.Courses];
-    }
+    private readonly AppDbContext _context = context;
 
     public IEnumerable<Evl> GetEvlsByCourseId(int id)
     {
-        var course = Context.Courses
+        var course = _context.Courses
             .Include(c => c.Evls)
             .FirstOrDefault(c => c.Id == id);
         
@@ -34,20 +21,15 @@ public class CourseRepository(AppDbContext context) : RepositoryBase(context), I
         return course.Evls;
     }
 
-    public bool CourseExists(int courseId)
-    {
-        return Context.Courses.Any(c => c.Id == courseId);
-    }
-
     public void AddEvlToCourse(int courseId, int evlId)
     {
-        var course = Context.Courses.Include(c => c.Evls)
+        var course = _context.Courses.Include(c => c.Evls)
             .FirstOrDefault(c => c.Id == courseId);
 
         if (course == null)
             throw new KeyNotFoundException($"Course with ID {courseId} not found.");
 
-        var evl = Context.Evls.FirstOrDefault(e => e.Id == evlId);
+        var evl = _context.Evls.FirstOrDefault(e => e.Id == evlId);
 
         if (evl == null)
             throw new KeyNotFoundException($"Evl with ID {evlId} not found.");
@@ -56,11 +38,6 @@ public class CourseRepository(AppDbContext context) : RepositoryBase(context), I
             throw new InvalidOperationException($"Evl with ID {evlId} is already associated with Course ID {courseId}.");
 
         course.Evls.Add(evl);
-        Context.SaveChanges();
-    }
-
-    public Course GetCourseById(int id)
-    {
-        return Context.Courses.FirstOrDefault(p => p.Id == id) ?? throw new KeyNotFoundException();
+        _context.SaveChanges();
     }
 }
