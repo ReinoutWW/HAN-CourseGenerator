@@ -2,6 +2,7 @@
 using HAN.Data.Entities;
 using HAN.Repositories;
 using HAN.Repositories.Interfaces;
+using HAN.Services;
 using HAN.Services.Extensions;
 using HAN.Tests.Mocks;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ public static class TestServiceProvider
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseComponentRepository, CourseComponentRepository>();
         services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
+        services.AddScoped<ICourseValidationService, CourseValidationService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
         services.AddCourseServices();

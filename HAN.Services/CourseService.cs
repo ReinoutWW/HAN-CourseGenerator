@@ -51,6 +51,4 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
 
         courseRepository.AddEvlToCourse(courseId, evlId);
     }
-
-
 }

@@ -12,7 +12,6 @@ public class EvlServiceTests: TestBase
     public EvlServiceTests()
     {
         _evlService = ServiceProvider.GetRequiredService<IEvlService>();
-        TestDbSeeder.SeedCoursesForValidation(Context, 2);
     }
 
     [Fact]

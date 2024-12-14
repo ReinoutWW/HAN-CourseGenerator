@@ -68,7 +68,13 @@ public static class DbEntityCreator<T> where T : class, new()
         {
             return GenerateBoolean();
         }
-
+        
+        // List, instanciate new list
+        if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            return Activator.CreateInstance(propertyType);
+        }
+        
         // Add more types if needed (e.g., float, double, etc.)
         return null;
     }

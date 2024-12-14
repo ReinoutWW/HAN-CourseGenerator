@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using HAN.Data.Entities.CourseComponents;
 
 namespace HAN.Data.Entities;
 
@@ -24,4 +25,7 @@ public class Evl : BaseEntity
     [Required]
     [DataType(DataType.DateTime)]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    
+    public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+    public ICollection<Exam> Exams { get; set; } = new List<Exam>();
 }
