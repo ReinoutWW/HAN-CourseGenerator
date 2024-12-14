@@ -8,7 +8,7 @@ public class Evl : BaseEntity
     
     [Required(ErrorMessage = "Name is required.")] 
     [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")] 
-    [MinLength(5, ErrorMessage = "Name should be at least 5 characters.")]
+    [MinLength(2, ErrorMessage = "Name should be at least 5 characters.")]
     public string Name { get; set; } = string.Empty;
     
     [Required(ErrorMessage = "Description is required.")] 
