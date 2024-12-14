@@ -12,25 +12,21 @@ public interface IEvlService
     EvlResponseDto GetEvlById(int id);
 }
 
-public class EvlService(IEvlRepository evlRepostory, IMapper mapper, IValidationService validationService) : IEvlService
+public class EvlService(IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : IEvlService
 {
     public EvlResponseDto CreateEvl(CreateEvlDto evl)
     {
-        var evlDomainEntity = mapper.Map<Evl>(evl);
+        var evlEntity = mapper.Map<Evl>(evl);
         
-        validationService.Validate(evlDomainEntity);
+        validationService.Validate(evlEntity);
+        evlRepository.Add(evlEntity);
         
-        var evlResult = evlRepostory.CreateEvl(
-            mapper.Map<Data.Entities.Evl>(evl)
-        );
-        evlRepostory.SaveChanges();
-        
-        return mapper.Map<EvlResponseDto>(evlResult);
+        return mapper.Map<EvlResponseDto>(evlEntity);
     }
 
     public EvlResponseDto GetEvlById(int id)
     {
-        var evl = evlRepostory.GetEvlById(id);
+        var evl = evlRepository.GetById(id);
         return mapper.Map<EvlResponseDto>(evl);
     }
 }

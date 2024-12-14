@@ -46,7 +46,7 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
         if (!courseRepository.Exists(courseId))
             throw new KeyNotFoundException($"Course with id {courseId} does not exist");
 
-        if (!evlRepository.EvlExists(evlId))
+        if (!evlRepository.Exists(evlId))
             throw new KeyNotFoundException($"Evl with id {evlId} does not exist");
 
         courseRepository.AddEvlToCourse(courseId, evlId);
