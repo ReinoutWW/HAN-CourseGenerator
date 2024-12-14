@@ -7,109 +7,46 @@ namespace HAN.Tests.Base;
 
 public static class TestDbSeederValidateCourse
 {
+    public static void SeedCourses(AppDbContext context, int seedCourseCount, int seedValidEvlCount = 2)
+    {
+        var courses = Enumerable.Range(0, seedCourseCount)
+            .Select(i => new CourseBuilder()
+                .WithName($"Course {i}")
+                .AddValidEvls(seedValidEvlCount) // Example: Adds 3 valid EVLs
+                .Build())
+            .ToList();
+
+        context.Courses.AddRange(courses);
+        context.SaveChanges();
+    }
+
     public static int SeedValidCourseForValidation(AppDbContext context)
     {
-        const int totalCourses = 1;
-        const int validCourseId = 1;
+        const int validEvlCount = 2;
         
-        TestDbSeeder.SeedCourses(context, totalCourses);
+        var course = new CourseBuilder()
+            .WithName("Valid Course")
+            .AddValidEvls(validEvlCount) // Adds 2 valid EVLs
+            .Build();
 
-        var courses = context.Courses
-            .Include(c => c.Evls)
-            .ToList();
-
-        courses.AddValidEvlsToCources(context, totalCourses);
-        
+        context.Courses.Add(course);
         context.SaveChanges();
 
-        return validCourseId;
+        return course.Id;
     }
-    
+
     public static int SeedInvalidLessonCourseForValidation(AppDbContext context)
     {
-        const int totalCourses = 1;
-        const int validCourseId = 1;
+        const int invalidEvlCount = 0;
         
-        TestDbSeeder.SeedCourses(context, totalCourses);
+        var course = new CourseBuilder()
+            .WithName("Invalid Course")
+            .AddInvalidEvls(invalidEvlCount) // Adds 2 invalid EVLs
+            .Build();
 
-        var courses = context.Courses
-            .Include(c => c.Evls)
-            .ToList();
-
-        courses.AddInvalidLessonsEvlsToCources(context, totalCourses);
-        
+        context.Courses.Add(course);
         context.SaveChanges();
 
-        return validCourseId;
+        return course.Id;
     }
-    
-    private static void AddValidEvlsToCources(this List<Course> courses, AppDbContext context, int seedEvlsCount)
-    {
-        courses.ForEach(course =>
-            SeedLessonsAndExamsForEvls(context, seedEvlsCount)
-                .ForEach(ev => course.Evls.Add(ev)
-                ));
-        
-        context.SaveChanges();
-    }
-    
-    private static void AddInvalidLessonsEvlsToCources(this List<Course> courses, AppDbContext context, int seedEvlsCount)
-    {
-        courses.ForEach(course =>
-            SeedInvalidLessonsAndExamsForEvls(context, seedEvlsCount)
-                .ForEach(ev => course.Evls.Add(ev)
-                ));
-        
-        context.SaveChanges();
-    }
-    
-    public static List<Evl> SeedLessonsAndExamsForEvls(AppDbContext context, int seedEvlCount)
-    {
-        var evls = TestDbSeeder.SeedEvls(context, seedEvlCount);
-        
-        evls.SeedLessonAndExamForEvls(context);
-
-        return evls;
-    }
-    
-    public static List<Evl> SeedInvalidLessonsAndExamsForEvls(AppDbContext context, int seedEvlCount)
-    {
-        var evls = TestDbSeeder.SeedEvls(context, seedEvlCount);
-        
-        evls.SeedMissingLessonAndExamForEvls(context);
-
-        return evls;
-    }
-    
-    private static void SeedMissingLessonAndExamForEvls(this List<Evl> evls, AppDbContext context)
-    {
-        evls.ForEach(evl =>
-        {
-            var exam = DbEntityCreator<Exam>.CreateEntity();
-            evl.Exams ??= new List<Exam>();
-            evl.Exams.Add(exam);
-        });
-        
-        context.SaveChanges();
-    }
-    
-    private static void SeedLessonAndExamForEvls(this List<Evl> evls, AppDbContext context)
-    {
-        evls.ForEach(evl =>
-        {
-            var lesson = DbEntityCreator<Lesson>.CreateEntity();
-            var exam = DbEntityCreator<Exam>.CreateEntity();
-
-            evl.Exams ??= new List<Exam>();
-            evl.Lessons ??= new List<Lesson>();            
-            
-            evl.Lessons.Add(lesson);
-            evl.Exams.Add(exam);
-        });
-        
-        context.SaveChanges();
-    }
-    
-    
-    
 }

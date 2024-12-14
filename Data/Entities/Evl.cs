@@ -26,6 +26,6 @@ public class Evl : BaseEntity
     [DataType(DataType.DateTime)]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     
-    public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
-    public ICollection<Exam> Exams { get; set; } = new List<Exam>();
+    public ICollection<Lesson>? Lessons { get; set; } = new List<Lesson>();
+    public ICollection<Exam>? Exams { get; set; } = new List<Exam>();
 }
