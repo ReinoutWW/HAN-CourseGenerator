@@ -12,7 +12,7 @@ public static class TestDbSeederValidateCourse
         var courses = Enumerable.Range(0, seedCourseCount)
             .Select(i => new CourseBuilder()
                 .WithName($"Course {i}")
-                .AddValidEvls(seedValidEvlCount) // Example: Adds 3 valid EVLs
+                .AddValidEvls(seedValidEvlCount) 
                 .Build())
             .ToList();
 
@@ -22,11 +22,13 @@ public static class TestDbSeederValidateCourse
 
     public static int SeedValidCourseForValidation(AppDbContext context)
     {
+        const int invalidEvlCount = 0;
         const int validEvlCount = 2;
         
         var course = new CourseBuilder()
             .WithName("Valid Course")
-            .AddValidEvls(validEvlCount) // Adds 2 valid EVLs
+            .AddValidEvls(validEvlCount) 
+            .AddInvalidEvls(invalidEvlCount)
             .Build();
 
         context.Courses.Add(course);
@@ -37,11 +39,13 @@ public static class TestDbSeederValidateCourse
 
     public static int SeedInvalidLessonCourseForValidation(AppDbContext context)
     {
-        const int invalidEvlCount = 0;
+        const int invalidEvlCount = 2;
+        const int validEvlCount = 2;
         
         var course = new CourseBuilder()
             .WithName("Invalid Course")
-            .AddInvalidEvls(invalidEvlCount) // Adds 2 invalid EVLs
+            .AddValidEvls(validEvlCount)
+            .AddInvalidEvls(invalidEvlCount) 
             .Build();
 
         context.Courses.Add(course);
