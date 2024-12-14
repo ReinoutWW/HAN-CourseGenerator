@@ -2,13 +2,8 @@
 
 namespace HAN.Repositories.Interfaces;
 
-public interface ICourseComponentRepository
+public interface ICourseComponentRepository : IGenericRepository<CourseComponent>
 {
-    bool SaveChanges();
-    CourseComponent CreateCourseComponent(CourseComponent courseComponent);
-    CourseComponent GetCourseComponentById(int id);
-    IEnumerable<CourseComponent> GetAllCourseComponents();
-    bool CourseComponentExists(int courseComponentId);
     IEnumerable<Evl> GetEvlsByCourseComponentId(int id);
     void AddEvlToCourseComponent(int courseComponentId, int evlId);
 }
