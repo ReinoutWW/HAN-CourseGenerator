@@ -3,12 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HAN.Data.Entities;
 
-public class User
+public class User : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-    
     [Required(ErrorMessage = "Name is required.")] 
     [StringLength(100, ErrorMessage = "Name cannot exceed 100 characters.")] 
     [MinLength(5, ErrorMessage = "Name cannot exceed 5 characters.")]

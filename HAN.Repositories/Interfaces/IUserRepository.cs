@@ -2,11 +2,6 @@
 
 namespace HAN.Repositories.Interfaces;
 
-public interface IUserRepository
+public interface IUserRepository : IGenericRepository<User>
 {
-    bool SaveChanges();
-    
-    IEnumerable<User> GetAllUsers();
-    User GetUserById(int id);
-    User CreateUser(User user);
 }

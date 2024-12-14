@@ -39,24 +39,22 @@
     // Demo code
     private void GetAllUsers()
     {
-        _users = UserRepository.GetAllUsers().ToList();
+        _users = UserRepository.GetAll().ToList();
     }
     
     // Demo code
     private void TestRepository()
     {
-        UserRepository.CreateUser(
+        UserRepository.Add(
             new User()
             {
                 Name = _userName
             }    
         );
 
-        UserRepository.SaveChanges();
-
-        var getAgain = UserRepository.GetUserById(1);
+        var user = UserRepository.GetById(1);
         
-        Console.WriteLine(getAgain.Name);
+        Console.WriteLine(user?.Name);
 
         InvokeAsync(StateHasChanged);
     }
