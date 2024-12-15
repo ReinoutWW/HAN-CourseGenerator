@@ -1,54 +1,54 @@
+name: SonarQube
+
 on:
   push:
     branches:
       - master
-      - 'releases/**'
   pull_request:
     types: [opened, synchronize, reopened]
 
-name: SonarQube Main Workflow
-
 jobs:
   sonarqube:
+    name: SonarQube
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0' 
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
 
-    - name: Install SonarScanner for .NET
-      run: dotnet tool install --global dotnet-sonarscanner
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Add .NET tools to PATH
-      shell: bash
-      run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
+      - name: Build solution
+        run: dotnet build --configuration Release --no-restore
 
-    - name: SonarQube Begin Analysis
-      run: |
-        dotnet sonarscanner begin /k:"ReinoutWW_HAN-CourseGenerator" \
-          /o:"reinoutww" \
-          /d:sonar.host.url="https://sonarcloud.io" \
-          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
-          /d:sonar.cs.dotcover.reportsPaths="dotCover.Output.html"
+      - name: Run tests with coverage
+        run: |
+          dotnet test --configuration Release --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults
+        continue-on-error: false
 
-    - name: Build Solution
-      run: dotnet build --no-incremental
+      - name: Convert coverage to SonarQube format
+        run: |
+          mkdir -p coverage-reports
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator \
+            -reports:TestResults/**/*.xml \
+            -targetdir:coverage-reports \
+            -reporttypes:SonarQube
+        env:
+          PATH: ${{ runner.tool_cache }}/.store:$PATH
 
-    - name: Run Tests with DotCover
-      run: dotnet dotcover test --dcReportType=HTML
-
-    - name: SonarQube End Analysis
-      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-
-    - name: Upload Coverage Report (Optional)
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage-report
-        path: dotCover.Output.html
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env: 
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.cs.opencover.reportsPaths=coverage-reports/SonarQube.xml
