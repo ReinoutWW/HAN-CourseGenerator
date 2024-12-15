@@ -32,6 +32,7 @@ jobs:
     - name: SonarQube Begin Analysis
       run: |
         dotnet sonarscanner begin /k:"ReinoutWW_HAN-CourseGenerator" \
+          /o:"reinoutww" \
           /d:sonar.host.url="https://sonarcloud.io" \
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
           /d:sonar.cs.dotcover.reportsPaths="dotCover.Output.html"
