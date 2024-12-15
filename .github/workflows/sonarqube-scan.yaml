@@ -28,20 +28,15 @@ jobs:
       - name: Build solution
         run: dotnet build --configuration Release --no-restore
 
-      - name: Install dotnet-coverage
-        run: dotnet tool install --global dotnet-coverage
-        env:
-          DOTNET_ROOT: /home/runner/.dotnet
-
-      - name: Run Tests and Collect Coverage
+      - name: Run Tests and Collect Coverage with Coverlet
         run: |
-          export PATH="$PATH:/home/runner/.dotnet/tools"
-          dotnet-coverage collect \
-            "dotnet test --configuration Release --no-build" \
-            -f xml -o coverage.xml
+          dotnet test --configuration Release --no-build \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=./coverage.opencover.xml
 
       - name: Debug Coverage Report
-        run: cat coverage.xml
+        run: cat coverage.opencover.xml
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
@@ -49,5 +44,5 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.cs.opencover.reportsPaths=coverage.xml
+            -Dsonar.cs.opencover.reportsPaths=coverage.opencover.xml
             -Dsonar.coverage.exclusions=**/bin/**,**/obj/**
