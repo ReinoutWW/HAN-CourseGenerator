@@ -37,15 +37,16 @@ jobs:
       - name: Debug Test Results
         run: ls -R TestResults
 
-      - name: Generate Coverage Report
+      - name: Install dotnet-cover
+        run: dotnet tool install --global dotnet-cover
+        env:
+          DOTNET_ROOT: /home/runner/.dotnet
+
+      - name: Convert Coverage Report
         run: |
-          /usr/bin/mkdir -p coverage-reports
-          dotnet tool install --global dotnet-reportgenerator-globaltool
           export PATH="$PATH:/home/runner/.dotnet/tools"
-          reportgenerator \
-            -reports:TestResults/**/*.xml \
-            -targetdir:coverage-reports \
-            -reporttypes:SonarQube
+          dotnet-cover -i TestResults/**/coverage.cobertura.xml -f sonar \
+            -o coverage-reports/SonarQube.xml
 
       - name: Debug Coverage Reports
         run: cat coverage-reports/SonarQube.xml
