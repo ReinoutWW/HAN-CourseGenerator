@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - master
-      - development
       - 'releases/**'
   pull_request:
     types: [opened, synchronize, reopened]
@@ -21,33 +20,29 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0' 
+        dotnet-version: '8.0'
 
-    - name: Restore dependencies
-      run: dotnet restore
+    - name: Install DotCover Tool
+      run: dotnet tool install --global JetBrains.dotCover.GlobalTool
 
-    - name: Build solution
-      run: dotnet build --no-restore --configuration Release
-
-    - name: Run tests and collect coverage
-      run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
-      continue-on-error: false
-
-    - name: Prepare coverage report for SonarQube
+    - name: SonarQube Begin Analysis
       run: |
-        mkdir -p coverage-reports
-        reportgenerator \
-          -reports:**/TestResults/**/*.xml \
-          -targetdir:coverage-reports \
-          -reporttypes:SonarQube
-      env:
-        DOTNET_TOOLS_PATH: ${{ runner.tool_cache }}/.store
-      shell: bash
+        dotnet sonarscanner begin /k:"ReinoutWW_HAN-CourseGenerator" \
+          /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.cs.dotcover.reportsPaths="dotCover.Output.html"
 
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@v4.1.0
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Build Solution
+      run: dotnet build --no-incremental
+
+    - name: Run Tests with DotCover
+      run: dotnet dotcover test --dcReportType=HTML
+
+    - name: SonarQube End Analysis
+      run: dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
+    - name: Upload Coverage Report (Optional)
+      if: always()
+      uses: actions/upload-artifact@v3
       with:
-        args: >
-          -Dsonar.cs.opencover.reportsPaths=coverage-reports/SonarQube.xml
+        name: coverage-report
+        path: dotCover.Output.html
