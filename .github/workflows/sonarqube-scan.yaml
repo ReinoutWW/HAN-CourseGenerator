@@ -34,16 +34,15 @@ jobs:
             --results-directory ./TestResults
         continue-on-error: false
 
-      - name: Run Tests with Coverage
+      - name: Generate Coverage Report
         run: |
           /usr/bin/mkdir -p coverage-reports
           dotnet tool install --global dotnet-reportgenerator-globaltool
+          export PATH="$PATH:/home/runner/.dotnet/tools"
           reportgenerator \
             -reports:TestResults/**/*.xml \
             -targetdir:coverage-reports \
             -reporttypes:SonarQube
-        env:
-          PATH: /opt/hostedtoolcache/.store:/usr/bin:/bin:$PATH
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
