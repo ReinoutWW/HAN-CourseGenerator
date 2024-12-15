@@ -34,16 +34,16 @@ jobs:
             --results-directory ./TestResults
         continue-on-error: false
 
-      - name: Convert coverage to SonarQube format
+      - name: Run Tests with Coverage
         run: |
-          mkdir -p coverage-reports
+          /usr/bin/mkdir -p coverage-reports
           dotnet tool install --global dotnet-reportgenerator-globaltool
           reportgenerator \
             -reports:TestResults/**/*.xml \
             -targetdir:coverage-reports \
             -reporttypes:SonarQube
         env:
-          PATH: ${{ runner.tool_cache }}/.store:$PATH
+          PATH: /opt/hostedtoolcache/.store:/usr/bin:/bin:$PATH
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
