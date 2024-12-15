@@ -7,9 +7,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-env:
-  sonarqube: ${{ secrets.SONAR_TOKEN }} 
-
 jobs:
   sonarqube:
     name: SonarQube
@@ -35,6 +32,7 @@ jobs:
         run: |
           dotnet test --configuration Release --collect:"XPlat Code Coverage" \
             --results-directory ./TestResults
+        continue-on-error: false
 
       - name: Generate Coverage Report
         run: |
@@ -48,11 +46,8 @@ jobs:
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ env.sonarqube }} 
+        env: 
+          sonarqube: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.projectKey=ReinoutWW_HAN-CourseGenerator
-            -Dsonar.organization=your-organization-key
-            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.cs.opencover.reportsPaths=coverage-reports/SonarQube.xml
