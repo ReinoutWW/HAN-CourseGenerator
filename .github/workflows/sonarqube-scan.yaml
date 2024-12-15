@@ -6,7 +6,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
-name: Main Workflow
+name: SonarQube Main Workflow
 
 jobs:
   sonarqube:
@@ -20,10 +20,14 @@ jobs:
     - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0'
+        dotnet-version: '8.0' 
 
-    - name: Install DotCover Tool
-      run: dotnet tool install --global JetBrains.dotCover.GlobalTool
+    - name: Install SonarScanner for .NET
+      run: dotnet tool install --global dotnet-sonarscanner
+
+    - name: Add .NET tools to PATH
+      shell: bash
+      run: echo "${HOME}/.dotnet/tools" >> $GITHUB_PATH
 
     - name: SonarQube Begin Analysis
       run: |
