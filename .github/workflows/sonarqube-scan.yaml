@@ -1,0 +1,53 @@
+on:
+  push:
+    branches:
+      - master
+      - development
+      - 'releases/**'
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+name: Main Workflow
+
+jobs:
+  sonarqube:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '7.0' # Adjust to your target framework version
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run tests and collect coverage
+      run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage"
+      continue-on-error: false
+
+    - name: Prepare coverage report for SonarQube
+      run: |
+        mkdir -p coverage-reports
+        reportgenerator \
+          -reports:**/TestResults/**/*.xml \
+          -targetdir:coverage-reports \
+          -reporttypes:SonarQube
+      env:
+        DOTNET_TOOLS_PATH: ${{ runner.tool_cache }}/.store
+      shell: bash
+
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v4.1.0
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.cs.opencover.reportsPaths=coverage-reports/SonarQube.xml
