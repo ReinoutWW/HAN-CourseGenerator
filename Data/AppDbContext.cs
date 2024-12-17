@@ -1,4 +1,5 @@
 ﻿using HAN.Data.Entities;
+using HAN.Data.Entities.CourseComponents;
 using Microsoft.EntityFrameworkCore;
 using File = HAN.Data.Entities.File;
 
@@ -13,8 +14,9 @@ public class AppDbContext : DbContext
     public DbSet<Evl> Evls { get; set; }
     public DbSet<CourseComponent> CourseComponents { get; set; }
     public DbSet<File> Files { get; set; }
-    
-    
+    public DbSet<Exam> Exams { get; set; }
+    public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<CourseExecution> CourseExecutions { get; set; }
     public DbSet<ExampleEntity> GenericTests { get; set; }
 
     public override int SaveChanges()

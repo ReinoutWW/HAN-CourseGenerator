@@ -53,4 +53,17 @@ public static class TestDbSeederValidateCourse
 
         return course.Id;
     }
+
+    public static void SeedValidCourseSchedule()
+    {
+        const int validEvlCount = 1;
+        
+        var course = new CourseBuilder()
+            .WithName("Invalid Course")
+            .AddValidEvls(validEvlCount);
+ 
+        // Create schedule
+        
+        // Validate schedule
+    }
 }

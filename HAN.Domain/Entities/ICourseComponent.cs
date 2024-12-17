@@ -1,6 +1,6 @@
 ﻿namespace HAN.Domain.Entities;
 
-public class Exam : ICourseComponent
+public interface ICourseComponent
 {
     
 }

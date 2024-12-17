@@ -1,4 +1,4 @@
-﻿namespace HAN.Domain.Entities;
+﻿namespace HAN.Data.Entities;
 
 public class CourseExecution
 {
