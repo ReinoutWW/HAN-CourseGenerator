@@ -3,11 +3,6 @@ using HAN.Domain.Entities;
 
 namespace HAN.Services;
 
-public interface ICourseValidationService
-{
-    public bool ValidateCourse(int courseId);    
-}
-
 public class CourseValidationService(ICourseService courseService, IMapper mapper) : ICourseValidationService
 {
     public bool ValidateCourse(int courseId)

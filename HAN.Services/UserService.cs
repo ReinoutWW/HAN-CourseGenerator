@@ -6,12 +6,6 @@ using HAN.Services.Validation;
 
 namespace HAN.Services;
 
-public interface IUserService
-{
-    public UserResponseDto CreateUser(CreateUserDto userDto);
-    public UserResponseDto? GetUserById(int id);
-}
-
 public class UserService(IUserRepository repository, IMapper mapper, IValidationService validationService) : IUserService
 {
     public UserResponseDto CreateUser(CreateUserDto userDto)

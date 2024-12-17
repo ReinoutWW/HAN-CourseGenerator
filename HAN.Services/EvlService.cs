@@ -6,12 +6,6 @@ using HAN.Services.Validation;
 
 namespace HAN.Services;
 
-public interface IEvlService
-{
-    EvlResponseDto CreateEvl(CreateEvlDto evl);
-    EvlResponseDto GetEvlById(int id);
-}
-
 public class EvlService(IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : IEvlService
 {
     public EvlResponseDto CreateEvl(CreateEvlDto evl)
