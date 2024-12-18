@@ -24,8 +24,6 @@ public class CourseBuilder
         for (int i = 0; i < count; i++)
         {
             var evl = DbEntityCreator<Evl>.CreateEntity();
-            evl.Lessons = new List<Lesson> { DbEntityCreator<Lesson>.CreateEntity() };
-            evl.Exams = new List<Exam> { DbEntityCreator<Exam>.CreateEntity() };
             _course.Evls.Add(evl);
         }
         return this;
@@ -36,8 +34,6 @@ public class CourseBuilder
         for (int i = 0; i < count; i++)
         {
             var evl = DbEntityCreator<Evl>.CreateEntity();
-            evl.Lessons = new List<Lesson> { DbEntityCreator<Lesson>.CreateEntity() };
-            evl.Exams = null;
             _course.Evls.Add(evl);
             _course.Evls.Add(evl);
         }
