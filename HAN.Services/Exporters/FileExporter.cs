@@ -1,16 +1,16 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.Interfaces;
 
-namespace HAN.Services.Exporter;
+namespace HAN.Services.Exporters;
 
-public abstract class FileExporter
+public abstract class FileExporter : IExporterService
 {
-    public FileDto File { get; set; }
+    protected FileDto File { get; set; }
 
     protected FileExporter(FileDto file)
     {
         File = file;
     }
-
-    // Abstract method to be implemented by derived classes
+    
     public abstract void Export(string content);
 }

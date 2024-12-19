@@ -19,14 +19,14 @@ public class FileServiceTests: TestBase
     {
         FileDto file = new()
         {
-            FileName = "Filename",
+            Name = "Filename",
             Content = "Content"
         };
 
         var createdfile = _fileService.CreateFile(file);
         
         Assert.NotNull(createdfile);
-        Assert.Equal(file.FileName, createdfile.FileName);
+        Assert.Equal(file.Name, createdfile.Name);
         Assert.Equal(file.Content, createdfile.Content);
     }
 
@@ -46,7 +46,7 @@ public class FileServiceTests: TestBase
     {
         FileDto file = new()
         {
-            FileName = invalidName,
+            Name = invalidName,
             Content = "Content"
         };
         
@@ -59,7 +59,7 @@ public class FileServiceTests: TestBase
     {
         FileDto file = new()
         {
-            FileName = "Filename valid",
+            Name = "Filename valid",
             Content = invalidDescription
         };
         

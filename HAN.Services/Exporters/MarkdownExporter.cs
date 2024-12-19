@@ -1,6 +1,6 @@
 ﻿using HAN.Services.DTOs;
 
-namespace HAN.Services.Exporter;
+namespace HAN.Services.Exporters;
 
 public class MarkdownExporter : FileExporter
 {
@@ -8,9 +8,9 @@ public class MarkdownExporter : FileExporter
 
     public override void Export(string content)
     {
-        Console.WriteLine($"Exporting to Markdown file: {File.FileName}");
+        Console.WriteLine($"Exporting to Markdown file: {File.Name}");
         // Add logic to write content to a .md file
-        System.IO.File.WriteAllText(File.FileName, content);
+        System.IO.File.WriteAllText(File.Name, content);
         Console.WriteLine("Markdown export completed.");
     }
     

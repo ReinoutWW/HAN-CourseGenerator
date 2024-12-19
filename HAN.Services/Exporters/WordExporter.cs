@@ -1,6 +1,6 @@
 ﻿using HAN.Services.DTOs;
 
-namespace HAN.Services.Exporter;
+namespace HAN.Services.Exporters;
 
 public class WordExporter : FileExporter
 {
@@ -8,10 +8,10 @@ public class WordExporter : FileExporter
 
     public override void Export(string content)
     {
-        Console.WriteLine($"Exporting to Word file: {File.FileName}");
+        Console.WriteLine($"Exporting to Word file: {File.Name}");
         // Add logic to write content to a .docx file (using a library like OpenXML SDK)
         // Placeholder code for now:
-        System.IO.File.WriteAllText(File.FileName, content); // Temporary logic
+        System.IO.File.WriteAllText(File.Name, content); // Temporary logic
         Console.WriteLine("Word export completed.");
     }
     

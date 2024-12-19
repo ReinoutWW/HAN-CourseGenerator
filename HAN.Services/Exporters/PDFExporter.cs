@@ -1,6 +1,6 @@
 ﻿using HAN.Services.DTOs;
 
-namespace HAN.Services.Exporter;
+namespace HAN.Services.Exporters;
 
 public class PDFExporter : FileExporter
 {
@@ -8,10 +8,10 @@ public class PDFExporter : FileExporter
 
     public override void Export(string content)
     {
-        Console.WriteLine($"Exporting to PDF file: {File.FileName}");
+        Console.WriteLine($"Exporting to PDF file: {File.Name}");
         // Add logic to write content to a .pdf file (using a library like iTextSharp or PDFSharp)
         // Placeholder code for now:
-        System.IO.File.WriteAllText(File.FileName, content); // Temporary logic
+        System.IO.File.WriteAllText(File.Name, content); // Temporary logic
         Console.WriteLine("PDF export completed.");
     }
     
