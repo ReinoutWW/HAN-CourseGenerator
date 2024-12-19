@@ -2,6 +2,7 @@
 using HAN.Data.Entities;
 using HAN.Data.Entities.CourseComponents;
 using HAN.Services.DTOs;
+using File = HAN.Data.Entities.File;
 
 namespace HAN.Services.Mappers;
 
@@ -23,5 +24,8 @@ public class CourseProfile : Profile
         
         CreateMap<UserDto, User>();
         CreateMap<User, UserDto>();
+        
+        CreateMap<FileDto, File>();
+        CreateMap<File, FileDto>();
     }
 }
