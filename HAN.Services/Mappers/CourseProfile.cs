@@ -16,9 +16,6 @@ public class CourseProfile : Profile
         CreateMap<CourseDto, Course>();
         CreateMap<Course, CourseDto>();
         
-        CreateMap<CourseComponentDto, CourseComponent>();
-        CreateMap<CourseComponent, CourseComponentDto>();
-        
         CreateMap<EvlDto, Evl>();
         CreateMap<Evl, EvlDto>();
         
