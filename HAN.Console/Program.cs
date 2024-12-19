@@ -13,13 +13,13 @@ var scope = serviceProvider.CreateScope();
 var courseService = scope.ServiceProvider.GetRequiredService<ICourseService>();
 var evlService = scope.ServiceProvider.GetRequiredService<IEvlService>();
 
-var course = new CreateCourseDto
+var course = new CourseDto
 {
     Name = "HAN I-OOSE",
     Description = "The magical course "
 };
 
-List<CreateEvlDto> evls =
+List<EvlDto> evls =
 [
     new() {
         Name = "GP",

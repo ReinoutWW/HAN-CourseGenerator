@@ -8,26 +8,27 @@ namespace HAN.Services;
 
 public class CourseService(ICourseRepository courseRepository, IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : ICourseService
 {
-    public CourseResponseDto CreateCourse(CreateCourseDto course)
+    public CourseDto CreateCourse(CourseDto course)
     {
+        validationService.Validate(course);
+        
         var courseEntity = mapper.Map<Course>(course);
-        validationService.Validate(courseEntity);
         
         courseRepository.Add(courseEntity);
-        
-        return mapper.Map<CourseResponseDto>(courseEntity);
+
+        return mapper.Map<CourseDto>(courseEntity);
     }
 
-    public CourseResponseDto GetCourseById(int id)
+    public CourseDto GetCourseById(int id)
     {
         var course = courseRepository.GetById(id);
-        return mapper.Map<CourseResponseDto>(course);
+        return mapper.Map<CourseDto>(course);
     }
 
-    public IEnumerable<EvlResponseDto> GetEvls(int courseId)
+    public IEnumerable<EvlDto> GetEvls(int courseId)
     {
         var evls = courseRepository.GetEvlsByCourseId(courseId);
-        return mapper.Map<IEnumerable<EvlResponseDto>>(evls);
+        return mapper.Map<IEnumerable<EvlDto>>(evls);
     }
 
     public void AddEvlToCourse(int courseId, int evlId)

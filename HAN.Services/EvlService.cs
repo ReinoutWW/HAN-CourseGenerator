@@ -8,19 +8,19 @@ namespace HAN.Services;
 
 public class EvlService(IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : IEvlService
 {
-    public EvlResponseDto CreateEvl(CreateEvlDto evl)
+    public EvlDto CreateEvl(EvlDto evl)
     {
-        var evlEntity = mapper.Map<Evl>(evl);
+        validationService.Validate(evl);
         
-        validationService.Validate(evlEntity);
+        var evlEntity = mapper.Map<Evl>(evl);
         evlRepository.Add(evlEntity);
         
-        return mapper.Map<EvlResponseDto>(evlEntity);
+        return mapper.Map<EvlDto>(evlEntity);
     }
 
-    public EvlResponseDto GetEvlById(int id)
+    public EvlDto GetEvlById(int id)
     {
         var evl = evlRepository.GetById(id);
-        return mapper.Map<EvlResponseDto>(evl);
+        return mapper.Map<EvlDto>(evl);
     }
 }

@@ -12,17 +12,17 @@ public class CourseComponentService(
     IValidationService validationService
 ) : ICourseComponentService
 {
-    public CourseComponentResponseDto CreateCourseComponent(CreateCourseComponentDto courseComponent)
+    public CourseComponentDto CreateCourseComponent(CourseComponentDto courseComponent)
     {
         throw new NotImplementedException();
     }
 
-    public CourseComponentResponseDto GetCourseComponentById(int id)
+    public CourseComponentDto GetCourseComponentById(int id)
     {
         throw new NotImplementedException();
     }
 
-    public IEnumerable<EvlResponseDto> GetEvls(int courseComponentId)
+    public IEnumerable<EvlDto> GetEvls(int courseComponentId)
     {
         throw new NotImplementedException();
     }
