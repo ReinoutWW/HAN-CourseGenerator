@@ -5,9 +5,9 @@ namespace HAN.Services;
 public interface ICourseComponentService
 {
     // Create
-    CourseComponentResponseDto CreateCourseComponent(CreateCourseComponentDto courseComponent);
-    CourseComponentResponseDto GetCourseComponentById(int id);
-    IEnumerable<EvlResponseDto> GetEvls(int courseComponentId);
+    CourseComponentDto CreateCourseComponent(CourseComponentDto courseComponent);
+    CourseComponentDto GetCourseComponentById(int id);
+    IEnumerable<EvlDto> GetEvls(int courseComponentId);
     
     // Assign
     void AddEvlToCourseComponent(int courseComponentId, int evlId);

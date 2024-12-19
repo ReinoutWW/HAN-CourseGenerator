@@ -8,19 +8,19 @@ namespace HAN.Services;
 
 public class UserService(IUserRepository repository, IMapper mapper, IValidationService validationService) : IUserService
 {
-    public UserResponseDto CreateUser(CreateUserDto userDto)
+    public UserDto CreateUser(UserDto userDto)
     {
+        validationService.Validate(userDto);
+        
         var userEntity = mapper.Map<User>(userDto);
-    
-        validationService.Validate(userEntity);
         repository.Add(userEntity);
     
-        return mapper.Map<UserResponseDto>(userEntity);
+        return mapper.Map<UserDto>(userEntity);
     }
 
-    public UserResponseDto? GetUserById(int id)
+    public UserDto? GetUserById(int id)
     {
         var user = repository.GetById(id);
-        return mapper.Map<UserResponseDto>(user);
+        return mapper.Map<UserDto>(user);
     }
 }

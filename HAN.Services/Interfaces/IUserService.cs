@@ -4,6 +4,6 @@ namespace HAN.Services;
 
 public interface IUserService
 {
-    public UserResponseDto CreateUser(CreateUserDto userDto);
-    public UserResponseDto? GetUserById(int id);
+    public UserDto CreateUser(UserDto userDto);
+    public UserDto? GetUserById(int id);
 }

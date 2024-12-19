@@ -4,7 +4,7 @@ namespace HAN.Console;
 
 public static class DemoCourseLogger
 {
-    public static void LogEvl(EvlResponseDto evl)
+    public static void LogEvl(EvlDto evl)
     {
         System.Console.WriteLine("");
         System.Console.WriteLine($"Evl {evl.Id} ");
@@ -12,7 +12,7 @@ public static class DemoCourseLogger
         System.Console.WriteLine($"- {evl.Description}");
     }
 
-    public static void LogCourse(CourseResponseDto createCourseDto)
+    public static void LogCourse(CourseDto createCourseDto)
     {
         System.Console.WriteLine("-------- Course: -----");
         System.Console.WriteLine(createCourseDto.Id);

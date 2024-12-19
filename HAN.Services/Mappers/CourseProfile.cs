@@ -12,21 +12,16 @@ public class CourseProfile : Profile
         // From - To (Easy to f* up)
         
         // Persistence
-        CreateMap<CreateCourseDto, Course>();
-        CreateMap<Data.Entities.Course, CourseResponseDto>();
-        CreateMap<CourseResponseDto, Domain.Entities.Course>();
+        CreateMap<CourseDto, Course>();
+        CreateMap<Course, CourseDto>();
         
-        CreateMap<CreateCourseComponentDto, CourseComponent>();
-        CreateMap<CourseComponent, CourseComponentResponseDto>();
+        CreateMap<CourseComponentDto, CourseComponent>();
+        CreateMap<CourseComponent, CourseComponentDto>();
         
-        CreateMap<CreateEvlDto, Evl>();
-        CreateMap<Evl, Domain.Entities.Evl>();
-        CreateMap<Evl, EvlResponseDto>();
+        CreateMap<EvlDto, Evl>();
+        CreateMap<Evl, EvlDto>();
         
-        CreateMap<CreateUserDto, User>();
-        CreateMap<User, UserResponseDto>();
-
-        CreateMap<Lesson, Domain.Entities.Lesson>();
-        CreateMap<Exam, Domain.Entities.Exam>();
+        CreateMap<UserDto, User>();
+        CreateMap<User, UserDto>();
     }
 }

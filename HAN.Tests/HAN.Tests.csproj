@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Data\HAN.Data.csproj" />
-    <ProjectReference Include="..\HAN.Domain\HAN.Domain.csproj" />
     <ProjectReference Include="..\HAN.Repositories\HAN.Repositories.csproj" />
     <ProjectReference Include="..\HAN.Services\HAN.Services.csproj" />
   </ItemGroup>

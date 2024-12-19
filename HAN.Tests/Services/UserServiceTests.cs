@@ -17,7 +17,7 @@ public class UserServiceTests : TestBase
     [Fact]
     public void CreateUser_ShouldCreateUser()
     {
-        CreateUserDto user = new()
+        UserDto user = new()
         {
             Name = "Test Course",
             Email = "test@test.com",
