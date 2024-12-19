@@ -7,7 +7,7 @@ using File = HAN.Data.Entities.File;
 
 namespace HAN.Services;
 
-public class FileService(IFileRepository fileRepository, IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : IFileService
+public class FileService(IFileRepository fileRepository, IMapper mapper, IValidationService validationService) : IFileService
 {
     [ValidateEntities]
     public FileDto CreateFile(FileDto file)
@@ -19,6 +19,5 @@ public class FileService(IFileRepository fileRepository, IEvlRepository evlRepos
         fileRepository.Add(courseEntity);
 
         return mapper.Map<FileDto>(courseEntity);
-        
     }
 }

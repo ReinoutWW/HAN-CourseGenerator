@@ -5,9 +5,5 @@ namespace HAN.Data.Entities;
 
 public class File : BaseEntity
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public string Content { get; set; } = string.Empty;
-    
-    
 }

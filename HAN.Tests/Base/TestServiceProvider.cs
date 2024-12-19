@@ -25,6 +25,7 @@ public static class TestServiceProvider
         services.AddScoped<IEvlRepository, EvlRepostory>();
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseComponentRepository, CourseComponentRepository>();
+        services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
