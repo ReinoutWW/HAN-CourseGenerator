@@ -1,14 +1,12 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.DTOs.CourseComponents;
 
 namespace HAN.Services;
 
 public interface ICourseComponentService
 {
-    // Create
-    CourseComponentDto CreateCourseComponent(CourseComponentDto courseComponent);
-    CourseComponentDto GetCourseComponentById(int id);
-    IEnumerable<EvlDto> GetEvls(int courseComponentId);
+    LessonDto CreateLesson(LessonDto lesson);
     
-    // Assign
+    
     void AddEvlToCourseComponent(int courseComponentId, int evlId);
 }
