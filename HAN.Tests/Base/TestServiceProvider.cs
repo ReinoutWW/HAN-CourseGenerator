@@ -1,5 +1,6 @@
 ﻿using HAN.Data;
 using HAN.Data.Entities;
+using HAN.Data.Entities.CourseComponents;
 using HAN.Repositories;
 using HAN.Repositories.Interfaces;
 using HAN.Services;
@@ -24,7 +25,8 @@ public static class TestServiceProvider
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IEvlRepository, EvlRepostory>();
         services.AddScoped<ICourseRepository, CourseRepository>();
-        services.AddScoped<ICourseComponentRepository, CourseComponentRepository>();
+        services.AddScoped<ICourseComponentRepository<Lesson>, CourseComponentRepository<Lesson>>();
+        services.AddScoped<ICourseComponentRepository<Exam>, CourseComponentRepository<Exam>>();
         services.AddScoped<IFileRepository, FileRepository>();
         services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

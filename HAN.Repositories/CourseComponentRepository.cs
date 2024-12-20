@@ -7,7 +7,7 @@ using File = HAN.Data.Entities.File;
 
 namespace HAN.Repositories;
 
-public class CourseComponentRepository(AppDbContext context) : GenericRepository<CourseComponent>(context), ICourseComponentRepository
+public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericRepository<TEntity>(context), ICourseComponentRepository<TEntity> where TEntity : CourseComponent
 {
     private readonly AppDbContext _context = context;
 

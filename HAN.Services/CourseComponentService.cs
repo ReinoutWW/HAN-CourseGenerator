@@ -4,28 +4,30 @@ using HAN.Repositories.Interfaces;
 using HAN.Services.DTOs;
 using HAN.Services.DTOs.CourseComponents;
 using HAN.Services.Interfaces;
-using HAN.Services.Mappers;
 using HAN.Services.Validation;
 
 namespace HAN.Services;
 
-public class CourseComponentService(
-    ICourseComponentRepository repository,
+public abstract class CourseComponentService<TDto, TEntity>(
+    ICourseComponentRepository<TEntity> repository,
     IValidationService validationService,
-    IMapper mapper) : ICourseComponentService
+    IMapper mapper) : 
+            ICourseComponentService<TDto> 
+                where TDto : CourseComponentDto 
+                where TEntity : CourseComponent
 {
-
-    public T CreateCourseComponent<T>(T courseComponentDto) where T : CourseComponentDto
+    public TDto CreateCourseComponent(TDto courseComponentDto)
     {
         validationService.Validate(courseComponentDto);
 
-        var entityType = CourseComponentTypeMap.GetEntityType(typeof(T));
+        // Map DTO to entity
+        var entity = mapper.Map<TEntity>(courseComponentDto);
 
-        var entity = (CourseComponent)mapper.Map(courseComponentDto, typeof(T), entityType);
-
+        // Persist entity
         repository.Add(entity);
 
-        return (T)mapper.Map(entity, entityType, typeof(T));
+        // Map entity back to DTO
+        return mapper.Map<TDto>(entity);
     }
 
     public void AddEvlToCourseComponent(int courseComponentId, int evlId)
@@ -52,12 +54,13 @@ public class CourseComponentService(
             .ToList();
     }
 
-    public T GetCourseComponentById<T>(int id) where T : CourseComponentDto
+    public TDto GetCourseComponentById(int id)
     {
-        var entityType = CourseComponentTypeMap.GetEntityType(typeof(T));
-
         var entity = repository.GetById(id);
 
-        return (T)mapper.Map(entity, entityType, typeof(T));
+        if (entity == null)
+            throw new KeyNotFoundException($"CourseComponent with ID {id} not found.");
+
+        return mapper.Map<TDto>(entity);
     }
 }

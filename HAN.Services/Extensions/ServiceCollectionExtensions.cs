@@ -1,4 +1,5 @@
-﻿using HAN.Services.Interfaces;
+﻿using HAN.Services.DTOs.CourseComponents;
+using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEvlService, EvlService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFileService, FileService>();
-        services.AddScoped<ICourseComponentService, CourseComponentService>();
+        services.AddScoped<LessonService>();
+        services.AddScoped<ExamService>();
+        
         return services;
     }
 }

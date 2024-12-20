@@ -4,10 +4,8 @@ using File = HAN.Data.Entities.File;
 
 namespace HAN.Repositories.Interfaces;
 
-public interface ICourseComponentRepository : IGenericRepository<CourseComponent>
+public interface ICourseComponentRepository<TEntity> : IGenericRepository<TEntity>  where TEntity : CourseComponent
 {
-    List<Lesson> GetLessons();
-    List<Exam> GetExams();
     public void AddFileToCourseComponent(int courseComponentId, int fileId);
     public void AddEvlToCourseComponent(int courseComponentId, int evlId);
     List<File> GetFilesForCourseComponent(int courseComponentId);

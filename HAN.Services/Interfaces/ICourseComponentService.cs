@@ -3,12 +3,12 @@ using HAN.Services.DTOs.CourseComponents;
 
 namespace HAN.Services.Interfaces;
 
-public interface ICourseComponentService
+public interface ICourseComponentService<TDto> where TDto : CourseComponentDto
 {
-    public T CreateCourseComponent<T>(T courseComponentDto) where T : CourseComponentDto;
-    public void AddEvlToCourseComponent(int courseComponentId, int evlId);
-    public void AddFileToCourseComponent(int courseComponentId, int fileId);
-    public List<FileDto> GetFilesForCourseComponent(int courseComponentId);
-    public List<EvlDto> GetEvlsForCourseComponent(int courseComponentId);
-    public T GetCourseComponentById<T>(int id) where T : CourseComponentDto;
+    TDto CreateCourseComponent(TDto courseComponentDto);
+    void AddEvlToCourseComponent(int courseComponentId, int evlId);
+    void AddFileToCourseComponent(int courseComponentId, int fileId);
+    List<FileDto> GetFilesForCourseComponent(int courseComponentId);
+    List<EvlDto> GetEvlsForCourseComponent(int courseComponentId);
+    TDto GetCourseComponentById(int id);
 }
