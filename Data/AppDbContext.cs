@@ -42,12 +42,6 @@ public class AppDbContext : DbContext
             .WithOne()
             .HasForeignKey(sl => sl.Id) 
             .OnDelete(DeleteBehavior.Cascade); 
-
-        modelBuilder.Entity<ScheduleLine>()
-            .HasOne(sl => sl.CourseComponent)
-            .WithMany()
-            .HasForeignKey(sl => sl.CourseComponentId)
-            .OnDelete(DeleteBehavior.Restrict); 
     }
     
     private void ValidateEntities()

@@ -8,7 +8,7 @@ namespace HAN.Services;
 
 public class LessonService(ICourseComponentRepository<Lesson> repository, 
     IValidationService validationService, 
-    IMapper mapper) : CourseComponentService<LessonDto, Lesson>(
+    IMapper mapper) : AbstractCourseComponentService<LessonDto, Lesson>(
         repository, 
         validationService, 
         mapper)

@@ -30,6 +30,7 @@ public static class TestServiceProvider
         services.AddScoped<IScheduleRepository, ScheduleRepository>();
         services.AddScoped<ICourseComponentRepository<Lesson>, CourseComponentRepository<Lesson>>();
         services.AddScoped<ICourseComponentRepository<Exam>, CourseComponentRepository<Exam>>();
+        services.AddScoped<ICourseComponentRepository<CourseComponent>, CourseComponentRepository<CourseComponent>>();
         services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         

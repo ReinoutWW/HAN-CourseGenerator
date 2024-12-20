@@ -12,10 +12,11 @@ public class ScheduleService(
         IValidationService validationService, 
         IScheduleRepository scheduleRepository,
         ICourseRepository courseRepository,
+        CourseComponentService courseComponentService,
         IMapper mapper
     ) : IScheduleService
 {
-    public ScheduleDto CreateSchedule(ScheduleDto scheduleDto, int courseId)
+    public ScheduleDto AddSchedule(ScheduleDto scheduleDto, int courseId)
     {
         validationService.Validate(scheduleDto);
         
@@ -42,7 +43,15 @@ public class ScheduleService(
         if(schedule == null)
             throw new KeyNotFoundException($"Schedule with id {id} not found");
         
-        return mapper.Map<ScheduleDto>(schedule);
+        var scheduleDto = mapper.Map<ScheduleDto>(schedule);
+
+        foreach (var scheduleLine in scheduleDto.ScheduleLines)
+        {
+            scheduleLine.CourseComponent =
+                courseComponentService.GetCourseComponentById(scheduleLine.CourseComponentId);
+        }
+        
+        return scheduleDto;
     }
 
     public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto)

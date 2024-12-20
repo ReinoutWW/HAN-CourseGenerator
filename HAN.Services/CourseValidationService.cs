@@ -3,10 +3,35 @@ using HAN.Services.Interfaces;
 
 namespace HAN.Services;
 
-public class CourseValidationService : ICourseValidationService
+public class CourseValidationService(
+    ICourseService courseService,
+    IScheduleService scheduleService,
+    CourseComponentService courseComponentService
+    ) : ICourseValidationService
 {
     public bool ValidateCourse(int courseId)
     {
-        throw new NotImplementedException();
+        return IsCourseComplete(courseId) && 
+               HasCourseValidOrder(courseId);
+    }
+
+    public bool IsCourseComplete(int courseId)
+    {
+        return IsCourseScheduleComplete(courseId);
+    }
+
+    private bool IsCourseScheduleComplete(int courseId)
+    {
+        var course = courseService.GetCourseById(courseId);
+        var schedule = scheduleService.GetScheduleById(course.Schedule.Id);
+        var allCourseComponents = courseComponentService.GetAllCourseComponentsByCourseId(courseId);
+        
+        return allCourseComponents.All(courseComponent => schedule.ScheduleLines.Any(sl => sl.CourseComponentId == courseComponent.Id));
+    }
+
+    public bool HasCourseValidOrder(int courseId)
+    {
+        // Implement
+        return true;
     }
 }
