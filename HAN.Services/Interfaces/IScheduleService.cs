@@ -6,4 +6,5 @@ public interface IScheduleService
 {
     public ScheduleDto CreateSchedule(ScheduleDto schedule, int courseId);
     public ScheduleDto GetScheduleById(int id);
+    public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto);
 }

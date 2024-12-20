@@ -35,6 +35,9 @@ public class CourseProfile : Profile
         CreateMap<ScheduleDto, Schedule>();
         CreateMap<Schedule, ScheduleDto>();
         
+        CreateMap<ScheduleLineDto, ScheduleLine>();
+        CreateMap<ScheduleLine, ScheduleLineDto>();
+        
         CreateMap<CourseComponentDto, CourseComponent>();
         CreateMap<CourseComponent, CourseComponentDto>();
 

@@ -44,4 +44,19 @@ public class ScheduleService(
         
         return mapper.Map<ScheduleDto>(schedule);
     }
+
+    public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto)
+    {
+        var course = courseRepository.GetById(courseId);
+            
+        if(course == null)
+            throw new KeyNotFoundException($"Course with id {courseId} not found");
+        
+        var schedule = mapper.Map<Schedule>(scheduleDto);
+        
+        course.Schedule = schedule;
+        courseRepository.Update(course);
+        
+        return mapper.Map<ScheduleDto>(schedule);
+    }
 }

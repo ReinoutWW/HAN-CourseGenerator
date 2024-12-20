@@ -14,7 +14,8 @@ public class AppDbContext : DbContext
     public DbSet<Evl> Evls { get; set; }
     public DbSet<CourseComponent> CourseComponents { get; set; }
     public DbSet<File> Files { get; set; }
-    
+    public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<ScheduleLine> ScheduleLines { get; set; }
     
     public DbSet<ExampleEntity> GenericTests { get; set; }
 
@@ -35,6 +36,12 @@ public class AppDbContext : DbContext
             .HasValue<CourseComponent>("Base")
             .HasValue<Lesson>("Lesson")
             .HasValue<Exam>("Exam");
+        
+        modelBuilder.Entity<ScheduleLine>()
+            .HasOne(sl => sl.CourseComponent)
+            .WithMany()
+            .HasForeignKey(sl => sl.CourseComponentId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
     }
     
     private void ValidateEntities()

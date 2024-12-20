@@ -53,6 +53,13 @@ public abstract class CourseComponentService<TDto, TEntity>(
             .Select(mapper.Map<EvlDto>)
             .ToList();
     }
+    
+    public List<TDto> GetAllCourseComponentsByCourseId(int courseId)
+    {
+        var entities = repository.GetAll();
+
+        return mapper.Map<List<TDto>>(entities);
+    }
 
     public TDto GetCourseComponentById(int id)
     {

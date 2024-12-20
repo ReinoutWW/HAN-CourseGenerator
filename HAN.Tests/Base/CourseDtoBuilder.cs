@@ -1,4 +1,5 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.DTOs.CourseComponents;
 
 namespace HAN.Tests.Base;
 
@@ -47,6 +48,12 @@ public class CourseDtoBuilder
         return this;
     }
     
+    private CourseDtoBuilder WithSchedule(ScheduleDto schedule)
+    {
+        _courseDto.Schedule = schedule;
+        return this;
+    }
+
     public CourseDto Build()
     {
         return _courseDto;
