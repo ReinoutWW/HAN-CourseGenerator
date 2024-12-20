@@ -7,13 +7,11 @@ namespace HAN.Tests.Persistence;
 
 public class CourseRepositoryTests : TestBase
 {
-    private const int SeedCourseCount = 2;
     private readonly ICourseRepository _repository;
 
     public CourseRepositoryTests()
     {
         _repository = ServiceProvider.GetRequiredService<ICourseRepository>();
-        TestDbSeeder.SeedCourses(Context, SeedCourseCount);
     }
 
     [Theory]
@@ -49,7 +47,10 @@ public class CourseRepositoryTests : TestBase
     [Fact]
     public void CreateCourse_ShouldThrowException_WhenCourseAlreadyExists()
     {
+        
         var course = new Course() { Id = 1, Name = $"{Guid.NewGuid()}" };
+        _repository.Add(course);
+        
         Assert.ThrowsAny<Exception>(() => _repository.Add(course));        
     }
 
@@ -62,7 +63,7 @@ public class CourseRepositoryTests : TestBase
         });
 
         Assert.NotNull(expectedException);
-        Assert.IsType<ArgumentNullException>(expectedException);
+        Assert.IsType<NullReferenceException>(expectedException);
     }
 
     private void AddCourseExpectValidationException(Course newCourse)

@@ -44,8 +44,7 @@ public class CourseComponentTests : TestBase
     public void AddFile_ShouldAddFileToLesson()
     {
         // Arrange
-        const int seedLessonId = 1;
-        TestDbSeeder.SeedLessons(Context, 1);
+        var seedLessonId = SeedLessons();
 
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         FileDto file = new()
@@ -69,9 +68,8 @@ public class CourseComponentTests : TestBase
     public void AddEvl_ShouldAddEvlToLesson()
     {
         // Arrange
-        const int seedLessonId = 1;
-        TestDbSeeder.SeedLessons(Context, 1);
-
+        var seedLessonId = SeedLessons();
+        
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         EvlDto evl = new()
         {
@@ -94,9 +92,8 @@ public class CourseComponentTests : TestBase
     public void Lesson_HasEvls_ShouldHaveEvls()
     {
         // Arrange
-        const int seedLessonId = 1;
         const int evlCount = 1;
-        TestDbSeeder.SeedLessonsWithEvls(Context, 1, evlCount);
+        var seedLessonId = SeedLessons(evlCount);
 
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         
@@ -122,5 +119,17 @@ public class CourseComponentTests : TestBase
         Assert.NotNull(createdExam);
         Assert.Equal(exam.Name, createdExam.Name);
         Assert.Equal(exam.Score, createdExam.Score);
+    }
+
+    private int SeedLessons(int evlsCount = 1)
+    {
+        var lesson = new CourseComponentDtoBuilder()
+            .AsLesson()
+            .AddEvls(evlsCount)
+            .Build();
+        
+        var createdLesson = _lessonService.CreateCourseComponent((LessonDto)lesson);
+
+        return createdLesson.Id;
     }
 }
