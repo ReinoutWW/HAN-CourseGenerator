@@ -1,6 +1,6 @@
 ﻿using HAN.Services.DTOs;
 
-namespace HAN.Services;
+namespace HAN.Services.Interfaces;
 
 public interface IAuthenticationService
 {

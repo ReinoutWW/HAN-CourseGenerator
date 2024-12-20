@@ -1,6 +1,6 @@
-﻿using HAN.Services.Validation;
+﻿using HAN.Services.Interfaces;
+using HAN.Services.Validation;
 using Microsoft.Extensions.DependencyInjection;
-using File = HAN.Data.Entities.File;
 
 namespace HAN.Services.Extensions;
 
@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEvlService, EvlService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<ICourseComponentService, CourseComponentService>();
         return services;
     }
 }

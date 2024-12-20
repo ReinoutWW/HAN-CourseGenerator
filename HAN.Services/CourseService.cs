@@ -2,6 +2,7 @@
 using HAN.Data.Entities;
 using HAN.Repositories.Interfaces;
 using HAN.Services.DTOs;
+using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 
 namespace HAN.Services;
