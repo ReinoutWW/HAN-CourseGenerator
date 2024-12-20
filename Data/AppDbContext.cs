@@ -37,11 +37,17 @@ public class AppDbContext : DbContext
             .HasValue<Lesson>("Lesson")
             .HasValue<Exam>("Exam");
         
+        modelBuilder.Entity<Schedule>()
+            .HasMany(s => s.ScheduleLines)
+            .WithOne()
+            .HasForeignKey(sl => sl.Id) 
+            .OnDelete(DeleteBehavior.Cascade); 
+
         modelBuilder.Entity<ScheduleLine>()
             .HasOne(sl => sl.CourseComponent)
             .WithMany()
             .HasForeignKey(sl => sl.CourseComponentId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+            .OnDelete(DeleteBehavior.Restrict); 
     }
     
     private void ValidateEntities()

@@ -60,7 +60,7 @@ public class CourseScheduleTests : TestBase
             .Build();
         
         AddLessonToEvls(course.Evls);
-
+        
         var createdCourse = _courseService.CreateCourse(course);
         
         return createdCourse.Id;
