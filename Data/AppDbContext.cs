@@ -1,4 +1,5 @@
 ﻿using HAN.Data.Entities;
+using HAN.Data.Entities.CourseComponents;
 using Microsoft.EntityFrameworkCore;
 using File = HAN.Data.Entities.File;
 
@@ -28,6 +29,12 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Course>()
             .Property(c => c.CreatedAt)
             .ValueGeneratedOnAdd();
+        
+        modelBuilder.Entity<CourseComponent>()
+            .HasDiscriminator<string>("ComponentType")
+            .HasValue<CourseComponent>("Base")
+            .HasValue<Lesson>("Lesson")
+            .HasValue<Exam>("Exam");
     }
     
     private void ValidateEntities()
