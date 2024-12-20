@@ -29,6 +29,12 @@ public class CourseDtoBuilder
         return this;
     }
     
+    public CourseDtoBuilder WithEvls(List<EvlDto> evls)
+    {
+        _courseDto.Evls = evls;
+        return this;
+    }
+    
     public CourseDtoBuilder WithCreatedEvls(int count)
     {
         var evls = new List<EvlDto>();

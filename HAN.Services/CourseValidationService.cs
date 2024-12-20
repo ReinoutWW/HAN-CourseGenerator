@@ -1,4 +1,5 @@
-﻿using HAN.Services.Interfaces;
+﻿using HAN.Services.DTOs.CourseComponents;
+using HAN.Services.Interfaces;
 
 namespace HAN.Services;
 

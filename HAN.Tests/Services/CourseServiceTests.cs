@@ -170,7 +170,7 @@ public class CourseServiceTests : TestBase
         Assert.NotNull(expectedException);
         Assert.IsType<HAN.Services.Exceptions.ValidationException>(expectedException);
     }
-
+    
     [Fact]
     public void Test()
     {
