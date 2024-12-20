@@ -2,6 +2,7 @@
 using HAN.Repositories.Interfaces;
 using HAN.Services.Attributes;
 using HAN.Services.DTOs;
+using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 using File = HAN.Data.Entities.File;
 

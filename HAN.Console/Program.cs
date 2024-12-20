@@ -3,6 +3,7 @@
 using HAN.Console;
 using HAN.Services;
 using HAN.Services.DTOs;
+using HAN.Services.Interfaces;
 using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
 

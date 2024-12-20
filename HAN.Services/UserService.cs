@@ -2,12 +2,12 @@
 using HAN.Data.Entities;
 using HAN.Repositories.Interfaces;
 using HAN.Services.DTOs;
+using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 
 namespace HAN.Services;
 
-public class UserService(IUserRepository repository, IMapper mapper, IValidationService validationService) : IUserService
-{
+public class UserService(IUserRepository repository, IMapper mapper, IValidationService validationService) : IUserService {
     public UserDto CreateUser(UserDto userDto)
     {
         validationService.Validate(userDto);

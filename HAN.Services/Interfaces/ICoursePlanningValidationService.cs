@@ -1,4 +1,4 @@
-﻿namespace HAN.Services;
+﻿namespace HAN.Services.Interfaces;
 
 public interface ICoursePlanningValidationService
 {

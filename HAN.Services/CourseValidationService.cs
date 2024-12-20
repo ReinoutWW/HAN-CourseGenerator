@@ -1,4 +1,6 @@
-﻿namespace HAN.Services;
+﻿using HAN.Services.Interfaces;
+
+namespace HAN.Services;
 
 public class CourseValidationService : ICourseValidationService
 {
