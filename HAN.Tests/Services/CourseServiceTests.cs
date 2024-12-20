@@ -10,16 +10,11 @@ public class CourseServiceTests : TestBase
 {
     private readonly ICourseService _courseService;
     private readonly IEvlService _evlService;
-    private const int SeedCourseAmount = 2;
-    private const int SeedEvlAmount = 2;
     
     public CourseServiceTests()
     {
         _courseService = ServiceProvider.GetRequiredService<ICourseService>();
         _evlService = ServiceProvider.GetRequiredService<IEvlService>();
-        
-        TestDbSeeder.SeedCourses(Context, SeedCourseAmount);
-        TestDbSeeder.SeedEvls(Context, SeedEvlAmount);
     }
 
     [Fact]
@@ -72,8 +67,12 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void AddEvlToCourse_ShouldAddEvl()
     {
-        var evl = _evlService.GetEvlById(1);
-        var course = _courseService.GetCourseById(1);
+        var courseId = SeedValidCourse(0);
+        var evlIds = SeedEvl();
+        var evlId = evlIds.FirstOrDefault();
+        
+        var evl = _evlService.GetEvlById(evlId);
+        var course = _courseService.GetCourseById(courseId);
 
         var exception = Record.Exception(() =>
         {
@@ -86,7 +85,9 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void AddEvlToCourse_ShouldThrowException_EvlNotFound()
     {
-        var course = _courseService.GetCourseById(1);
+        var courseId = SeedValidCourse();
+        
+        var course = _courseService.GetCourseById(courseId);
         const int nonExistentEvilId = 100000;
         
         var expectedException = Record.Exception(() =>
@@ -101,8 +102,9 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void AddEvlToCourse_ShouldThrowException_CourseNotFound()
     {
+        var evlId = SeedEvl().FirstOrDefault();
+        var evl = _evlService.GetEvlById(evlId);
         const int nonExistentCourseId = 100000;
-        var evl = _evlService.GetEvlById(1);
 
         var expectedException = Record.Exception(() =>
         {
@@ -116,8 +118,11 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void AddEvlToCourse_ShouldThrowException_EvlAlreadyAdded()
     {
-        var evl = _evlService.GetEvlById(1);
-        var course = _courseService.GetCourseById(1);
+        var courseId = SeedValidCourse();
+        var evlId = SeedEvl().FirstOrDefault();
+        
+        var evl = _evlService.GetEvlById(evlId);
+        var course = _courseService.GetCourseById(courseId);
         
         var expectedExceptionNull = Record.Exception(() =>
         {
@@ -137,12 +142,15 @@ public class CourseServiceTests : TestBase
     [Fact]
     private void GetAllEvls_ShouldReturnAllEvls()
     {
-        var evl = _evlService.GetEvlById(1);
-        var course = _courseService.GetCourseById(1);
+        var courseId = SeedValidCourse(0);
+        var evlIds = SeedEvl(1);
+        var evlId = evlIds.FirstOrDefault();
+        
+        var course = _courseService.GetCourseById(courseId);
         
         var expectedExceptionNull = Record.Exception(() =>
         {
-            _courseService.AddEvlToCourse(course.Id, evl.Id);
+            _courseService.AddEvlToCourse(course.Id, evlId);
         });
 
         var evls = _courseService.GetEvls(course.Id).ToList();
@@ -161,5 +169,54 @@ public class CourseServiceTests : TestBase
 
         Assert.NotNull(expectedException);
         Assert.IsType<HAN.Services.Exceptions.ValidationException>(expectedException);
+    }
+
+    [Fact]
+    public void Test()
+    {
+        var course = new CourseDtoBuilder()
+            .WithName("Course name")
+            .WithCreatedEvls(2)
+            .Build();
+        
+        var createdCourse = _courseService.CreateCourse(course);
+        
+        var evls = _courseService.GetEvls(createdCourse.Id).ToList();
+        
+        Assert.NotNull(createdCourse);
+        Assert.Equal(course.Name, createdCourse.Name);
+        Assert.Equal(course.Description, createdCourse.Description);
+        Assert.Equal(course.Evls.Count, evls.Count);
+    }
+    
+    private int SeedValidCourse(int seedEvlCount = 1)
+    {
+        var course = new CourseDtoBuilder()
+            .WithName("Course name")
+            .WithCreatedEvls(seedEvlCount)
+            .Build();
+
+        var createdCourse = _courseService.CreateCourse(course);
+        
+        return createdCourse.Id;
+    }
+
+    private List<int> SeedEvl(int evlCount = 2)
+    {
+        List<int> evlIds = [];
+        
+        for(var i = 0; i < evlCount; i++)
+        {
+            var evl = new EvlDto
+            {
+                Name = "Test Evl",
+                Description = "Test Description",
+            };
+        
+            var createdEvl = _evlService.CreateEvl(evl);
+            evlIds.Add(createdEvl.Id);
+        }
+
+        return evlIds;
     }
 }

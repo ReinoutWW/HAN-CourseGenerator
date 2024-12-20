@@ -13,4 +13,6 @@ public class CourseDto
     
     [StringLength(450, ErrorMessage = "Description cannot exceed 450 characters.")] 
     public string? Description { get; set; }
+    
+    public ICollection<EvlDto> Evls { get; set; } = new List<EvlDto>();
 }

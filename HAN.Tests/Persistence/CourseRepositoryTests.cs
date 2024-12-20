@@ -13,7 +13,6 @@ public class CourseRepositoryTests : TestBase
     public CourseRepositoryTests()
     {
         _repository = ServiceProvider.GetRequiredService<ICourseRepository>();
-        
         TestDbSeeder.SeedCourses(Context, SeedCourseCount);
     }
 

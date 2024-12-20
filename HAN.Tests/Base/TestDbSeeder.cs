@@ -18,28 +18,6 @@ public static class TestDbSeeder
         context.SaveChanges();
     }
 
-    public static List<Evl> SeedEvls(AppDbContext context, int seedEvlCount)
-    {
-        var evls = Enumerable.Range(0, seedEvlCount)
-            .Select(_ => DbEntityCreator<Evl>.CreateEntity())
-            .ToList();
-
-        context.Evls.AddRange(evls);
-        context.SaveChanges();
-
-        return evls;
-    }
-    
-    public static void SeedCourseComponents(AppDbContext context, int seedCourseComponentCount)
-    {
-        var courseComponents = Enumerable.Range(0, seedCourseComponentCount)
-            .Select(_ => DbEntityCreator<CourseComponent>.CreateEntity())
-            .ToList();
-
-        context.CourseComponents.AddRange(courseComponents);
-        context.SaveChanges();
-    }
-    
     public static void SeedLessons(AppDbContext context, int seedCourseComponentCount, int seedFileCount = 2)
     {
         var lessons = Enumerable.Range(0, seedCourseComponentCount)
