@@ -31,6 +31,9 @@ public class CourseProfile : Profile
         
         CreateMap<ExamDto, Exam>();
         CreateMap<Exam, ExamDto>();
+
+        CreateMap<ScheduleDto, Schedule>();
+        CreateMap<Schedule, ScheduleDto>();
         
         CreateMap<CourseComponentDto, CourseComponent>();
         CreateMap<CourseComponent, CourseComponentDto>();
