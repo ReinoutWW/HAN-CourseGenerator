@@ -7,5 +7,4 @@ public class ScheduleLine : BaseEntity
     [Required]
     public int WeekSequenceNumber { get; set; }
     public int CourseComponentId { get; set; }
-    public CourseComponent CourseComponent { get; set; }
 }
