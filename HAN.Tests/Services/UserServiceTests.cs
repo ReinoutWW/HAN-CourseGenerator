@@ -25,10 +25,28 @@ public class UserServiceTests : TestBase
             Password = "password"
         };
 
-        var createdCourse = _userService.CreateUser(user);
+        var createdUser = _userService.CreateUser(user);
         
-        Assert.NotNull(createdCourse);
-        Assert.Equal(user.Name, createdCourse.Name);
-        Assert.Equal(user.Email, createdCourse.Email);
+        Assert.NotNull(createdUser);
+        Assert.Equal(user.Name, createdUser.Name);
+        Assert.Equal(user.Email, createdUser.Email);
+    }
+    
+    [Fact]
+    public void GetUserById_ShouldReturnUser()
+    {
+        UserDto user = new()
+        {
+            Name = "Test Course",
+            Email = "test@test.com",
+            Password = "password"
+        };
+
+        var createdUser = _userService.CreateUser(user);
+        var getUser = _userService.GetUserById(createdUser.Id);
+        
+        Assert.NotNull(getUser);
+        Assert.Equal(user.Name, getUser.Name);
+        Assert.Equal(user.Email, getUser.Email);
     }
 }
