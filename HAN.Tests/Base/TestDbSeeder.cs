@@ -39,4 +39,32 @@ public static class TestDbSeeder
         context.CourseComponents.AddRange(courseComponents);
         context.SaveChanges();
     }
+    
+    public static void SeedLessons(AppDbContext context, int seedCourseComponentCount, int seedFileCount = 2)
+    {
+        var lessons = Enumerable.Range(0, seedCourseComponentCount)
+            .Select(i => new CourseComponentBuilder()
+                .AsLesson()
+                .WithName($"Lesson {i}")
+                .AddFiles(seedFileCount)
+                .Build())
+            .ToList();
+
+        context.CourseComponents.AddRange(lessons);
+        context.SaveChanges();
+    }
+    
+    public static void SeedLessonsWithEvls(AppDbContext context, int seedCourseComponentCount, int seedEvlCount = 2)
+    {
+        var lessons = Enumerable.Range(0, seedCourseComponentCount)
+            .Select(i => new CourseComponentBuilder()
+                .AsLesson()
+                .WithName($"Lesson {i}")
+                .AddEvls(seedEvlCount)
+                .Build())
+            .ToList();
+
+        context.CourseComponents.AddRange(lessons);
+        context.SaveChanges();
+    }
 }
