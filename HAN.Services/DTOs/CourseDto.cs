@@ -15,4 +15,5 @@ public class CourseDto
     public string? Description { get; set; }
     
     public ICollection<EvlDto> Evls { get; set; } = new List<EvlDto>();
+    public ScheduleDto Schedule { get; set; }
 }

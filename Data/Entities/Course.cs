@@ -22,4 +22,5 @@ public class Course : BaseEntity
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<Evl> Evls { get; set; } = new List<Evl>();
+    public Schedule Schedule { get; set; }
 }
