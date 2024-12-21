@@ -22,18 +22,8 @@ public static class TestServiceProvider
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase(inMemoryDbName));
-
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IEvlRepository, EvlRepostory>();
-        services.AddScoped<ICourseRepository, CourseRepository>();
-        services.AddScoped<IFileRepository, FileRepository>();
-        services.AddScoped<IScheduleRepository, ScheduleRepository>();
-        services.AddScoped<ICourseComponentRepository<Lesson>, CourseComponentRepository<Lesson>>();
-        services.AddScoped<ICourseComponentRepository<Exam>, CourseComponentRepository<Exam>>();
-        services.AddScoped<ICourseComponentRepository<CourseComponent>, CourseComponentRepository<CourseComponent>>();
-        services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
+        services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
         services.AddCourseServices();
 
         return services.BuildServiceProvider();

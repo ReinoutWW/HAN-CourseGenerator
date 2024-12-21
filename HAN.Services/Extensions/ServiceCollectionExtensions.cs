@@ -1,4 +1,4 @@
-﻿using HAN.Services.DTOs.CourseComponents;
+﻿using HAN.Repositories.Extensions;
 using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +18,9 @@ public static class ServiceCollectionExtensions
             .AddScoped<ExamService>()
             .AddScoped<IScheduleService, ScheduleService>()
             .AddScoped<ICourseValidationService, CourseValidationService>()
-            .AddScoped<CourseComponentService>();
+            .AddScoped<CourseComponentService>()
+            .AddRepositories()
+            .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         
         return services;
     }

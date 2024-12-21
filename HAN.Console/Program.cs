@@ -1,14 +1,29 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using HAN.Console;
-using HAN.Services;
+using HAN.Data;
 using HAN.Services.DTOs;
+using HAN.Services.Extensions;
 using HAN.Services.Interfaces;
-using HAN.Tests.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
+static IServiceProvider BuildServiceProvider()
+{
+    var inMemoryDbName = $"InMemDB-{Guid.NewGuid():N}";
+        
+    var services = new ServiceCollection();
+
+    services.AddDbContext<AppDbContext>(options =>
+        options.UseInMemoryDatabase(inMemoryDbName));
+        
+    services.AddCourseServices();
+
+    return services.BuildServiceProvider();
+}
+
 // For demo purposes, we use the Test serviceprovider
-var serviceProvider = TestServiceProvider.BuildServiceProvider();
+var serviceProvider = BuildServiceProvider();
 var scope = serviceProvider.CreateScope();
 
 var courseService = scope.ServiceProvider.GetRequiredService<ICourseService>();

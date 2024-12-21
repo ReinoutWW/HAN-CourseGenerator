@@ -2,8 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using HAN.Client;
 using HAN.Data;
-using HAN.Repositories;
-using HAN.Repositories.Interfaces;
+using HAN.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 
@@ -15,8 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseInMemoryDatabase("InMem"));
 
 builder.Services.AddRadzenComponents();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddCourseServices();
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
