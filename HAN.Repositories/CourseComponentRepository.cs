@@ -7,9 +7,53 @@ using File = HAN.Data.Entities.File;
 
 namespace HAN.Repositories;
 
-public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericRepository<TEntity>(context), ICourseComponentRepository<TEntity> where TEntity : CourseComponent
+public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericRepository<TEntity>(context: context), ICourseComponentRepository<TEntity> where TEntity : CourseComponent
 {
     private readonly AppDbContext _context = context;
+    
+    public override void Add(TEntity entity)
+    {
+        if (entity == null) 
+            throw new ArgumentNullException(nameof(entity));
+
+        for (int i = 0; i < entity.Evls.Count; i++)
+        {
+            var inputEvl = entity.Evls[i];
+
+            if (inputEvl.Id <= 0)
+            {
+                throw new InvalidOperationException(
+                    "Cannot add a new Evl in this method. Only existing Evl references are allowed."
+                );
+            }
+
+            var trackedEvl = _context.ChangeTracker.Entries<Evl>()
+                .Where(e => e.Entity.Id == inputEvl.Id)
+                .Select(e => e.Entity)
+                .FirstOrDefault();
+
+            if (trackedEvl != null)
+            {
+                entity.Evls[i] = trackedEvl; 
+            }
+            else
+            {
+                var existingEvl = _context.Set<Evl>().Find(inputEvl.Id);
+                if (existingEvl == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Evl with ID={inputEvl.Id} does not exist in the database."
+                    );
+                }
+
+                _context.Set<Evl>().Attach(existingEvl);
+                entity.Evls[i] = existingEvl;
+            }
+        }
+
+        Entity.Add(entity);
+        _context.SaveChanges();
+    }
 
     public IEnumerable<Evl> GetEvlsByCourseComponentId(int id)
     {
@@ -28,7 +72,7 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
         if(!Exists(courseComponentId))
             throw new KeyNotFoundException($"CourseComponent with ID {courseComponentId} not found.");
         
-        var files = context.CourseComponents
+        var files = _context.CourseComponents
             .Include(c => c.Files)
             .FirstOrDefault(c => c.Id == courseComponentId)
             ?.Files;
@@ -41,12 +85,32 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
         if(!Exists(courseComponentId))
             throw new KeyNotFoundException($"CourseComponent with ID {courseComponentId} not found.");
         
-        var evls = context.CourseComponents
+        var evls = _context.CourseComponents
             .Include(c => c.Evls)
             .FirstOrDefault(c => c.Id == courseComponentId)
             ?.Evls;
 
         return evls ?? [];
+    }
+
+    public List<CourseComponent> GetAllCourseComponentsByEvlId(int evlId)
+    {
+        var courseComponents = _context.CourseComponents
+            .Include(c => c.Evls)
+            .Where(c => c.Evls.Any(e => e.Id == evlId))
+            .ToList();
+        
+        return courseComponents;
+    }
+
+    public List<CourseComponent> GetAllCourseComponentByEvlIds(List<int> evlIds)
+    {   
+        var courseComponents = _context.CourseComponents
+            .Include(c => c.Evls)
+            .Where(c => c.Evls.Any(e => evlIds.Contains(e.Id)))
+            .ToList();
+        
+        return courseComponents;
     }
 
     public void AddEvlToCourseComponent(int courseComponentId, int evlId)
@@ -87,16 +151,6 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
 
         courseComponent.Files.Add(file);
         _context.SaveChanges();
-    }
-
-    public List<Lesson> GetLessons()
-    {
-        return _context.Set<CourseComponent>().OfType<Lesson>().ToList();
-    }
-
-    public List<Exam> GetExams()
-    {
-        return _context.Set<CourseComponent>().OfType<Exam>().ToList();
     }
 }
 

@@ -12,6 +12,7 @@ public class CourseServiceTests : TestBase
     private readonly ICourseService _courseService;
     private readonly IEvlService _evlService;
     private readonly LessonService _lessonService;
+    private readonly ExamService _examService;
     private readonly CourseComponentService _courseComponentService;
     private readonly ICourseValidationService _courseValidationService;
 
@@ -20,6 +21,7 @@ public class CourseServiceTests : TestBase
         _courseService = ServiceProvider.GetRequiredService<ICourseService>();
         _evlService = ServiceProvider.GetRequiredService<IEvlService>();
         _lessonService = ServiceProvider.GetRequiredService<LessonService>();
+        _examService = ServiceProvider.GetRequiredService<ExamService>();
         _courseComponentService = ServiceProvider.GetRequiredService<CourseComponentService>();
         _courseValidationService = ServiceProvider.GetRequiredService<ICourseValidationService>();
     }
@@ -74,16 +76,14 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void AddEvlToCourse_ShouldAddEvl()
     {
-        var courseId = SeedValidCourse(0);
-        var evlIds = SeedEvl();
-        var evlId = evlIds.FirstOrDefault();
-        
-        var evl = _evlService.GetEvlById(evlId);
+        var courseId = SeedValidCourse();
+        var evl = SeedEvls().FirstOrDefault();
+
         var course = _courseService.GetCourseById(courseId);
 
         var exception = Record.Exception(() =>
         {
-            _courseService.AddEvlToCourse(evl.Id, course.Id);
+            _courseService.AddEvlToCourse(course.Id, evl.Id);
         });
         
         Assert.Null(exception);
@@ -109,8 +109,7 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void AddEvlToCourse_ShouldThrowException_CourseNotFound()
     {
-        var evlId = SeedEvl().FirstOrDefault();
-        var evl = _evlService.GetEvlById(evlId);
+        var evl = SeedEvls().FirstOrDefault();
         const int nonExistentCourseId = 100000;
 
         var expectedException = Record.Exception(() =>
@@ -126,7 +125,7 @@ public class CourseServiceTests : TestBase
     public void AddEvlToCourse_ShouldThrowException_EvlAlreadyAdded()
     {
         var courseId = SeedValidCourse();
-        var evlId = SeedEvl().FirstOrDefault();
+        var evlId = SeedEvls().FirstOrDefault().Id;
         
         var evl = _evlService.GetEvlById(evlId);
         var course = _courseService.GetCourseById(courseId);
@@ -149,22 +148,24 @@ public class CourseServiceTests : TestBase
     [Fact]
     private void GetAllEvls_ShouldReturnAllEvls()
     {
-        var courseId = SeedValidCourse(0);
-        var evlIds = SeedEvl(1);
-        var evlId = evlIds.FirstOrDefault();
+        var evlCOunt = 2;
+        var courseId = SeedValidCourse(evlCOunt);
+        var evlIds = SeedEvls(1);
+        var evlId = evlIds.FirstOrDefault().Id;
         
         var course = _courseService.GetCourseById(courseId);
         
         var expectedExceptionNull = Record.Exception(() =>
         {
             _courseService.AddEvlToCourse(course.Id, evlId);
+            evlCOunt++;
         });
 
         var evls = _courseService.GetEvls(course.Id).ToList();
         
         Assert.Null(expectedExceptionNull);
         Assert.NotNull(evls);
-        Assert.Single(evls);
+        Assert.Equal(expected: 3, evls.Count);
     }
     
     private void CreateCourseExpectValidationException(CourseDto course)
@@ -181,25 +182,27 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void Test()
     {
+        var evls = SeedEvls();
         var course = new CourseDtoBuilder()
             .WithName("Course name")
-            .WithCreatedEvls(2)
+            .WithEvls(evls)
             .Build();
         
         var createdCourse = _courseService.CreateCourse(course);
         
-        var evls = _courseService.GetEvls(createdCourse.Id).ToList();
+        var createdEvls = _courseService.GetEvls(createdCourse.Id).ToList();
         
         Assert.NotNull(createdCourse);
+        Assert.NotNull(createdEvls);
         Assert.Equal(course.Name, createdCourse.Name);
         Assert.Equal(course.Description, createdCourse.Description);
-        Assert.Equal(course.Evls.Count, evls.Count);
+        Assert.Equal(course.Evls.Count, createdEvls.Count);
     }
     
     [Fact]
     public void AddSchedule_ShouldAddSchedule()
     {
-        var courseId = SeedCourseWithCompleteSchedule();
+        var courseId = SeedValidCourse();
 
         var scheduleDto = new ScheduleDto();
 
@@ -214,7 +217,7 @@ public class CourseServiceTests : TestBase
     [Fact]
     public void GetSchedule_ShouldReturnSchedule()
     {
-        var courseId = SeedCourseWithCompleteSchedule();
+        var courseId = SeedValidCourse();
         var scheduleDto = new ScheduleDto();
 
         _courseService.AddSchedule(scheduleDto, courseId);
@@ -228,14 +231,15 @@ public class CourseServiceTests : TestBase
     }
 
     [Fact]
-    public void GetSchedule_ShouldBeComplete()
+    public void ValidateSchedule_ShouldBeComplete()
     {
         var courseId = SeedCourseWithCompleteSchedule();
         var course = _courseService.GetCourseById(courseId);
+        var evlIds = course.Evls.Select(evl => evl.Id).ToList();
         
         var schedule = _courseService.GetScheduleById(course.Schedule.Id);
         
-        var courseComponents = _courseComponentService.GetAllCourseComponentsByCourseId(courseId);
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
 
         var complete = _courseValidationService.IsCourseComplete(courseId);
         
@@ -243,19 +247,104 @@ public class CourseServiceTests : TestBase
         Assert.NotNull(schedule);
         Assert.True(complete);
     }
+    
+    [Fact]
+    public void ValidateSchedule_ShouldBeValid()
+    {
+        var evls = SeedEvls();
+        var course = new CourseDtoBuilder()
+            .WithName("Course name")
+            .WithEvls(evls)
+            .Build();
+        
+        course = _courseService.CreateCourse(course);
+        
+        AddLessonToEvls(course.Evls);
+        AddExamToEvls(course.Evls);
+
+        var evlIds = course.Evls.Select(x => x.Id).ToList();
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
+
+        course = new CourseDtoBuilder(course)
+            .WithValidSchedule(courseComponents)
+            .Build();
+
+        _courseService.AddSchedule(course.Schedule, course.Id);
+        
+        var valid = _courseValidationService.ValidateCourse(course.Id);
+        
+        Assert.True(valid);
+    }
 
     [Fact]
-    public void GetSchedule_ShouldBeIncomplete()
+    public void ValidateSchedule_ShouldBeInvalid()
     {
-        var courseId = SeedCourseWithIncompleteSchedule();
+        var evls = SeedEvls();
+        var course = new CourseDtoBuilder()
+            .WithName("Course name")
+            .WithEvls(evls)
+            .Build();
+        
+        course = _courseService.CreateCourse(course);
+        
+        AddLessonToEvls(course.Evls);
+        AddExamToEvls(course.Evls);
+
+        var evlIds = course.Evls.Select(x => x.Id).ToList();
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
+
+        course = new CourseDtoBuilder(course)
+            .WithInvalidSchedule(courseComponents)
+            .Build();
+
+        _courseService.AddSchedule(course.Schedule, course.Id);
+        
+        var valid = _courseValidationService.ValidateCourse(course.Id);
+        
+        Assert.True(valid);
+    }
+
+    [Fact]
+    public void ValidateSchedule_ShouldBeIncomplete()
+    {
+        var evls = SeedEvls();
+        var course = new CourseDtoBuilder()
+            .WithName("Course name")
+            .WithEvls(evls)
+            .Build();
+        
+        course = _courseService.CreateCourse(course);
+        
+        AddLessonToEvls(course.Evls);
+        
+        _courseService.AddSchedule(new ScheduleDto(), course.Id);
+        
+        var complete = _courseValidationService.IsCourseComplete(course.Id);
+        
+        Assert.False(complete);
+    }
+
+    [Fact]
+    public void Schedule_Update_ShouldUpdate()
+    {
+        var courseId = SeedCourseWithCompleteSchedule();
+        var evl = SeedEvls(1).FirstOrDefault();
         var course = _courseService.GetCourseById(courseId);
         
-        var schedule = _courseService.GetScheduleById(course.Schedule.Id);
+        _courseService.AddEvlToCourse(courseId, evl.Id);
+        AddLessonToEvls([evl]);
         
-        var complete = _courseValidationService.IsCourseComplete(courseId);
+        var evlIds = course.Evls.Select(x => x.Id).ToList();
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
+        
+        course = new CourseDtoBuilder(course)
+            .WithInvalidSchedule(courseComponents)
+            .Build();
+        
+        var schedule = _courseService.AddSchedule(course.Schedule, course.Id);
         
         Assert.NotNull(schedule);
-        Assert.False(complete);
+        Assert.Equal(course.Schedule.ScheduleLines.Count, schedule.ScheduleLines.Count);
     }
 
     private static void ScheduleShouldContainAllCourseComponents(ScheduleDto schedule, List<CourseComponentDto> courseComponents)
@@ -267,59 +356,30 @@ public class CourseServiceTests : TestBase
         }
     }
     
-    private int SeedCourseWithIncompleteSchedule(int seedEvlCount = 1)
+    private int SeedCourseWithCompleteSchedule()
     {
+        var evls = SeedEvls();
         var course = new CourseDtoBuilder()
             .WithName("Course name")
-            .WithCreatedEvls(seedEvlCount)
+            .WithEvls(evls)
             .Build();
+        
+        course = _courseService.CreateCourse(course);
         
         AddLessonToEvls(course.Evls);
 
-        var createdCourse = _courseService.CreateCourse(course);
-        
-        _courseService.AddSchedule(new ScheduleDto(), createdCourse.Id);
+        var evlIds = course.Evls.Select(x => x.Id).ToList();
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
 
-        return createdCourse.Id;
+        course = new CourseDtoBuilder(course)
+            .WithValidSchedule(courseComponents)
+            .Build();
+
+        _courseService.AddSchedule(course.Schedule, course.Id);
+        
+        return course.Id;
     }
     
-    private int SeedCourseWithCompleteSchedule(int seedEvlCount = 1)
-    {
-        var course = new CourseDtoBuilder()
-            .WithName("Course name")
-            .WithCreatedEvls(seedEvlCount)
-            .Build();
-        
-        AddLessonToEvls(course.Evls);
-
-        var createdCourse = _courseService.CreateCourse(course);
-        
-        CreateScheduleWithAllLessons(createdCourse);
-        return createdCourse.Id;
-    }
-
-    private void CreateScheduleWithAllLessons(CourseDto createdCourse)
-    {
-        var courseComponents = _lessonService.GetAllCourseComponentsByCourseId(createdCourse.Id);
-
-        var sequenceId = 1;
-        var scheduleDto = new ScheduleDto();
-        foreach (var courseComponent in courseComponents)
-        {
-            var scheduleLine = new ScheduleLineDto()
-            {
-                WeekSequenceNumber = sequenceId,
-                CourseComponent = courseComponent,
-                CourseComponentId = courseComponent.Id
-            };
-            
-            scheduleDto.ScheduleLines.Add(scheduleLine);
-            sequenceId++;
-        }
-
-        _courseService.AddSchedule(scheduleDto, createdCourse.Id);
-    }
-
     private void AddLessonToEvls(List<EvlDto> evls)
     {
         for(var i = 0; i < evls.Count; i++)
@@ -337,21 +397,39 @@ public class CourseServiceTests : TestBase
         }
     }
     
-    private int SeedValidCourse(int seedEvlCount = 1)
+    private void AddExamToEvls(List<EvlDto> evls)
     {
+        for(var i = 0; i < evls.Count; i++)
+        {
+            var evl = evls[i];
+            var exam = (ExamDto)new CourseComponentDtoBuilder()
+                .AsExam()
+                .WithName("Lesson 1")
+                .Build();
+
+            exam.Evls ??= [];
+            exam.Evls.Add(evl);
+            
+            _examService.CreateCourseComponent(exam);
+        }
+    }
+    
+    private int SeedValidCourse(int evlCount = 2)
+    {
+        var evls = SeedEvls(evlCount);
         var course = new CourseDtoBuilder()
             .WithName("Course name")
-            .WithCreatedEvls(seedEvlCount)
+            .WithEvls(evls)
             .Build();
 
         var createdCourse = _courseService.CreateCourse(course);
         
         return createdCourse.Id;
     }
-
-    private List<int> SeedEvl(int evlCount = 2)
+    
+    private List<EvlDto> SeedEvls(int evlCount = 2)
     {
-        List<int> evlIds = [];
+        List<EvlDto> evls = [];
         
         for(var i = 0; i < evlCount; i++)
         {
@@ -362,10 +440,10 @@ public class CourseServiceTests : TestBase
             };
         
             var createdEvl = _evlService.CreateEvl(evl);
-            evlIds.Add(createdEvl.Id);
+            evls.Add(createdEvl);
         }
 
-        return evlIds;
+        return evls;
     }
     
 }

@@ -8,6 +8,63 @@ namespace HAN.Repositories;
 public class CourseRepository(AppDbContext context) : GenericRepository<Course>(context), ICourseRepository
 {
     private readonly AppDbContext _context = context;
+    
+    public override void Add(Course entity)
+    {
+        if (entity == null) 
+            throw new ArgumentNullException(nameof(entity));
+
+        // We'll iterate over each Evl in entity.Evls
+        for (int i = 0; i < entity.Evls.Count; i++)
+        {
+            var inputEvl = entity.Evls[i];
+
+            // Must have a valid ID to be considered existing
+            if (inputEvl.Id <= 0)
+            {
+                throw new InvalidOperationException(
+                    "Cannot add a new Evl in this method. Only existing Evl references are allowed."
+                );
+            }
+
+            // STEP 1: Check if the context is already tracking an Evl with the same Id
+            var trackedEvl = _context.ChangeTracker.Entries<Evl>()
+                .Where(e => e.Entity.Id == inputEvl.Id)
+                .Select(e => e.Entity)
+                .FirstOrDefault();
+
+            if (trackedEvl != null)
+            {
+                // We already have an Evl with the same Id in memory, so reuse it.
+                entity.Evls[i] = trackedEvl; 
+                // No need to Attach since it's already tracked.
+            }
+            else
+            {
+                // STEP 2: Not tracked yet, fetch from DB
+                var existingEvl = _context.Set<Evl>().Find(inputEvl.Id);
+                if (existingEvl == null)
+                {
+                    throw new InvalidOperationException(
+                        $"Evl with ID={inputEvl.Id} does not exist in the database."
+                    );
+                }
+
+                // Attach it to ensure EF sees it as an existing entity
+                _context.Set<Evl>().Attach(existingEvl);
+
+                // Now replace the Evl reference in the list
+                entity.Evls[i] = existingEvl;
+            }
+        }
+
+        // Finally, add the main entity
+        Entity.Add(entity);
+
+        // Save once at the end
+        _context.SaveChanges();
+    }
+
 
     public IEnumerable<Evl> GetEvlsByCourseId(int id)
     {

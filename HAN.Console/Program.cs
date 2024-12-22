@@ -22,7 +22,6 @@ static IServiceProvider BuildServiceProvider()
     return services.BuildServiceProvider();
 }
 
-// For demo purposes, we use the Test serviceprovider
 var serviceProvider = BuildServiceProvider();
 var scope = serviceProvider.CreateScope();
 

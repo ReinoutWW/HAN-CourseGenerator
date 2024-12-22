@@ -10,4 +10,6 @@ public interface ICourseComponentRepository<TEntity> : IGenericRepository<TEntit
     public void AddEvlToCourseComponent(int courseComponentId, int evlId);
     List<File> GetFilesForCourseComponent(int courseComponentId);
     List<Evl> GetEvlsForCourseComponent(int courseComponentId);
+    List<CourseComponent> GetAllCourseComponentsByEvlId(int evlId);
+    public List<CourseComponent> GetAllCourseComponentByEvlIds(List<int> evlIds);
 }
