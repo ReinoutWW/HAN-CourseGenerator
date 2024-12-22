@@ -54,13 +54,6 @@ public abstract class AbstractCourseComponentService<TDto, TEntity>(
             .ToList();
     }
     
-    public List<TDto> GetAllCourseComponentsByCourseId(int courseId)
-    {
-        var entities = repository.GetAll();
-
-        return mapper.Map<List<TDto>>(entities);
-    }
-
     public TDto GetCourseComponentById(int id)
     {
         var entity = repository.GetById(id);
@@ -69,5 +62,19 @@ public abstract class AbstractCourseComponentService<TDto, TEntity>(
             throw new KeyNotFoundException($"CourseComponent with ID {id} not found.");
 
         return mapper.Map<TDto>(entity);
+    }
+    
+    public List<TDto> GetAllCourseComponentByEvlIds(List<int> evlIds)
+    {
+        var entities = repository.GetAllCourseComponentByEvlIds(evlIds);
+
+        return mapper.Map<List<TDto>>(entities);
+    }
+
+    public List<CourseComponentDto> GetAllCourseComponentsByEvlId(int evlId)
+    {
+        var entities = repository.GetAllCourseComponentsByEvlId(evlId);
+
+        return mapper.Map<List<CourseComponentDto>>(entities);
     }
 }

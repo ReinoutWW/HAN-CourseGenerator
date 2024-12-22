@@ -12,12 +12,14 @@ public class CourseComponentTests : TestBase
     private readonly LessonService _lessonService;
     private readonly ExamService _examService;
     private readonly IFileService _fileService;
+    private readonly IEvlService _evlService;
 
     public CourseComponentTests()
     {
         _lessonService = ServiceProvider.GetRequiredService<LessonService>();
         _examService = ServiceProvider.GetRequiredService<ExamService>();
         _fileService = ServiceProvider.GetRequiredService<IFileService>();
+        _evlService = ServiceProvider.GetRequiredService<IEvlService>();
     }
 
     [Fact]
@@ -44,7 +46,8 @@ public class CourseComponentTests : TestBase
     public void AddFile_ShouldAddFileToLesson()
     {
         // Arrange
-        var seedLessonId = SeedLessons();
+        var evl = SeedEvl();
+        var seedLessonId = SeedLessons(evl);
 
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         FileDto file = new()
@@ -68,23 +71,18 @@ public class CourseComponentTests : TestBase
     public void AddEvl_ShouldAddEvlToLesson()
     {
         // Arrange
-        var seedLessonId = SeedLessons();
+        var evl = SeedEvl();
+        var seedLessonId = SeedLessons(evl);
         
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
-        EvlDto evl = new()
-        {
-            Name = "EvlName",
-            Description = "EvlDescription"
-        };
 
-        var createdEvl = ServiceProvider.GetRequiredService<IEvlService>().CreateEvl(evl);
-
+        var secondEvl = SeedEvl();
         // Act
-        _lessonService.AddEvlToCourseComponent(existingLesson.Id, createdEvl.Id);
+        _lessonService.AddEvlToCourseComponent(existingLesson.Id, secondEvl.Id);
         var evlsForLesson = _lessonService.GetEvlsForCourseComponent(existingLesson.Id);
 
         // Assert
-        var containsItem = evlsForLesson.Any(item => createdEvl.Id == item.Id);
+        var containsItem = evlsForLesson.Any(item => secondEvl.Id == item.Id);
         Assert.True(containsItem);
     }
 
@@ -92,8 +90,8 @@ public class CourseComponentTests : TestBase
     public void Lesson_HasEvls_ShouldHaveEvls()
     {
         // Arrange
-        const int evlCount = 1;
-        var seedLessonId = SeedLessons(evlCount);
+        var evl = SeedEvl();
+        var seedLessonId = SeedLessons(evl);
 
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         
@@ -121,15 +119,27 @@ public class CourseComponentTests : TestBase
         Assert.Equal(exam.Score, createdExam.Score);
     }
 
-    private int SeedLessons(int evlsCount = 1)
+    private int SeedLessons(EvlDto evls)
     {
         var lesson = new CourseComponentDtoBuilder()
             .AsLesson()
-            .AddEvls(evlsCount)
+            .WithEvl(evls)
             .Build();
         
         var createdLesson = _lessonService.CreateCourseComponent((LessonDto)lesson);
 
         return createdLesson.Id;
     }
+    
+    private EvlDto SeedEvl()
+    {
+        var evl = new EvlDto()
+        {
+            Name = "Example evl",
+            Description = "Example evl description"
+        };
+        
+        var createdEvl = _evlService.CreateEvl(evl);
+        return createdEvl;
+    } 
 }

@@ -7,18 +7,19 @@ namespace HAN.Repositories;
 
 public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : BaseEntity
 {
-    private DbSet<T> Entity => context.Set<T>();
+    protected DbSet<T> Entity => Context.Set<T>();
+    protected readonly AppDbContext Context = context;
 
-    public void Add(T entity)
+    public virtual void Add(T entity)
     {
         Entity.Add(entity);   
-        context.SaveChanges(); 
+        Context.SaveChanges(); 
     }
 
     public void Delete(T entity)
     {
         Entity.Remove(entity);
-        context.SaveChanges();
+        Context.SaveChanges();
     }
 
     public List<T> GetAll()
@@ -28,7 +29,7 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
 
     public T? GetById(int id)
     {
-        var entity = context.Find<T>(id);
+        var entity = Context.Find<T>(id);
         return entity;
     }
 
@@ -37,9 +38,9 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
         return GetById(id) != null;
     }
 
-    public void Update(T entity)
+    public virtual void Update(T entity)
     {
-        context.Update(entity);
-        context.SaveChanges(); 
+        Context.Update(entity);
+        Context.SaveChanges(); 
     }
 }

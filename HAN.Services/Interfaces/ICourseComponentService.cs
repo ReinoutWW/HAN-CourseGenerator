@@ -11,4 +11,5 @@ public interface ICourseComponentService<TDto> where TDto : CourseComponentDto
     List<FileDto> GetFilesForCourseComponent(int courseComponentId);
     List<EvlDto> GetEvlsForCourseComponent(int courseComponentId);
     TDto GetCourseComponentById(int id);
+    List<CourseComponentDto> GetAllCourseComponentsByEvlId(int evlId);
 }

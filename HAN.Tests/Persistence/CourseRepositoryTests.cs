@@ -63,7 +63,7 @@ public class CourseRepositoryTests : TestBase
         });
 
         Assert.NotNull(expectedException);
-        Assert.IsType<NullReferenceException>(expectedException);
+        Assert.IsType<ArgumentNullException>(expectedException);
     }
 
     private void AddCourseExpectValidationException(Course newCourse)

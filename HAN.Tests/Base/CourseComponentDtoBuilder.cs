@@ -36,14 +36,10 @@ public class CourseComponentDtoBuilder : CourseComponentDto
         return this;
     }
     
-    public CourseComponentDtoBuilder AddEvls(int count)
+    public CourseComponentDtoBuilder WithEvl(EvlDto evl)
     {
-        for (var i = 0; i < count; i++)
-        {
-            var evl = DbEntityCreator<EvlDto>.CreateEntity();
-            _courseComponent.Evls ??= [];
-            _courseComponent.Evls.Add(evl);
-        }
+        _courseComponent.Evls ??= [];
+        _courseComponent.Evls.Add(evl);        
         return this;
     }
 

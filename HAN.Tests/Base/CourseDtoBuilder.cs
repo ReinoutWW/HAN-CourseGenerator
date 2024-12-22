@@ -5,11 +5,11 @@ namespace HAN.Tests.Base;
 
 public class CourseDtoBuilder
 {
-    private CourseDto _courseDto;
+    private readonly CourseDto _courseDto;
     
-    public CourseDtoBuilder()
+    public CourseDtoBuilder(CourseDto? course = null)
     {
-        _courseDto = new CourseDto();
+        _courseDto = course ?? DbEntityCreator<CourseDto>.CreateEntity();
     }
     
     public CourseDtoBuilder WithId(int id)
@@ -36,24 +36,63 @@ public class CourseDtoBuilder
         return this;
     }
     
-    public CourseDtoBuilder WithCreatedEvls(int count)
+    public CourseDtoBuilder WithValidSchedule(List<CourseComponentDto> courseComponents)
     {
-        var evls = new List<EvlDto>();
-        for (int i = 0; i < count; i++)
+        if (_courseDto.Evls == null)
+            throw new InvalidOperationException("Evls must be created before Schedule.");
+        
+        var schedule = new ScheduleDto();
+
+        var orderedComponents = courseComponents
+            .OrderBy(cc => cc is AssessmentDto) // Assessments come after lessons.
+            .ThenBy(cc => cc is LessonDto)     // Lessons are prioritized first.
+            .ToList();
+
+        int weekSequenceNumber = 0;
+
+        foreach (var component in orderedComponents)
         {
-            var evl = DbEntityCreator<EvlDto>.CreateEntity();
-            evls.Add(evl);
+            var scheduleLine = new ScheduleLineDto
+            {
+                CourseComponentId = component.Id,
+                WeekSequenceNumber = weekSequenceNumber++
+            };
+            schedule.ScheduleLines.Add(scheduleLine);
         }
-        _courseDto.Evls = evls;
-        return this;
-    }
-    
-    private CourseDtoBuilder WithSchedule(ScheduleDto schedule)
-    {
+
         _courseDto.Schedule = schedule;
         return this;
     }
 
+    public CourseDtoBuilder WithInvalidSchedule(List<CourseComponentDto> courseComponents)
+    {
+        if (_courseDto.Evls == null)
+            throw new InvalidOperationException("Evls must be created before Schedule.");
+        
+        var schedule = new ScheduleDto();
+
+        var orderedComponents = courseComponents
+            .OrderBy(cc => cc is LessonDto)   // Lessons come after assessments.
+            .ThenBy(cc => cc is AssessmentDto) // Assessments are prioritized first.
+            .ToList();
+
+        int weekSequenceNumber = 0;
+
+        foreach (var component in orderedComponents)
+        {
+            var scheduleLine = new ScheduleLineDto
+            {
+                CourseComponentId = component.Id,
+                WeekSequenceNumber = weekSequenceNumber++
+            };
+            schedule.ScheduleLines.Add(scheduleLine);
+        }
+
+        _courseDto.Schedule = schedule;
+        return this;
+    }
+
+    
     public CourseDto Build()
     {
         return _courseDto;
