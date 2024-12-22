@@ -4,11 +4,11 @@ namespace HAN.Services.Interfaces;
 
 public interface ICourseService
 {
-    // Create
     CourseDto CreateCourse(CourseDto course);
     CourseDto GetCourseById(int id);
     IEnumerable<EvlDto> GetEvls(int courseId);
-    
-    // Assign
+    public ScheduleDto AddSchedule(ScheduleDto schedule, int courseId);
+    public ScheduleDto GetScheduleById(int id);
+    public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto);
     void AddEvlToCourse(int courseId, int evlId);
 }
