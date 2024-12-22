@@ -61,6 +61,8 @@ public class CourseService(ICourseRepository courseRepository,
         
         if(course == null)
             throw new KeyNotFoundException($"Course with id {courseId} not found");
+
+        course.Schedule = scheduleEntity;
         
         courseRepository.Update(course);
         
