@@ -7,7 +7,13 @@ using HAN.Services.Validation;
 
 namespace HAN.Services;
 
-public class CourseService(ICourseRepository courseRepository, IEvlRepository evlRepository, IMapper mapper, IValidationService validationService) : ICourseService
+public class CourseService(ICourseRepository courseRepository, 
+    IEvlRepository evlRepository, 
+    IMapper mapper, 
+    IValidationService validationService,
+    IScheduleRepository scheduleRepository,
+    CourseComponentService courseComponentService
+) : ICourseService
 {
     public CourseDto CreateCourse(CourseDto course)
     {
@@ -42,4 +48,59 @@ public class CourseService(ICourseRepository courseRepository, IEvlRepository ev
 
         courseRepository.AddEvlToCourse(courseId, evlId);
     }
+    
+    public ScheduleDto AddSchedule(ScheduleDto scheduleDto, int courseId)
+    {
+        validationService.Validate(scheduleDto);
+        
+        if(!courseRepository.Exists(courseId))
+            throw new KeyNotFoundException($"Course with id {courseId} not found");
+        
+        var scheduleEntity = mapper.Map<Schedule>(scheduleDto);
+        var course = courseRepository.GetById(courseId);
+        
+        if(course == null)
+            throw new KeyNotFoundException($"Course with id {courseId} not found");
+        
+        course.Schedule = scheduleEntity;
+        
+        courseRepository.Update(course);
+        
+        return mapper.Map<ScheduleDto>(scheduleEntity);
+    }
+
+    public ScheduleDto GetScheduleById(int id)
+    {
+        var schedule = scheduleRepository.GetById(id);
+        
+        if(schedule == null)
+            throw new KeyNotFoundException($"Schedule with id {id} not found");
+        
+        var scheduleDto = mapper.Map<ScheduleDto>(schedule);
+
+        foreach (var scheduleLine in scheduleDto.ScheduleLines)
+        {
+            scheduleLine.CourseComponent =
+                courseComponentService.GetCourseComponentById(scheduleLine.CourseComponentId);
+        }
+        
+        return scheduleDto;
+    }
+
+    public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto)
+    {
+        var course = courseRepository.GetById(courseId);
+            
+        if(course == null)
+            throw new KeyNotFoundException($"Course with id {courseId} not found");
+        
+        var schedule = mapper.Map<Schedule>(scheduleDto);
+        
+        course.Schedule = schedule;
+        courseRepository.Update(course);
+        
+        return mapper.Map<ScheduleDto>(schedule);
+    }
+    
+    
 }

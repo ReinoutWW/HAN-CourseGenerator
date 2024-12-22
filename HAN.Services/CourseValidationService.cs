@@ -5,7 +5,6 @@ namespace HAN.Services;
 
 public class CourseValidationService(
     ICourseService courseService,
-    IScheduleService scheduleService,
     CourseComponentService courseComponentService
     ) : ICourseValidationService
 {
@@ -23,7 +22,7 @@ public class CourseValidationService(
     private bool IsCourseScheduleComplete(int courseId)
     {
         var course = courseService.GetCourseById(courseId);
-        var schedule = scheduleService.GetScheduleById(course.Schedule.Id);
+        var schedule = courseService.GetScheduleById(course.Schedule.Id);
         var allCourseComponents = courseComponentService.GetAllCourseComponentsByCourseId(courseId);
         
         return allCourseComponents.All(courseComponent => schedule.ScheduleLines.Any(sl => sl.CourseComponentId == courseComponent.Id));
