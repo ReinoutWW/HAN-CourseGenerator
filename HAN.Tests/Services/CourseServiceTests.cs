@@ -324,6 +324,29 @@ public class CourseServiceTests : TestBase
         Assert.False(complete);
     }
 
+    [Fact]
+    public void Schedule_Update_ShouldUpdate()
+    {
+        var courseId = SeedCourseWithCompleteSchedule();
+        var evl = SeedEvls(1).FirstOrDefault();
+        var course = _courseService.GetCourseById(courseId);
+        
+        _courseService.AddEvlToCourse(courseId, evl.Id);
+        AddLessonToEvls([evl]);
+        
+        var evlIds = course.Evls.Select(x => x.Id).ToList();
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
+        
+        course = new CourseDtoBuilder(course)
+            .WithInvalidSchedule(courseComponents)
+            .Build();
+        
+        var schedule = _courseService.AddSchedule(course.Schedule, course.Id);
+        
+        Assert.NotNull(schedule);
+        Assert.Equal(course.Schedule.ScheduleLines.Count, schedule.ScheduleLines.Count);
+    }
+
     private static void ScheduleShouldContainAllCourseComponents(ScheduleDto schedule, List<CourseComponentDto> courseComponents)
     {
         foreach (var courseComponent in courseComponents)
