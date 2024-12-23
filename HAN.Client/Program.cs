@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using HAN.Client;
+using HAN.Client.Data;
 using HAN.Data;
 using HAN.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -24,5 +25,7 @@ builder.Services.AddOidcAuthentication(options =>
     // For more information, see https://aka.ms/blazor-standalone-auth
     builder.Configuration.Bind("Local", options.ProviderOptions);
 });
+
+DataSeeder.SeedCourseData(builder.Build().Services);
 
 await builder.Build().RunAsync();
