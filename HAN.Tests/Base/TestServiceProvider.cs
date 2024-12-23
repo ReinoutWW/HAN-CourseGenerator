@@ -22,7 +22,8 @@ public static class TestServiceProvider
 
         services.AddDbContext<AppDbContext>(options =>
             options.UseInMemoryDatabase(inMemoryDbName));
-        
+
+        services.AddScoped<PersistHelper>();
         services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
         services.AddCourseServices();
 

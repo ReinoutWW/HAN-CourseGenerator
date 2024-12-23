@@ -1,7 +1,8 @@
 ﻿using HAN.Services.DTOs;
 using HAN.Services.DTOs.CourseComponents;
+using HAN.Tests.Base;
 
-namespace HAN.Tests.Base;
+namespace HAN.Tests.Builders;
 
 public class CourseComponentDtoBuilder : CourseComponentDto
 {

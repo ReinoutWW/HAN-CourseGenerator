@@ -3,6 +3,7 @@ using HAN.Services.DTOs;
 using HAN.Services.DTOs.CourseComponents;
 using HAN.Services.Interfaces;
 using HAN.Tests.Base;
+using HAN.Tests.Builders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests.Services;
@@ -13,6 +14,7 @@ public class CourseComponentTests : TestBase
     private readonly ExamService _examService;
     private readonly IFileService _fileService;
     private readonly IEvlService _evlService;
+    private readonly PersistHelper _persistHelper;
 
     public CourseComponentTests()
     {
@@ -20,6 +22,7 @@ public class CourseComponentTests : TestBase
         _examService = ServiceProvider.GetRequiredService<ExamService>();
         _fileService = ServiceProvider.GetRequiredService<IFileService>();
         _evlService = ServiceProvider.GetRequiredService<IEvlService>();
+        _persistHelper = ServiceProvider.GetRequiredService<PersistHelper>();
     }
 
     [Fact]
@@ -46,8 +49,8 @@ public class CourseComponentTests : TestBase
     public void AddFile_ShouldAddFileToLesson()
     {
         // Arrange
-        var evl = SeedEvl();
-        var seedLessonId = SeedLessons(evl);
+        var evl = _persistHelper.SeedEvl();
+        var seedLessonId = _persistHelper.SeedLessons(evl);
 
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         FileDto file = new()
@@ -71,12 +74,12 @@ public class CourseComponentTests : TestBase
     public void AddEvl_ShouldAddEvlToLesson()
     {
         // Arrange
-        var evl = SeedEvl();
-        var seedLessonId = SeedLessons(evl);
+        var evl = _persistHelper.SeedEvl();
+        var seedLessonId = _persistHelper.SeedLessons(evl);
         
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
 
-        var secondEvl = SeedEvl();
+        var secondEvl = _persistHelper.SeedEvl();
         // Act
         _lessonService.AddEvlToCourseComponent(existingLesson.Id, secondEvl.Id);
         var evlsForLesson = _lessonService.GetEvlsForCourseComponent(existingLesson.Id);
@@ -90,8 +93,8 @@ public class CourseComponentTests : TestBase
     public void Lesson_HasEvls_ShouldHaveEvls()
     {
         // Arrange
-        var evl = SeedEvl();
-        var seedLessonId = SeedLessons(evl);
+        var evl = _persistHelper.SeedEvl();
+        var seedLessonId = _persistHelper.SeedLessons(evl);
 
         var existingLesson = _lessonService.GetCourseComponentById(seedLessonId);
         
@@ -118,28 +121,4 @@ public class CourseComponentTests : TestBase
         Assert.Equal(exam.Name, createdExam.Name);
         Assert.Equal(exam.Score, createdExam.Score);
     }
-
-    private int SeedLessons(EvlDto evls)
-    {
-        var lesson = new CourseComponentDtoBuilder()
-            .AsLesson()
-            .WithEvl(evls)
-            .Build();
-        
-        var createdLesson = _lessonService.CreateCourseComponent((LessonDto)lesson);
-
-        return createdLesson.Id;
-    }
-    
-    private EvlDto SeedEvl()
-    {
-        var evl = new EvlDto()
-        {
-            Name = "Example evl",
-            Description = "Example evl description"
-        };
-        
-        var createdEvl = _evlService.CreateEvl(evl);
-        return createdEvl;
-    } 
 }
