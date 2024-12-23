@@ -22,7 +22,7 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
         Context.SaveChanges();
     }
 
-    public List<T> GetAll()
+    public virtual List<T> GetAll()
     {
         return Entity.ToList();   
     }

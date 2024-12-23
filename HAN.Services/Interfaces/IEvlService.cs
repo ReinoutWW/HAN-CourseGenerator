@@ -6,4 +6,5 @@ public interface IEvlService
 {
     EvlDto CreateEvl(EvlDto evl);
     EvlDto GetEvlById(int id);
+    IEnumerable<EvlDto> GetAllEvls();
 }

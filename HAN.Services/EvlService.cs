@@ -24,4 +24,10 @@ public class EvlService(IEvlRepository evlRepository, IMapper mapper, IValidatio
         var evl = evlRepository.GetById(id);
         return mapper.Map<EvlDto>(evl);
     }
+
+    public IEnumerable<EvlDto> GetAllEvls()
+    {
+        var evls = evlRepository.GetAll();
+        return mapper.Map<IEnumerable<EvlDto>>(evls);
+    }
 }

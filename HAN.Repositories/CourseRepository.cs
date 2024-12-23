@@ -65,6 +65,12 @@ public class CourseRepository(AppDbContext context) : GenericRepository<Course>(
         _context.SaveChanges();
     }
 
+    public override List<Course> GetAll()
+    {
+        return _context.Courses
+            .Include(c => c.Evls)
+            .ToList();
+    }
 
     public IEnumerable<Evl> GetEvlsByCourseId(int id)
     {

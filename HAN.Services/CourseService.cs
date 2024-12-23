@@ -25,7 +25,7 @@ public class CourseService(ICourseRepository courseRepository,
 
         return mapper.Map<CourseDto>(courseEntity);
     }
-
+    
     public CourseDto GetCourseById(int id)
     {
         var course = courseRepository.GetById(id);
@@ -48,7 +48,14 @@ public class CourseService(ICourseRepository courseRepository,
 
         courseRepository.AddEvlToCourse(courseId, evlId);
     }
-    
+
+    public List<CourseDto> GetAllCourses()
+    {
+        var courses = courseRepository.GetAll();
+        
+        return mapper.Map<List<CourseDto>>(courses);
+    }
+
     public ScheduleDto AddSchedule(ScheduleDto scheduleDto, int courseId)
     {
         validationService.Validate(scheduleDto);

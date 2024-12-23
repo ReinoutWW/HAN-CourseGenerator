@@ -11,4 +11,5 @@ public interface ICourseService
     public ScheduleDto GetScheduleById(int id);
     public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto);
     void AddEvlToCourse(int courseId, int evlId);
+    public List<CourseDto> GetAllCourses();
 }
