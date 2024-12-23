@@ -1,0 +1,63 @@
+﻿@page "/evl/overview"
+
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+
+@inject NavigationManager NavigationManager
+@inject IEvlService EvlService
+
+<h3>Evl Overview</h3>
+
+<div class="mb-4">
+    <RadzenButton Text="New" Click="@NavigateToNewEvl"></RadzenButton>
+</div>
+<div>
+    <RadzenDataGrid Data="@_evls"
+                    TItem="EvlDto"
+                    AllowFiltering="true"
+                    AllowColumnResize="true"
+                    AllowAlternatingRows="false"
+                    FilterMode="FilterMode.Advanced"
+                    AllowSorting="true"
+                    PageSize="5"
+                    AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Left"
+                    ShowPagingSummary="true"
+                    ColumnWidth="300px"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    SelectionMode="DataGridSelectionMode.Single">
+        <Columns>
+            <RadzenDataGridColumn Filterable="false" Frozen="true" Width="20px">
+                <Template>
+                    <RadzenIcon Icon="workspace_premium"></RadzenIcon>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(EvlDto.Id)" Filterable="false" Title="ID" Frozen="true" Width="20px" TextAlign="TextAlign.Center"/>
+            <RadzenDataGridColumn Property="@nameof(EvlDto.Name)" Title="Name" Width="50px"/>
+            <RadzenDataGridColumn Property="@nameof(EvlDto.Description)" Title="Description" Width="200px"/>
+            <RadzenDataGridColumn Filterable="false" Frozen="true" Width="40px">
+                <Template>
+                    <RadzenButton Click="@(() => NavigateToEditEvl(context.Id))" Icon="edit">
+                        <RadzenIcon Icon="edit"/> Edit
+                    </RadzenButton>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+
+@code {
+    private List<EvlDto> _evls = [];
+    private List<EvlDto> _selectedEvl;
+    
+    protected override Task OnInitializedAsync()
+    {
+        _evls = EvlService.GetAllEvls().ToList();
+        StateHasChanged();
+        
+        return base.OnInitializedAsync();
+    }
+    
+    private void NavigateToNewEvl() => NavigationManager.NavigateTo("/evl/create");
+    private void NavigateToEditEvl(int courseId) => NavigationManager.NavigateTo($"/evl/edit/{courseId}");
+}
