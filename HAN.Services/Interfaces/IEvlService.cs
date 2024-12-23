@@ -5,6 +5,7 @@ namespace HAN.Services.Interfaces;
 public interface IEvlService
 {
     EvlDto CreateEvl(EvlDto evl);
+    EvlDto UpdateEvl(EvlDto evl);
     EvlDto GetEvlById(int id);
     IEnumerable<EvlDto> GetAllEvls();
 }

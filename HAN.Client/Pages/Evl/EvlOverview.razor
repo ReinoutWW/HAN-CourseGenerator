@@ -58,6 +58,6 @@
         return base.OnInitializedAsync();
     }
     
-    private void NavigateToNewEvl() => NavigationManager.NavigateTo("/evl/create");
-    private void NavigateToEditEvl(int courseId) => NavigationManager.NavigateTo($"/evl/edit/{courseId}");
+    private void NavigateToNewEvl() => NavigationManager.NavigateTo("/evl/");
+    private void NavigateToEditEvl(int courseId) => NavigationManager.NavigateTo($"/evl/{courseId}");
 }

@@ -19,6 +19,16 @@ public class EvlService(IEvlRepository evlRepository, IMapper mapper, IValidatio
         return mapper.Map<EvlDto>(evlEntity);
     }
 
+    public EvlDto UpdateEvl(EvlDto evl)
+    {
+        validationService.Validate(evl);
+        
+        var evlEntity = mapper.Map<Evl>(evl);
+        evlRepository.Update(evlEntity);
+        
+        return mapper.Map<EvlDto>(evlEntity);
+    }
+
     public EvlDto GetEvlById(int id)
     {
         var evl = evlRepository.GetById(id);

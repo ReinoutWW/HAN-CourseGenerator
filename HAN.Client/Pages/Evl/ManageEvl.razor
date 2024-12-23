@@ -1,0 +1,85 @@
+﻿@page "/evl/{Id:int?}"
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+
+@inject IEvlService EvlService
+@inject NavigationManager NavigationManager
+
+<h3>@(evl.Id == 0 ? "Create Evl" : "Edit Evl")</h3>
+
+<RadzenTemplateForm Data="@evl" Submit="@((EvlDto args) => { Submit(args); })">
+    <RadzenFieldset Text="Evl Info">
+        <RadzenStack Gap="1rem">
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenLabel Text="Name" Component="Name" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenTextBox Style="width: 100%;" @bind-Value="evl.Name" Name="Name" />
+                    <RadzenRequiredValidator Component="Name" Text="Name is required." />
+                    <RadzenLengthValidator Component="Name" Min="2" Max="100" Text="Name must be between 2 and 100 characters." />
+                </RadzenColumn>
+            </RadzenRow>
+
+            <RadzenRow AlignItems="AlignItems.Center">
+                <RadzenColumn Size="12" SizeMD="4">
+                    <RadzenLabel Text="Description" Component="Description" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenTextArea Style="width: 100%;" Rows="5" @bind-Value="evl.Description" Name="Description" />
+                    <RadzenRequiredValidator Component="Description" Text="Description is required." />
+                    <RadzenLengthValidator Component="Description" Min="5" Max="450" Text="Description must be between 5 and 450 characters." />
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+    </RadzenFieldset>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+        <RadzenButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+        <RadzenButton ButtonStyle="ButtonStyle.Light" Variant="Variant.Flat" Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public int? Id { get; set; } = null;
+
+    private EvlDto evl = new();
+
+    protected override void OnInitialized()
+    {
+        if (Id.HasValue)
+        {
+            evl = EvlService.GetEvlById(Id.Value);
+        }
+        else
+        {
+            evl = new EvlDto();
+        }
+
+        base.OnInitialized();
+    }
+
+    void Submit(EvlDto arg)
+    {
+        try
+        {
+            if (evl.Id == 0)
+            {
+                EvlService.CreateEvl(arg);
+            }
+            else
+            {
+                EvlService.UpdateEvl(arg);
+            }
+            NavigationManager.NavigateTo("/evl/overview");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/evl/overview");
+    }
+}
