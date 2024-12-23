@@ -1,0 +1,63 @@
+﻿@page "/course/overview"
+
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+
+@inject NavigationManager NavigationManager
+@inject ICourseService CourseService
+
+<h3>Course Overview</h3>
+
+<div class="mb-4">
+    <RadzenButton Text="New" Click="@NavigateToNewCourse"></RadzenButton>
+</div>
+<div>
+    <RadzenDataGrid Data="@_courses"
+                    TItem="CourseDto"
+                    AllowFiltering="true"
+                    AllowColumnResize="true"
+                    AllowAlternatingRows="false"
+                    FilterMode="FilterMode.Advanced"
+                    AllowSorting="true"
+                    PageSize="5"
+                    AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Left"
+                    ShowPagingSummary="true"
+                    ColumnWidth="300px"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    SelectionMode="DataGridSelectionMode.Single">
+        <Columns>
+            <RadzenDataGridColumn Filterable="false" Frozen="true" Width="20px">
+                <Template>
+                    <RadzenIcon Icon="school"></RadzenIcon>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(CourseDto.Id)" Filterable="false" Title="ID" Frozen="true" Width="20px" TextAlign="TextAlign.Center"/>
+            <RadzenDataGridColumn Property="@nameof(CourseDto.Name)" Title="Name" Width="50px"/>
+            <RadzenDataGridColumn Property="@nameof(CourseDto.Description)" Title="Description" Width="200px"/>
+            <RadzenDataGridColumn Filterable="false" Frozen="true" Width="40px">
+                <Template>
+                    <RadzenButton Click="@(() => NavigateToEditCourse(context.Id))" Icon="edit">
+                        <RadzenIcon Icon="edit"/> Edit
+                    </RadzenButton>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+
+@code {
+    private List<CourseDto> _courses = [];
+    private List<CourseDto> _selectedCourse;
+    
+    protected override Task OnInitializedAsync()
+    {
+        _courses = CourseService.GetAllCourses();
+        StateHasChanged();
+        
+        return base.OnInitializedAsync();
+    }
+    
+    private void NavigateToNewCourse() => NavigationManager.NavigateTo("/course/create");
+    private void NavigateToEditCourse(int courseId) => NavigationManager.NavigateTo($"/course/edit/{courseId}");
+}
