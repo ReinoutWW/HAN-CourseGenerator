@@ -2,6 +2,24 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.rz-layout .rz-header {
+    box-shadow: none;
+    color: black;
+}
+
+.rz-layout .rz-header .rz-sidebar-toggle {
+    color: black;
+}
+
+.rz-layout .rz-header > div {
+    background-color: white;
+}
+
+.han-delimiter {
+    border-bottom: 1px solid lightgray;
+    padding: 0.5rem 0;
+}
+
 h1:focus {
     outline: none;
 }
