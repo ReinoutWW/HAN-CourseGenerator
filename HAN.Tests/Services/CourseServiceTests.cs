@@ -12,20 +12,14 @@ public class CourseServiceTests : TestBase
 {
     private readonly ICourseService _courseService;
     private readonly IEvlService _evlService;
-    private readonly LessonService _lessonService;
-    private readonly ExamService _examService;
     private readonly CourseComponentService _courseComponentService;
-    private readonly ICourseValidationService _courseValidationService;
     private readonly PersistHelper _persistHelper;
 
     public CourseServiceTests()
     {
         _courseService = ServiceProvider.GetRequiredService<ICourseService>();
         _evlService = ServiceProvider.GetRequiredService<IEvlService>();
-        _lessonService = ServiceProvider.GetRequiredService<LessonService>();
-        _examService = ServiceProvider.GetRequiredService<ExamService>();
         _courseComponentService = ServiceProvider.GetRequiredService<CourseComponentService>();
-        _courseValidationService = ServiceProvider.GetRequiredService<ICourseValidationService>();
         _persistHelper = ServiceProvider.GetRequiredService<PersistHelper>();
     }
 
@@ -128,7 +122,7 @@ public class CourseServiceTests : TestBase
     public void AddEvlToCourse_ShouldThrowException_EvlAlreadyAdded()
     {
         var courseId = _persistHelper.SeedValidCourse();
-        var evlId = _persistHelper.SeedEvls().FirstOrDefault().Id;
+        var evlId = _persistHelper.SeedEvl().Id;
         
         var evl = _evlService.GetEvlById(evlId);
         var course = _courseService.GetCourseById(courseId);
@@ -153,8 +147,7 @@ public class CourseServiceTests : TestBase
     {
         var evlCOunt = 2;
         var courseId = _persistHelper.SeedValidCourse(evlCOunt);
-        var evlIds = _persistHelper.SeedEvls(1);
-        var evlId = evlIds.FirstOrDefault().Id;
+        var evlId = _persistHelper.SeedEvl().Id;
         
         var course = _courseService.GetCourseById(courseId);
         
