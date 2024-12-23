@@ -13,7 +13,6 @@ public class CourseComponentTests : TestBase
     private readonly LessonService _lessonService;
     private readonly ExamService _examService;
     private readonly IFileService _fileService;
-    private readonly IEvlService _evlService;
     private readonly PersistHelper _persistHelper;
 
     public CourseComponentTests()
@@ -21,7 +20,6 @@ public class CourseComponentTests : TestBase
         _lessonService = ServiceProvider.GetRequiredService<LessonService>();
         _examService = ServiceProvider.GetRequiredService<ExamService>();
         _fileService = ServiceProvider.GetRequiredService<IFileService>();
-        _evlService = ServiceProvider.GetRequiredService<IEvlService>();
         _persistHelper = ServiceProvider.GetRequiredService<PersistHelper>();
     }
 
