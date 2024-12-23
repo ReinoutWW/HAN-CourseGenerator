@@ -25,7 +25,18 @@ public class CourseService(ICourseRepository courseRepository,
 
         return mapper.Map<CourseDto>(courseEntity);
     }
-    
+
+    public CourseDto UpdateCourse(CourseDto course)
+    {
+        validationService.Validate(course);
+        
+        var courseEntity = mapper.Map<Course>(course);
+        
+        courseRepository.Update(courseEntity);
+
+        return mapper.Map<CourseDto>(courseEntity);
+    }
+
     public CourseDto GetCourseById(int id)
     {
         var course = courseRepository.GetById(id);

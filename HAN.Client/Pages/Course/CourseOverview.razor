@@ -58,6 +58,6 @@
         return base.OnInitializedAsync();
     }
     
-    private void NavigateToNewCourse() => NavigationManager.NavigateTo("/course/create");
-    private void NavigateToEditCourse(int courseId) => NavigationManager.NavigateTo($"/course/edit/{courseId}");
+    private void NavigateToNewCourse() => NavigationManager.NavigateTo("/course/");
+    private void NavigateToEditCourse(int courseId) => NavigationManager.NavigateTo($"/course/{courseId}");
 }

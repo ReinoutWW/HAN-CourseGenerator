@@ -5,6 +5,7 @@ namespace HAN.Services.Interfaces;
 public interface ICourseService
 {
     CourseDto CreateCourse(CourseDto course);
+    CourseDto UpdateCourse(CourseDto course);
     CourseDto GetCourseById(int id);
     IEnumerable<EvlDto> GetEvls(int courseId);
     public ScheduleDto AddSchedule(ScheduleDto scheduleDto, int courseId);
