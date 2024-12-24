@@ -1,16 +1,42 @@
-﻿using HAN.Services.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using HAN.Services.DTOs;
 using HAN.Services.Interfaces;
+using ValidationException = HAN.Services.Exceptions.ValidationException;
 
 namespace HAN.Services.Exporters;
 
-public abstract class FileExporter : IExporterService
+public abstract class FileExporter(IFileTypeWriter fileTypeWriter)
 {
-    protected FileDto File { get; set; }
-
-    protected FileExporter(FileDto file)
+    public void Export(FileDto fileDto)
     {
-        File = file;
+        ValidateFile(fileDto);
+
+        var fileName = fileDto.Name;
+        Console.WriteLine($"Preparing to export to: {fileName}");
+        PrepareFile();
+        fileTypeWriter.WriteContent(fileName, fileDto.Content);
+        FinalizeFile();
+        Console.WriteLine($"Export completed for: {fileName}");
     }
-    
-    public abstract void Export(string content);
+
+    private static void ValidateFile(FileDto fileDto)
+    {
+        var validationContext = new ValidationContext(fileDto);
+        var validationResults = new System.Collections.Generic.List<ValidationResult>();
+
+        if (!Validator.TryValidateObject(fileDto, validationContext, validationResults, true))
+        {
+            throw new ValidationException($"FileDto validation failed: ", validationResults);
+        }
+    }
+
+    protected virtual void PrepareFile()
+    {
+        Console.WriteLine("Default preparation before export...");
+    }
+
+    protected virtual void FinalizeFile()
+    {
+        Console.WriteLine("Default finalization after export...");
+    }
 }

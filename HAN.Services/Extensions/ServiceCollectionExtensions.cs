@@ -1,4 +1,5 @@
 ﻿using HAN.Repositories.Extensions;
+using HAN.Services.Exporters;
 using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IEvlService, EvlService>()
             .AddScoped<IUserService, UserService>()
             .AddScoped<IFileService, FileService>()
+            .AddScoped<IExporterService, FileExporterService>()
             .AddScoped<LessonService>()
             .AddScoped<ExamService>()
             .AddScoped<ICourseValidationService, CourseValidationService>()
