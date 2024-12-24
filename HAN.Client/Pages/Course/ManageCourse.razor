@@ -41,6 +41,7 @@
                     <RadzenDropDown
                         @bind-Value="selectedEvls"
                         Data="@allEvls"
+                        Chips="true"
                         AllowClear="true"
                         Placeholder="Select evaluations"
                         TextProperty="Name"
@@ -48,7 +49,7 @@
                         Multiple="true"
                         class="mb-2"
                         Style="width: 100%;" />
-                    <RadzenLink Text="Create New Evaluation" Path="/evl/create" />
+                    <RadzenLink Text="Create New Evaluation" Path="/evl/" />
                 </RadzenColumn>
             </RadzenRow>
         </RadzenStack>
@@ -61,7 +62,9 @@
 
 @code {
     [Parameter] public int? Id { get; set; } = null;
-
+    
+    private bool IsEditMode => Id.HasValue;
+    private bool IsCreateMode => !Id.HasValue;
     private CourseDto course = new();
     private List<int> selectedEvls = new();
     private List<EvlDto> allEvls = new();
@@ -70,14 +73,10 @@
     {
         allEvls = EvlService.GetAllEvls().ToList();
 
-        if (Id.HasValue)
+        if (IsEditMode)
         {
             course = CourseService.GetCourseById(Id.Value);
             selectedEvls = course.Evls.Select(e => e.Id).ToList();
-        }
-        else
-        {
-            course = new CourseDto();
         }
         
         base.OnInitialized();
@@ -85,22 +84,14 @@
 
     void Submit(CourseDto arg)
     {
-        try
-        {
-            if (course.Id == 0)
-            {
-                CourseService.CreateCourse(arg);
-            }
-            else
-            {
-                CourseService.UpdateCourse(arg);
-            }
-            NavigationManager.NavigateTo("/course/overview");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
+        arg.Evls = allEvls.Where(e => selectedEvls.Contains(e.Id)).ToList();
+        
+        if (IsCreateMode)
+            CourseService.CreateCourse(arg);
+        else
+            CourseService.UpdateCourse(arg);
+        
+        NavigationManager.NavigateTo("/course/overview");
     }
 
     void Cancel()

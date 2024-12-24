@@ -41,42 +41,29 @@
 
 @code {
     [Parameter] public int? Id { get; set; } = null;
+    
+    private bool IsEditMode => Id.HasValue;
+    private bool IsCreateMode => !Id.HasValue;
 
     private EvlDto evl = new();
 
     protected override void OnInitialized()
     {
-        if (Id.HasValue)
-        {
+        if (IsEditMode)
             evl = EvlService.GetEvlById(Id.Value);
-        }
-        else
-        {
-            evl = new EvlDto();
-        }
 
         base.OnInitialized();
     }
 
     void Submit(EvlDto arg)
     {
-        try
-        {
-            if (evl.Id == 0)
-            {
-                EvlService.CreateEvl(arg);
-            }
-            else
-            {
-                EvlService.UpdateEvl(arg);
-            }
-            NavigationManager.NavigateTo("/evl/overview");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
+        if (IsCreateMode)
+            EvlService.CreateEvl(arg);
+        else
+            EvlService.UpdateEvl(arg);
+
+        NavigationManager.NavigateTo("/evl/overview");
+}
 
     void Cancel()
     {
