@@ -9,7 +9,10 @@
 
 <RadzenStack class="rz-p-0 rz-p-md-12">
     <RadzenCard class="rz-p-4" Variant="Variant.Outlined">
-        <RadzenCarousel @ref=carousel @bind-SelectedIndex="@selectedIndex" Auto="@auto" Interval="@interval" PagerOverlay="false" ButtonShade="Shade.Default" Style="height:500px">
+        <RadzenCarousel PagerOverlay="false" 
+                        ButtonShade="Shade.Default"
+                        Interval="1"
+                        Style="height:500px">
             <Items>
                 @foreach (var course in _courses)
                 {
@@ -20,17 +23,29 @@
                                     <RadzenIcon Icon="school"/>
                                     @course.Name
                                 </RadzenStack>
-                                <ul>
-                                    @foreach(var evl in course.Evls)
-                                    {
-                                        <li>
+
+                                <RadzenTree Style="width: 100%;">
+                                    <RadzenTreeItem Text="Evls">
+                                        <ChildContent>
+                                            @foreach(var evl in course.Evls)
+                                            {
+                                                <RadzenTreeItem Text="@evl.Name">
+                                                    <Template>
+                                                        <RadzenLink Path=@($"/evl/{evl.Id}") Text="@($"{@evl.Id} - {@evl.Name}")"></RadzenLink>
+                                                    </Template>
+                                                </RadzenTreeItem>
+                                            }
+                                        </ChildContent>
+                                        <Template>
                                             <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
                                                 <RadzenIcon Icon="workspace_premium"/>
-                                                <RadzenLink Path=@($"/evl/{evl.Id}") Text="@evl.Name"></RadzenLink>
+                                                <RadzenLink Path=@($"/evl/overview") Text="Evl overview"></RadzenLink>
                                             </RadzenStack>
-                                        </li>
-                                    }
-                                </ul>
+                                        </Template>
+                                    </RadzenTreeItem>
+                                </RadzenTree>
+                                
+                                
                             </div>
                             <RadzenButton Click="@(() => NavigateToEditCourse(course.Id))" Icon="edit">
                                 <RadzenIcon Icon="edit"/> Edit
@@ -45,29 +60,6 @@
 
 @code {
     private List<CourseDto> _courses = [];
-    int selectedIndex;
-    RadzenCarousel carousel;
-
-    bool auto = true;
-    double interval = 4000;
-    string toggleText = "Stop";
-
-    bool started = true;
-    void Toggle()
-    {
-        if (started)
-        {
-            carousel.Stop();
-            toggleText = "Start";
-        }
-        else
-        {
-            carousel.Start();
-            toggleText = "Stop";
-        }
-
-        started = !started;
-    }
 
     protected override Task OnInitializedAsync()
     {

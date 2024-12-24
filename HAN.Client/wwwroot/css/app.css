@@ -2,9 +2,25 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.rz-layout {
+    --rz-layout-background-color: #f5f5f5;
+    --rz-panel-menu-item-background-color: #f5f5f5;
+    --rz-sidebar-background-color: #f5f5f5;
+    background-color: white
+}
+
+.rz-layout .rz-body {
+    background-color: white;
+    border-radius: 10px;
+}
+
 .rz-layout .rz-header {
     box-shadow: none;
     color: black;
+}
+
+.rz-layout .rz-sidebar {
+    border-inline-end: unset;
 }
 
 .rz-layout .rz-header .rz-sidebar-toggle {
@@ -12,7 +28,7 @@ html, body {
 }
 
 .rz-layout .rz-header > div {
-    background-color: white;
+    background-color: #f5f5f5;
 }
 
 .han-delimiter {
