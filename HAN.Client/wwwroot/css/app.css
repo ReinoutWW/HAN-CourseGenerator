@@ -44,6 +44,14 @@ a, .btn-link {
     color: #0071c1;
 }
 
+.text-ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;
@@ -136,6 +144,10 @@ code {
     color: #c02d76;
 }
 
+.mt-auto {
+    margin-top: auto;
+}
+
 
 /* RADZEN */
 
@@ -144,4 +156,4 @@ code {
         background-color: #f5f5f5;
         cursor: pointer;
     }
-} 
+}
