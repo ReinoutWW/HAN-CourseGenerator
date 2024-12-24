@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
+@using Radzen.Blazor.Rendering
 @using NotificationMessage = HAN.Client.Components.Base.NotificationMessage
 @using NotificationService = HAN.Client.Components.Base.NotificationService
 
@@ -10,6 +11,17 @@
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
             <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
             <RadzenLabel Text="CourseGenerator" />
+            <div @onclick="OpenExternalNotifications" class="ml-auto mr-3">
+                <RadzenIcon @ref=@externalNotificationsIcon Visible="!hasExternalNotifications" Icon="notifications"/>
+                <RadzenIcon @ref=@externalNotificationsIcon Visible="hasExternalNotifications" Icon="notifications_active"/>
+            </div>
+            <Popup @ref=popup Lazy=true class="han-popup">
+                <ul>
+                    <li>Notification 1</li>
+                    <li>Notification 2</li>
+                    <li>Notification 3</li>
+                </ul>
+            </Popup>
         </RadzenStack>
     </RadzenHeader>
     <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
@@ -35,12 +47,24 @@
 </RadzenLayout>
 
 @code {
-    bool sidebar1Expanded = true;
     [Inject] private NotificationService NotificationService { get; set; } = default!;
+    
+    Popup popup;
+    RadzenIcon externalNotificationsIcon;
+    
+    bool hasExternalNotifications = false;
+    bool sidebar1Expanded = true;
+    
     private IReadOnlyList<NotificationMessage> Notifications => NotificationService.Notifications;
+    private List<int> externalNotifications = [];
 
     protected override void OnInitialized()
     {
         NotificationService.OnNotificationAdded += StateHasChanged;
+    }
+    
+    private void OpenExternalNotifications()
+    {
+        popup.ToggleAsync(externalNotificationsIcon.Element);
     }
 }

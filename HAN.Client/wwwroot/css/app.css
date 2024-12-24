@@ -148,6 +148,29 @@ code {
     margin-top: auto;
 }
 
+.ml-auto {
+    margin-left: auto;
+}
+
+.mr-1 {
+    margin-right: 0.25rem;
+}
+
+.mr-2 {
+    margin-right: 0.5rem;
+}
+
+.mr-3 {
+    margin-right: 1rem;
+}
+
+.mr-4 {
+    margin-right: 1.5rem;
+}
+
+.mr-5 {
+    margin-right: 3rem;
+}
 
 /* RADZEN */
 
@@ -156,4 +179,16 @@ code {
         background-color: #f5f5f5;
         cursor: pointer;
     }
+}
+
+.han-popup {
+    display: none;
+    position: absolute;
+    overflow: hidden;
+    height: 360px;
+    width: 600px;
+    border: var(--rz-panel-border);
+    background-color: var(--rz-panel-background-color);
+    box-shadow: var(--rz-panel-shadow);
+    border-radius: var(--rz-border-radius)
 }
