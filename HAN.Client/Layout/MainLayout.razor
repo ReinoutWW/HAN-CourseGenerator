@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 
+@using NotificationMessage = HAN.Client.Components.Base.NotificationMessage
+@using NotificationService = HAN.Client.Components.Base.NotificationService
+
 <RadzenComponents />
 
 <RadzenLayout>
@@ -18,12 +21,26 @@
     </RadzenSidebar>
     <RadzenBody>
         <div class="rz-p-4">
-            @Body
+            <RadzenStack class="mt-2" Gap="16px">
+                <div>
+                    @foreach (var notification in Notifications)
+                    {
+                        <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter" />
+                    }
+                </div>
+                @Body
+            </RadzenStack>
         </div>
     </RadzenBody>
 </RadzenLayout>
 
-
 @code {
     bool sidebar1Expanded = true;
+    [Inject] private NotificationService NotificationService { get; set; } = default!;
+    private IReadOnlyList<NotificationMessage> Notifications => NotificationService.Notifications;
+
+    protected override void OnInitialized()
+    {
+        NotificationService.OnNotificationAdded += StateHasChanged;
+    }
 }

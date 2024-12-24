@@ -2,10 +2,12 @@
 
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
+@using NotificationService = HAN.Client.Components.Base.NotificationService
 
 @inject IEvlService EvlService
 @inject ICourseService CourseService
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 <h3>@(course.Id == 0 ? "Create Course" : "Edit Course")</h3>
 
@@ -85,13 +87,10 @@
     void Submit(CourseDto arg)
     {
         arg.Evls = allEvls.Where(e => selectedEvls.Contains(e.Id)).ToList();
-        
-        if (IsCreateMode)
-            CourseService.CreateCourse(arg);
-        else
-            CourseService.UpdateCourse(arg);
+        var courseDto = IsCreateMode ? CourseService.CreateCourse(arg) : CourseService.UpdateCourse(arg);
         
         NavigationManager.NavigateTo("/course/overview");
+        NotificationService.AddNotification($"Course ({courseDto.Id}) saved successfully!");
     }
 
     void Cancel()
