@@ -1,15 +1,23 @@
 ﻿using HAN.Data;
+using HAN.Data.EF;
 using HAN.Data.Entities;
 using HAN.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace HAN.Repositories;
 
-public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> where T : BaseEntity
+public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 {
     protected DbSet<T> Entity => Context.Set<T>();
-    protected readonly AppDbContext Context = context;
+    protected readonly AppDbContext Context;
+    private readonly EntityCollectionSynchronizer _collectionSynchronizer;
 
+    protected GenericRepository(AppDbContext context)
+    {
+        Context = context;
+        _collectionSynchronizer = new EntityCollectionSynchronizer(context);
+    }
+    
     public virtual void Add(T entity)
     {
         Entity.Add(entity);   
@@ -40,7 +48,18 @@ public class GenericRepository<T>(AppDbContext context) : IGenericRepository<T> 
 
     public virtual void Update(T entity)
     {
-        Context.Update(entity);
-        Context.SaveChanges(); 
+        var existingEntity = Context.Set<T>().Find(entity.Id);
+
+        if (existingEntity == null)
+            throw new ArgumentException("Entity with the specified ID does not exist.");
+
+        var entry = Context.Entry(existingEntity);
+        entry.CurrentValues.SetValues(entity);
+        Context.SaveChanges();
+    }
+    
+    protected void SynchronizeCollection<TU>(ICollection<TU> existing, ICollection<TU> updated) where TU : BaseEntity
+    {
+        _collectionSynchronizer.SynchronizeCollection(existing, updated);
     }
 }

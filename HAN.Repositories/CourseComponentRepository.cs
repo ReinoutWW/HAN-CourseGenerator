@@ -1,6 +1,5 @@
 ﻿using HAN.Data;
 using HAN.Data.Entities;
-using HAN.Data.Entities.CourseComponents;
 using HAN.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using File = HAN.Data.Entities.File;
@@ -13,46 +12,55 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
     
     public override void Add(TEntity entity)
     {
-        if (entity == null) 
+        if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        for (int i = 0; i < entity.Evls.Count; i++)
-        {
-            var inputEvl = entity.Evls[i];
-
-            if (inputEvl.Id <= 0)
-            {
-                throw new InvalidOperationException(
-                    "Cannot add a new Evl in this method. Only existing Evl references are allowed."
-                );
-            }
-
-            var trackedEvl = _context.ChangeTracker.Entries<Evl>()
-                .Where(e => e.Entity.Id == inputEvl.Id)
-                .Select(e => e.Entity)
-                .FirstOrDefault();
-
-            if (trackedEvl != null)
-            {
-                entity.Evls[i] = trackedEvl; 
-            }
-            else
-            {
-                var existingEvl = _context.Set<Evl>().Find(inputEvl.Id);
-                if (existingEvl == null)
-                {
-                    throw new InvalidOperationException(
-                        $"Evl with ID={inputEvl.Id} does not exist in the database."
-                    );
-                }
-
-                _context.Set<Evl>().Attach(existingEvl);
-                entity.Evls[i] = existingEvl;
-            }
-        }
+        entity.Evls = ResolveEvls(entity.Evls);
 
         Entity.Add(entity);
         _context.SaveChanges();
+    }
+
+    private List<Evl> ResolveEvls(List<Evl> evls)
+    {
+        if (evls == null)
+            throw new ArgumentNullException(nameof(evls));
+
+        var resolvedEvls = new List<Evl>();
+
+        foreach (var evl in evls)
+        {
+            resolvedEvls.Add(FindOrAttachEvl(evl));
+        }
+
+        return resolvedEvls;
+    }
+
+    private Evl FindOrAttachEvl(Evl evl)
+    {
+        if (evl.Id <= 0)
+        {
+            throw new InvalidOperationException(
+                "Cannot add a new Evl in this method. Only existing Evl references are allowed."
+            );
+        }
+
+        var trackedEvl = _context.ChangeTracker.Entries<Evl>()
+            .Where(e => e.Entity.Id == evl.Id)
+            .Select(e => e.Entity)
+            .FirstOrDefault();
+
+        if (trackedEvl != null)
+            return trackedEvl;
+
+        var existingEvl = _context.Set<Evl>().Find(evl.Id);
+        if (existingEvl == null)
+        {
+            throw new InvalidOperationException($"Evl with ID={evl.Id} does not exist in the database.");
+        }
+
+        _context.Set<Evl>().Attach(existingEvl);
+        return existingEvl;
     }
 
     public IEnumerable<Evl> GetEvlsByCourseComponentId(int id)

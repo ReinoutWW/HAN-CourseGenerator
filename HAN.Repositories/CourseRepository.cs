@@ -8,61 +8,57 @@ namespace HAN.Repositories;
 public class CourseRepository(AppDbContext context) : GenericRepository<Course>(context), ICourseRepository
 {
     private readonly AppDbContext _context = context;
-    
+
+    public override void Update(Course entity)
+    {
+        var existingCourse = Context.Set<Course>()
+            .Include(c => c.Evls)
+            .FirstOrDefault(c => c.Id == entity.Id);
+
+        if (existingCourse == null)
+            throw new InvalidOperationException($"Course with Id {entity.Id} not found.");
+
+        Context.Entry(existingCourse).CurrentValues.SetValues(entity);
+        SynchronizeCollection(existingCourse.Evls, entity.Evls);
+
+        Context.SaveChanges();
+    }
+
     public override void Add(Course entity)
     {
-        if (entity == null) 
+        if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        // We'll iterate over each Evl in entity.Evls
-        for (int i = 0; i < entity.Evls.Count; i++)
+        entity.Evls = ValidateAndResolveEvls(entity.Evls);
+
+        Entity.Add(entity);
+        Context.SaveChanges();
+    }
+
+    private List<Evl> ValidateAndResolveEvls(List<Evl> evls)
+    {
+        if (evls == null)
+            throw new ArgumentNullException(nameof(evls));
+
+        var resolvedEvls = new List<Evl>();
+        foreach (var evl in evls)
         {
-            var inputEvl = entity.Evls[i];
-
-            // Must have a valid ID to be considered existing
-            if (inputEvl.Id <= 0)
-            {
-                throw new InvalidOperationException(
-                    "Cannot add a new Evl in this method. Only existing Evl references are allowed."
-                );
-            }
-
-            // STEP 1: Check if the context is already tracking an Evl with the same Id
-            var trackedEvl = _context.ChangeTracker.Entries<Evl>()
-                .Where(e => e.Entity.Id == inputEvl.Id)
-                .Select(e => e.Entity)
-                .FirstOrDefault();
-
-            if (trackedEvl != null)
-            {
-                // We already have an Evl with the same Id in memory, so reuse it.
-                entity.Evls[i] = trackedEvl; 
-                // No need to Attach since it's already tracked.
-            }
-            else
-            {
-                // STEP 2: Not tracked yet, fetch from DB
-                var existingEvl = _context.Set<Evl>().Find(inputEvl.Id);
-                if (existingEvl == null)
-                {
-                    throw new InvalidOperationException(
-                        $"Evl with ID={inputEvl.Id} does not exist in the database."
-                    );
-                }
-
-                // Attach it to ensure EF sees it as an existing entity
-                _context.Set<Evl>().Attach(existingEvl);
-
-                // Now replace the Evl reference in the list
-                entity.Evls[i] = existingEvl;
-            }
+            resolvedEvls.Add(GetExistingEvlOrThrow(evl));
         }
 
-        // Finally, add the main entity
-        Entity.Add(entity);
+        return resolvedEvls;
+    }
 
-        // Save once at the end
-        _context.SaveChanges();
+    private Evl GetExistingEvlOrThrow(Evl evl)
+    {
+        if (evl.Id <= 0)
+            throw new InvalidOperationException("Cannot add a new Evl in this method. Only existing Evl references are allowed.");
+
+        var existingEvl = Context.Set<Evl>().Find(evl.Id);
+        if (existingEvl == null)
+            throw new InvalidOperationException($"Evl with Id {evl.Id} not found.");
+
+        return existingEvl;
     }
 
     public override List<Course> GetAll()
