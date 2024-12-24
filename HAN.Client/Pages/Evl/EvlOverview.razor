@@ -24,6 +24,8 @@
                     PagerHorizontalAlign="HorizontalAlign.Left"
                     ShowPagingSummary="true"
                     ColumnWidth="300px"
+                    RowClick="@NavigateToEditEvl"
+                    RowRender="@RowRender"
                     LogicalFilterOperator="LogicalFilterOperator.Or"
                     SelectionMode="DataGridSelectionMode.Single">
         <Columns>
@@ -35,13 +37,6 @@
             <RadzenDataGridColumn Property="@nameof(EvlDto.Id)" Filterable="false" Title="ID" Frozen="true" Width="20px" TextAlign="TextAlign.Center"/>
             <RadzenDataGridColumn Property="@nameof(EvlDto.Name)" Title="Name" Width="50px"/>
             <RadzenDataGridColumn Property="@nameof(EvlDto.Description)" Title="Description" Width="200px"/>
-            <RadzenDataGridColumn Filterable="false" Frozen="true" Width="40px">
-                <Template>
-                    <RadzenButton Click="@(() => NavigateToEditEvl(context.Id))" Icon="edit">
-                        <RadzenIcon Icon="edit"/> Edit
-                    </RadzenButton>
-                </Template>
-            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
 </div>
@@ -59,5 +54,10 @@
     }
     
     private void NavigateToNewEvl() => NavigationManager.NavigateTo("/evl/");
-    private void NavigateToEditEvl(int courseId) => NavigationManager.NavigateTo($"/evl/{courseId}");
+    private void NavigateToEditEvl(DataGridRowMouseEventArgs<EvlDto> args) => NavigationManager.NavigateTo($"/evl/{args.Data.Id}");
+    
+    private void RowRender(RowRenderEventArgs<EvlDto> obj)
+    {
+        obj.Attributes.Add("han-clickable", true);
+    }
 }
