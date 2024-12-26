@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using HAN.Client;
+using HAN.Client.Components.Base;
 using HAN.Client.Data;
 using HAN.Data;
 using HAN.Services.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
-using NotificationService = HAN.Client.Components.Base.NotificationService;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,7 +17,7 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 
 builder.Services.AddRadzenComponents();
 builder.Services.AddCourseServices();
-builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<SystemFeedbackNotificationService>();
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
