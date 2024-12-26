@@ -2,6 +2,7 @@
 
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
+@using HAN.Client.Components.UI;
 
 @inject NavigationManager NavigationManager
 @inject ICourseService CourseService
@@ -9,7 +10,7 @@
 <h3>Course Overview</h3>
 
 <div class="mb-4">
-    <RadzenButton Text="New" Click="@NavigateToNewCourse"></RadzenButton>
+    <PrimaryButton Text="New" Click="@NavigateToNewCourse"></PrimaryButton>
 </div>
 <div>
     <RadzenDataGrid Data="@_courses"

@@ -2,6 +2,7 @@
 
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
+@using HAN.Client.Components.UI;
 
 @inject NavigationManager NavigationManager
 @inject IEvlService EvlService
@@ -9,7 +10,7 @@
 <h3>Evl Overview</h3>
 
 <div class="mb-4">
-    <RadzenButton Text="New" Click="@NavigateToNewEvl"></RadzenButton>
+    <PrimaryButton Text="New" Click="@NavigateToNewEvl"></PrimaryButton>
 </div>
 <div>
     <RadzenDataGrid Data="@_evls"
