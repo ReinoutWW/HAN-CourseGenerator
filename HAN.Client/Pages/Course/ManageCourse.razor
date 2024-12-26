@@ -2,12 +2,12 @@
 
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
-@using NotificationService = HAN.Client.Components.Base.NotificationService
+@using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 
 @inject IEvlService EvlService
 @inject ICourseService CourseService
 @inject NavigationManager NavigationManager
-@inject NotificationService NotificationService
+@inject NotificationService SystemFeedbackNotificationService
 
 <h3>@(course.Id == 0 ? "Create Course" : "Edit Course")</h3>
 
@@ -90,7 +90,7 @@
         var courseDto = IsCreateMode ? CourseService.CreateCourse(arg) : CourseService.UpdateCourse(arg);
         
         NavigationManager.NavigateTo("/course/overview");
-        NotificationService.AddNotification($"Course ({courseDto.Id}) saved successfully!");
+        SystemFeedbackNotificationService.AddNotification($"Course ({courseDto.Id}) saved successfully!");
     }
 
     void Cancel()

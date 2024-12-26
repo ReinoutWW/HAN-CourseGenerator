@@ -4,8 +4,8 @@
 @using HAN.Services
 @using HAN.Services.VolatilityDecomposition
 @using Radzen.Blazor.Rendering
-@using NotificationMessage = HAN.Client.Components.Base.NotificationMessage
-@using NotificationService = HAN.Client.Components.Base.NotificationService
+@using NotificationMessage = HAN.Client.Components.Base.SystemFeedbackNotificationMessage
+@using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 
 @inject InternalNotificationStateService InternalNotificationStateService
 
@@ -68,7 +68,7 @@
 </Popup>
 
 @code {
-    [Inject] private NotificationService NotificationService { get; set; } = default!;
+    [Inject] private NotificationService SystemFeedbackNotificationService { get; set; } = default!;
     
     Popup _popup;
     RadzenButton _buttonRef;
@@ -76,17 +76,17 @@
     private bool _hasExternalNotifications => InternalNotificationStateService.Notifications.Any();
     private bool _sidebar1Expanded = true;
     
-    private IReadOnlyList<NotificationMessage> Notifications => NotificationService.Notifications;
+    private IReadOnlyList<NotificationMessage> Notifications => SystemFeedbackNotificationService.SystemNotifications;
 
     protected override void OnInitialized()
     {
-        NotificationService.OnNotificationAdded += StateHasChanged;
+        SystemFeedbackNotificationService.OnSystemNotificationAdded += StateHasChanged;
         InternalNotificationStateService.OnNotificationsChanged += StateHasChanged;
     }
     
     public void Dispose()
     {
-        NotificationService.OnNotificationAdded -= StateHasChanged;
+        SystemFeedbackNotificationService.OnSystemNotificationAdded -= StateHasChanged;
         InternalNotificationStateService.OnNotificationsChanged -= StateHasChanged;
     }
     
