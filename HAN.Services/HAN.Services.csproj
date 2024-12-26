@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Data\HAN.Data.csproj" />
     <ProjectReference Include="..\HAN.Repositories\HAN.Repositories.csproj" />
+    <ProjectReference Include="..\HAN.Utilities\HAN.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
