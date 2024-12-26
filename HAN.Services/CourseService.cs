@@ -4,6 +4,9 @@ using HAN.Repositories.Interfaces;
 using HAN.Services.DTOs;
 using HAN.Services.Interfaces;
 using HAN.Services.Validation;
+using HAN.Services.VolatilityDecomposition;
+using HAN.Services.VolatilityDecomposition.Notifications;
+using HAN.Utilities;
 
 namespace HAN.Services;
 
@@ -12,7 +15,8 @@ public class CourseService(ICourseRepository courseRepository,
     IMapper mapper, 
     IValidationService validationService,
     IScheduleRepository scheduleRepository,
-    CourseComponentService courseComponentService
+    CourseComponentService courseComponentService,
+    IMessageBroker messageBroker
 ) : ICourseService
 {
     public CourseDto CreateCourse(CourseDto course)
@@ -22,8 +26,32 @@ public class CourseService(ICourseRepository courseRepository,
         var courseEntity = mapper.Map<Course>(course);
         
         courseRepository.Add(courseEntity);
+        
+        var courseDto = mapper.Map<CourseDto>(courseEntity);
+        OnCourseCreated(courseDto);
 
-        return mapper.Map<CourseDto>(courseEntity);
+        return courseDto;
+    }
+    
+    private void OnCourseCreated(CourseDto course)
+    {
+        var notification = new EntityPersistedNotification
+        {
+            Title = "Course with name " + course.Name + " has been created successfully!",
+            Message = "An entity has been successfully created.",
+            Type = NotificationType.EntityPersisted,
+            PersistData = new EntityPersistedData
+            {
+                EntityName = course.Name,
+                Entity = course
+            }
+        };
+        
+        messageBroker.Publish(new NotificationEvent
+        {
+            Type = NotificationType.EntityPersisted,
+            Notification = notification
+        });
     }
 
     public CourseDto UpdateCourse(CourseDto course)
