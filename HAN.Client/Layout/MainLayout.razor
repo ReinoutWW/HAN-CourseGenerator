@@ -1,30 +1,27 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
 
+@using HAN.Services
+@using HAN.Services.VolatilityDecomposition
 @using Radzen.Blazor.Rendering
 @using NotificationMessage = HAN.Client.Components.Base.NotificationMessage
 @using NotificationService = HAN.Client.Components.Base.NotificationService
+
+@inject InternalNotificationStateService InternalNotificationStateService
 
 <RadzenComponents />
 
 <RadzenLayout>
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => sidebar1Expanded = !sidebar1Expanded)" />
+            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
             <RadzenLabel Text="CourseGenerator" />
-            <div @onclick="OpenExternalNotifications" class="ml-auto mr-3">
-                <RadzenIcon @ref=@externalNotificationsIcon Visible="!hasExternalNotifications" Icon="notifications"/>
-                <RadzenIcon @ref=@externalNotificationsIcon Visible="hasExternalNotifications" Icon="notifications_active"/>
+            <div class="ml-auto mr-3">
+                <RadzenButton Click="OpenExternalNotifications" @ref=@_buttonRef Variant="Variant.Flat" Shade="Shade.Lighter" Icon="@(_hasExternalNotifications ? "notifications_active" : "notifications")"/>
             </div>
-            <Popup @ref=popup Lazy=true class="han-popup">
-                <ul>
-                    <li>Notification 1</li>
-                    <li>Notification 2</li>
-                    <li>Notification 3</li>
-                </ul>
-            </Popup>
         </RadzenStack>
     </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@sidebar1Expanded">
+    <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
         <RadzenPanelMenu>
             <RadzenPanelMenuItem Text="Home" Path="/" Icon="home" />
             <RadzenPanelMenuItem Text="Courses" Path="/course/overview" Icon="School" />
@@ -37,7 +34,7 @@
                 <div>
                     @foreach (var notification in Notifications)
                     {
-                        <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter" />
+                        <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter"/>
                     }
                 </div>
                 @Body
@@ -46,25 +43,55 @@
     </RadzenBody>
 </RadzenLayout>
 
+<Popup @ref="_popup" Style="width: 350px;" class="han-popup" Show>
+    <div class="notification-container">
+        @if (InternalNotificationStateService.Notifications.Any())
+        {
+            @foreach (var notification in InternalNotificationStateService.Notifications)
+            {
+                <RadzenStack class="d-flex han-delimiter" Style="margin-bottom: 10px;" Gap="8px">
+                    <RadzenText TextStyle="TextStyle.Subtitle1" Level="1">
+                        @notification.Title
+                    </RadzenText>
+                    <RadzenLink Path="course/overview" Text="Overview" Icon="edit"/>
+                </RadzenStack>
+            }
+        }
+        else
+        {
+            <div Style="text-align: center;">
+                <RadzenText TextStyle="TextStyle.Subtitle1" Text="You're all set!" />
+                <RadzenText TextStyle="TextStyle.Body2" Text="No notifications to display at the moment." />
+            </div>
+        }
+    </div>
+</Popup>
+
 @code {
     [Inject] private NotificationService NotificationService { get; set; } = default!;
     
-    Popup popup;
-    RadzenIcon externalNotificationsIcon;
+    Popup _popup;
+    RadzenButton _buttonRef;
     
-    bool hasExternalNotifications = false;
-    bool sidebar1Expanded = true;
+    private bool _hasExternalNotifications => InternalNotificationStateService.Notifications.Any();
+    private bool _sidebar1Expanded = true;
     
     private IReadOnlyList<NotificationMessage> Notifications => NotificationService.Notifications;
-    private List<int> externalNotifications = [];
 
     protected override void OnInitialized()
     {
         NotificationService.OnNotificationAdded += StateHasChanged;
+        InternalNotificationStateService.OnNotificationsChanged += StateHasChanged;
+    }
+    
+    public void Dispose()
+    {
+        NotificationService.OnNotificationAdded -= StateHasChanged;
+        InternalNotificationStateService.OnNotificationsChanged -= StateHasChanged;
     }
     
     private void OpenExternalNotifications()
     {
-        popup.ToggleAsync(externalNotificationsIcon.Element);
+        _popup.ToggleAsync(_buttonRef.Element);
     }
 }

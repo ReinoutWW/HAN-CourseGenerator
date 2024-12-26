@@ -28,6 +28,8 @@ builder.Services.AddOidcAuthentication(options =>
     builder.Configuration.Bind("Local", options.ProviderOptions);
 });
 
-DataSeeder.SeedCourseData(builder.Build().Services);
+var app = builder.Build();
 
-await builder.Build().RunAsync();
+DataSeeder.SeedCourseData(app.Services);
+
+await app.RunAsync();
