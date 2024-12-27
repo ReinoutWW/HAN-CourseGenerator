@@ -1,5 +1,10 @@
+@import url('fonts.css');
+@import url('ui-components.css');
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: "Poppins", serif !important;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .rz-layout {
@@ -171,49 +176,3 @@ code {
 .mr-5 {
     margin-right: 3rem;
 }
-
-/* RADZEN */
-
-.rz-data-grid .rz-data-row[han-clickable]:hover {
-    td {
-        background-color: #f5f5f5;
-        cursor: pointer;
-    }
-}
-
-.han-popup {
-    display: none;
-    position: absolute;
-    overflow: hidden;
-    padding: 1rem;
-    border: var(--rz-panel-border);
-    background-color: var(--rz-panel-background-color);
-    box-shadow: var(--rz-panel-shadow);
-    border-radius: var(--rz-border-radius)
-}
-
-.han-notification-item {
-    display: flex;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-    padding: 0.5rem;
-}
-
-.han-notification-item:hover {
-    background-color: #e7e7e7;
-    cursor: pointer;
-}
-
-.han-notification-item::before {
-    content: "";
-    width: 10px;
-    height: 10px;
-    min-width: 10px;
-    min-height: 10px;
-    margin-right: 0.5rem;
-    background-color: var(--rz-on-primary-lighter);
-    border-radius: 50%;
-    opacity: 50%;
-    margin-top: 5px;
-}
-
