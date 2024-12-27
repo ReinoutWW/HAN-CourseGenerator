@@ -78,7 +78,15 @@
 
         if (IsEditMode)
         {
-            course = CourseService.GetCourseById(Id.Value);
+            try
+            {
+                course = CourseService.GetCourseById(Id.Value);
+            }
+            catch (KeyNotFoundException)
+            {
+                NavigationManager.NavigateTo("/404");
+            }
+            
             selectedEvls = course.Evls.Select(e => e.Id).ToList();
         }
         

@@ -53,7 +53,16 @@
     protected override void OnInitialized()
     {
         if (IsEditMode)
-            evl = EvlService.GetEvlById(Id.Value);
+        {
+            try
+            {
+                evl = EvlService.GetEvlById(Id.Value);
+            }
+            catch (KeyNotFoundException)
+            {
+                NavigationManager.NavigateTo("/404");
+            }
+        }
 
         base.OnInitialized();
     }

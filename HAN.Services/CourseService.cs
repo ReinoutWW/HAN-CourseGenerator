@@ -68,6 +68,10 @@ public class CourseService(ICourseRepository courseRepository,
     public CourseDto GetCourseById(int id)
     {
         var course = courseRepository.GetById(id);
+        
+        if(course == null)
+            throw new KeyNotFoundException($"Course with id {id} not found");
+        
         return mapper.Map<CourseDto>(course);
     }
 

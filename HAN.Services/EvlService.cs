@@ -32,6 +32,10 @@ public class EvlService(IEvlRepository evlRepository, IMapper mapper, IValidatio
     public EvlDto GetEvlById(int id)
     {
         var evl = evlRepository.GetById(id);
+
+        if (evl == null)
+            throw new KeyNotFoundException($"Evl with id {id} not found");
+        
         return mapper.Map<EvlDto>(evl);
     }
 
