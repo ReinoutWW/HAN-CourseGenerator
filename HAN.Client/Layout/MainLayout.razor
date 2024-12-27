@@ -28,17 +28,24 @@
         </RadzenPanelMenu>
     </RadzenSidebar>
     <RadzenBody>
-        <div class="rz-p-4">
-            <RadzenStack class="mt-2" Gap="16px">
-                <div>
-                    @foreach (var notification in Notifications)
-                    {
-                        <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter"/>
-                    }
+        <ErrorBoundary>
+            <ChildContent>
+                <div class="rz-p-4">
+                    <RadzenStack class="mt-2" Gap="16px">
+                        <div>
+                            @foreach (var notification in Notifications)
+                            {
+                                <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter"/>
+                            }
+                        </div>
+                        @Body
+                    </RadzenStack>
                 </div>
-                @Body
-            </RadzenStack>
-        </div>
+            </ChildContent>
+            <ErrorContent>
+                <ErrorComponent PrimaryText="Whoops." SecondaryText="Something went wrong on our end." />
+            </ErrorContent>
+        </ErrorBoundary>
     </RadzenBody>
 </RadzenLayout>
 
