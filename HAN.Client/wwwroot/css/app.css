@@ -1,5 +1,6 @@
 @import url('fonts.css');
 @import url('ui-components.css');
+@import url('Pages/error-page.css');
 
 html, body {
     font-family: "Poppins", serif !important;

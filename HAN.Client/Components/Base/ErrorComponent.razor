@@ -1,0 +1,24 @@
+﻿@using HAN.Client.Components.UI
+
+<div class="error-page">
+    <div class="error-content">
+        <h1 class="error-code">@PrimaryText</h1>
+        <p class="error-message">@SecondaryText</p>
+        <SecondaryButton Class="primary-button" Text="Go to Home" Click="NavigateHome" />
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string PrimaryText { get; set; } = "Whoops";
+    
+    [Parameter]
+    public string SecondaryText { get; set; } = "Something went wrong on our end.";
+    
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    
+    private void NavigateHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}
