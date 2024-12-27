@@ -13,5 +13,5 @@ public class CourseDto : BaseDto
     public string? Description { get; set; }
     
     public List<EvlDto> Evls { get; set; } = [];
-    public ScheduleDto Schedule { get; set; }
+    public ScheduleDto? Schedule { get; set; }
 }

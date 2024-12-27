@@ -61,6 +61,9 @@
         <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
         <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
     </RadzenStack>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+        <PrimaryButton Text="Navigate" Click="NavigateToSchedule" />
+    </RadzenStack>
 </RadzenTemplateForm>
 
 @code {
@@ -102,8 +105,6 @@
         SystemFeedbackNotificationService.AddNotification($"Course ({courseDto.Id}) saved successfully!");
     }
 
-    void Cancel()
-    {
-        NavigationManager.NavigateTo("/course/overview");
-    }
+    private void Cancel() => NavigationManager.NavigateTo("/course/overview");
+    private void NavigateToSchedule(MouseEventArgs obj) => NavigationManager.NavigateTo($"/course/{course.Id}/schedule");
 }

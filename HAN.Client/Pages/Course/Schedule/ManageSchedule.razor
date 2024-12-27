@@ -1,0 +1,137 @@
+﻿@page "/course/{Id:int}/schedule"
+
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+@using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
+@using HAN.Client.Components.UI;
+@using HAN.Services
+@using HAN.Services.DTOs.CourseComponents
+
+@inject ICourseService CourseService
+@inject CourseComponentService CourseComponentService
+@inject NavigationManager NavigationManager
+@inject NotificationService SystemFeedbackNotificationService
+
+<h3>@(schedule.Id == 0 ? "Create Schedule" : "Edit Schedule")</h3>
+
+<RadzenTemplateForm Data="@schedule" Submit="@((ScheduleDto args) => { Submit(args); })">
+    <RadzenFieldset Text="Schedule Info">
+        <RadzenStack Gap="1rem">
+            <RadzenDataGrid @bind-Data="@schedule.ScheduleLines" TItem="ScheduleLineDto" Editable="true" AutoGenerateColumns="false">
+                <Columns>
+                    <RadzenDataGridColumn TItem="ScheduleLineDto" Property="WeekSequenceNumber" Title="Sequence">
+                        <EditTemplate Context="scheduleLine">
+                            <RadzenNumeric Style="width: 100%;" @bind-Value="scheduleLine.WeekSequenceNumber" Min="1" />
+                        </EditTemplate>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ScheduleLineDto" Title="Component">
+                        <Template Context="scheduleLine">
+                            <RadzenDropDown
+                                Style="width: 100%;"
+                                Data="@allCourseComponents"
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                @bind-Value="scheduleLine.CourseComponentId"
+                                Placeholder="Select component" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="ScheduleLineDto" Context="scheduleLine">
+                        <Template Context="scheduleLine">
+                            <PrimaryButton Icon="delete" Size="ButtonSize.Medium" Text="Remove" Click="@(() => RemoveScheduleLine(scheduleLine))" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+            <PrimaryButton Icon="add" Size="ButtonSize.Medium" Text="Add Schedule Line" Click="@AddScheduleLine" />
+        </RadzenStack>
+    </RadzenFieldset>
+
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+        <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+        <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private ScheduleDto schedule = new()
+    {
+        ScheduleLines = new List<ScheduleLineDto>()
+    };
+    private List<CourseComponentDto> allCourseComponents = new();
+
+    protected override void OnInitialized()
+    {
+        if (Id > 0)
+        {
+            var course = CourseService.GetCourseById(Id);
+            var courseEvls = course.Evls.Select(evl => evl.Id).ToList();
+
+            foreach (var evlId in courseEvls)
+            {
+                var courseComponents = CourseComponentService.GetAllCourseComponentsByEvlId(evlId).ToList();
+                allCourseComponents.AddRange(courseComponents);
+            }
+            
+            schedule = course.Schedule == null ? CourseService.AddSchedule(new ScheduleDto(), Id) : CourseService.GetScheduleById(course.Schedule.Id);
+        }
+        else
+        {
+            schedule = new ScheduleDto();
+        }
+
+        base.OnInitialized();
+    }
+
+    void AddScheduleLine()
+    {
+        var newSequenceNumber = schedule.ScheduleLines.Any()
+            ? schedule.ScheduleLines.Max(line => line.WeekSequenceNumber) + 1
+            : 1;
+
+        schedule.ScheduleLines.Add(new ScheduleLineDto
+        {
+            WeekSequenceNumber = newSequenceNumber,
+            CourseComponentId = 0 // Default placeholder
+        });
+
+        schedule.ScheduleLines = schedule.ScheduleLines.ToList(); // Ensure UI refresh
+    }
+
+    void RemoveScheduleLine(ScheduleLineDto line)
+    {
+        schedule.ScheduleLines.Remove(line);
+
+        // Reorder sequence numbers
+        for (int i = 0; i < schedule.ScheduleLines.Count; i++)
+        {
+            schedule.ScheduleLines[i].WeekSequenceNumber = i + 1;
+        }
+
+        StateHasChanged();
+    }
+
+    void Submit(ScheduleDto arg)
+    {
+        if (!schedule.ScheduleLines.Any())
+        {
+            SystemFeedbackNotificationService.AddNotification("Please add at least one schedule line.");
+            return;
+        }
+
+        schedule.ScheduleLines = schedule.ScheduleLines
+            .OrderBy(line => line.WeekSequenceNumber)
+            .ToList();
+
+        CourseService.UpdateSchedule(schedule);
+        NavigationManager.NavigateTo($"/course/{Id}");
+        SystemFeedbackNotificationService.AddNotification("Schedule saved successfully!");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo($"/course/{Id}");
+    }
+}

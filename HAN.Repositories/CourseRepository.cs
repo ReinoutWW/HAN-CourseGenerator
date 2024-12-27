@@ -34,7 +34,7 @@ public class CourseRepository(AppDbContext context) : GenericRepository<Course>(
         Entity.Add(entity);
         Context.SaveChanges();
     }
-
+    
     private List<Evl> ValidateAndResolveEvls(List<Evl> evls)
     {
         if (evls == null)

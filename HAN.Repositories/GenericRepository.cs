@@ -35,7 +35,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         return Entity.ToList();   
     }
 
-    public T? GetById(int id)
+    public virtual T? GetById(int id)
     {
         var entity = Context.Find<T>(id);
         return entity;
@@ -48,13 +48,21 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 
     public virtual void Update(T entity)
     {
-        var existingEntity = Context.Set<T>().Find(entity.Id);
+        var entry = Context.Entry(entity);
 
-        if (existingEntity == null)
-            throw new ArgumentException("Entity with the specified ID does not exist.");
+        if (entry.State == EntityState.Detached)
+        {
+            var existingEntity = Context.Set<T>().Find(entity.Id);
+            if (existingEntity != null)
+            {
+                Context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            }
+            else
+            {
+                throw new ArgumentException("Entity with the specified ID does not exist.");
+            }
+        }
 
-        var entry = Context.Entry(existingEntity);
-        entry.CurrentValues.SetValues(entity);
         Context.SaveChanges();
     }
     

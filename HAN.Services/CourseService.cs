@@ -137,20 +137,19 @@ public class CourseService(ICourseRepository courseRepository,
         return scheduleDto;
     }
 
-    public ScheduleDto UpdateSchedule(int courseId, ScheduleDto scheduleDto)
+    public ScheduleDto UpdateSchedule(ScheduleDto scheduleDto)
     {
-        var course = courseRepository.GetById(courseId);
-            
-        if(course == null)
-            throw new KeyNotFoundException($"Course with id {courseId} not found");
-        
-        var schedule = mapper.Map<Schedule>(scheduleDto);
-        
-        course.Schedule = schedule;
-        courseRepository.Update(course);
-        
-        return mapper.Map<ScheduleDto>(schedule);
+        if (!scheduleRepository.Exists(scheduleDto.Id))
+            throw new KeyNotFoundException($"Schedule with id {scheduleDto.Id} not found");
+
+        var existingSchedule = scheduleRepository.GetById(scheduleDto.Id);
+
+        if (existingSchedule == null)
+            throw new KeyNotFoundException($"Schedule with id {scheduleDto.Id} not found");
+
+        mapper.Map(scheduleDto, existingSchedule);
+        scheduleRepository.Update(existingSchedule);
+
+        return mapper.Map<ScheduleDto>(existingSchedule);
     }
-    
-    
 }

@@ -1,4 +1,6 @@
-﻿using HAN.Services.DTOs;
+﻿using HAN.Services;
+using HAN.Services.DTOs;
+using HAN.Services.DTOs.CourseComponents;
 using HAN.Services.Interfaces;
 
 namespace HAN.Client.Data;
@@ -19,6 +21,8 @@ public static class DataSeeder
     {
         var evlService = serviceProvider.GetRequiredService<IEvlService>();
         var courseService = serviceProvider.GetRequiredService<ICourseService>();
+        var lessonService = serviceProvider.GetRequiredService<LessonService>();
+        var examService = serviceProvider.GetRequiredService<ExamService>();
 
         var evlDto1 = new EvlDto()
         {
@@ -33,6 +37,23 @@ public static class DataSeeder
 
         evlDto1 = evlService.CreateEvl(evlDto1);
         evlDto2 = evlService.CreateEvl(evlDto2);
+        
+        var lesson = new LessonDto()
+        {
+            Name = $"Lesson {iteration}",
+            Description = $"Introduction to Lesson {iteration}. After this lesson, you will be able to understand the basics of Lesson {iteration}.",
+            Evls = [evlDto1, evlDto2]
+        };
+        
+        var exam = new ExamDto()
+        {
+            Name = $"Exam {iteration}",
+            Description = $"Introduction to Exam {iteration}. After this exam, you will be able to understand the basics of Exam {iteration}.",
+            Evls = [evlDto1, evlDto2]
+        };
+
+        lessonService.CreateCourseComponent(lesson);
+        examService.CreateCourseComponent(exam);
     
         var courseName =  $"{GetRandomCourseName()} {iteration}";
         
