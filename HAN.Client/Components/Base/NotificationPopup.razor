@@ -13,10 +13,10 @@
     <div class="notification-container">
         @if (Notifications.Any())
         {
-            <RadzenStack class="d-flex" Gap="8px">
-                @foreach (var notification in Notifications)
+            <RadzenStack class="d-flex" Gap="0px">
+                @foreach (var notification in Notifications.OrderByDescending(n => n.CreatedAt))
                 {
-                    <RadzenStack Orientation="Orientation.Vertical" Gap="4px" class="han-notification-item">
+                    <RadzenStack Orientation="Orientation.Vertical" Gap="0px" class="@GetNotificationCssClass(notification)">
                         <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" @onclick="@(() => OnNotificationClick(notification))">
                             <RadzenText TextStyle="TextStyle.Body1" class="notification-text">
                                 @notification.Title
@@ -24,7 +24,7 @@
                             <RadzenIcon Icon="chevron_right" />
                         </RadzenStack>
                         <div class="han-notification-item-time">
-                            time
+                            @notification.CreatedAt.ToLocalTime().ToString("t")
                         </div>
                     </RadzenStack>
                 }
@@ -69,6 +69,8 @@
     
     private void OnNotificationClick(Notification internalNotification)
     {
+        InternalNotificationStateService.MarkAsRead(internalNotification);
+        
         if (internalNotification is EntityPersistedNotification entityPersistedNotification) RouteToEntity(entityPersistedNotification);
     }
 
@@ -80,6 +82,8 @@
             _popup?.CloseAsync();
         }
     }
+
+    private string GetNotificationCssClass(Notification notification) => $"han-notification-item {(InternalNotificationStateService.IsNotificationRead(notification) ? "notification-read" : "")}";
     
     public void Dispose()
     {

@@ -20,9 +20,12 @@
 
 .han-notification-item {
     display: flex;
-    background-color: #f5f5f5;
-    border-radius: 5px;
+    border-radius: 5px 5px 0 0;
     padding: 0.5rem;
+}
+
+.han-notification-item:not(:last-child) {
+    border-bottom: 1px solid #f1f1f1;
 }
 
 .han-notification-item:hover {
@@ -30,7 +33,7 @@
     cursor: pointer;
 }
 
-.han-notification-item .notification-text::before {
+.han-notification-item:not(.notification-read) .notification-text::before {
     display: inline-block;
     content: "";
     width: 10px;
