@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
+@using HAN.Client.Components.UI;
 
 @inject ICourseService CourseService
 @inject NavigationManager NavigationManager
@@ -9,7 +10,7 @@
 
 <RadzenDataList WrapItems="true" AllowPaging="false" Data="@_courses" TItem="CourseDto">
     <Template Context="course">
-        <RadzenCard class="d-flex flex-column" Style="width:300px;">
+        <PrimaryCard class="d-flex flex-column" Style="width:300px;">
             <div>
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
                     <RadzenIcon Icon="school"/>
@@ -17,14 +18,14 @@
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Name</RadzenText>
                         <RadzenText TextStyle="TextStyle.Body1"><b>@(course.Name)</b></RadzenText>
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Description</RadzenText>
-                        <RadzenText TextStyle="TextStyle.Body2" class="text-ellipsis"><b>@(course.Description)</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body2" class="text-ellipsis">@(course.Description)</RadzenText>
                     </RadzenStack>
                 </RadzenStack>
                 <hr style="border: none; background-color: rgba(0,0,0,.2); height: 1px; margin: 1rem 0;"/>
             </div>
             <RadzenRow class="mt-auto">
                 <RadzenColumn Size="12" class="rz-text-truncate">
-                    <RadzenStack JustifyContent="JustifyContent.SpaceBetween" Orientation="Orientation.Horizontal" Gap="4px" class="mb-2 han-delimiter">
+                    <RadzenStack JustifyContent="JustifyContent.SpaceBetween" Orientation="Orientation.Horizontal" Gap="4px">
                         <RadzenStack Orientation="Orientation.Horizontal" Gap="4px">
                             <RadzenIcon Icon="workspace_premium"/>
                             @course.Evls.Count @((course.Evls.Count > 1) ? "Evls" : "Evl")
@@ -36,7 +37,7 @@
                     </RadzenStack>
                 </RadzenColumn>
             </RadzenRow>
-        </RadzenCard>
+        </PrimaryCard>
     </Template>
 </RadzenDataList>
 
