@@ -25,9 +25,8 @@ public class NotificationManager
         var userPreferences = _userPreferencesFactory().Preferences;
         if (userPreferences.TryGetValue(notificationEvent.Type, out var methods))
         {
-            foreach (var method in methods)
+            foreach (var engine in methods.Select(method => _methodRegistry.GetEngine(method)))
             {
-                var engine = _methodRegistry.GetEngine(method);
                 engine.Notify(notificationEvent.Notification);
             }
         }

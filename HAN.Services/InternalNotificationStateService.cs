@@ -4,7 +4,7 @@ namespace HAN.Services;
 
 public class InternalNotificationStateService
 {
-    private readonly List<Notification> _notifications = new();
+    private readonly List<Notification> _notifications = [];
 
     public IReadOnlyList<Notification> Notifications => _notifications.AsReadOnly();
 

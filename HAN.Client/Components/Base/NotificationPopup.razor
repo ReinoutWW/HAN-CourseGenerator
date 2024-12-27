@@ -1,0 +1,88 @@
+﻿@using HAN.Services
+@using HAN.Services.DTOs
+@using HAN.Services.VolatilityDecomposition
+@using HAN.Services.VolatilityDecomposition.Notifications
+@using Radzen.Blazor.Rendering
+
+@inject InternalNotificationStateService InternalNotificationStateService
+@inject NavigationManager NavigationManager
+
+@implements IDisposable
+
+<Popup @ref="_popup" Style="width: 350px;" class="han-popup" Show>
+    <div class="notification-container">
+        @if (Notifications.Any())
+        {
+            <RadzenStack class="d-flex" Gap="8px">
+                @foreach (var notification in Notifications)
+                {
+                    <RadzenStack Orientation="Orientation.Vertical" Gap="4px" class="han-notification-item">
+                        <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" @onclick="@(() => OnNotificationClick(notification))">
+                            <RadzenText TextStyle="TextStyle.Body1" class="notification-text">
+                                @notification.Title
+                            </RadzenText>
+                            <RadzenIcon Icon="chevron_right" />
+                        </RadzenStack>
+                        <div class="han-notification-item-time">
+                            time
+                        </div>
+                    </RadzenStack>
+                }
+            </RadzenStack>
+        }
+        else
+        {
+            <div Style="text-align: center;">
+                <RadzenText TextStyle="TextStyle.Subtitle1" Text="You're all set!" />
+                <RadzenText TextStyle="TextStyle.Body2" Text="No notifications to display at the moment." />
+            </div>
+        }
+    </div>
+</Popup>
+
+@code {
+    [Parameter]
+    public ElementReference? PopupElementTarget { get; set; }
+    
+    private Popup _popup;
+
+    private bool _sidebar1Expanded = true;
+    private bool HasExternalNotifications => InternalNotificationStateService.Notifications.Any();
+
+    private IReadOnlyList<Notification> Notifications => InternalNotificationStateService.Notifications;
+    
+    protected override void OnInitialized()
+    {
+        if (InternalNotificationStateService is null)
+            throw new InvalidOperationException("InternalNotificationStateService is not initialized.");
+        
+        InternalNotificationStateService.OnNotificationsChanged += StateHasChanged;
+    }
+    
+    public void OpenNotifications()
+    {
+        if (PopupElementTarget is null)
+            throw new ArgumentNullException(nameof(PopupElementTarget), "PopupElementTarget cannot be null.");
+        
+        _popup?.ToggleAsync(PopupElementTarget ?? throw new ArgumentNullException($"Element can not be null: {nameof(PopupElementTarget)}"));
+    }
+    
+    private void OnNotificationClick(Notification internalNotification)
+    {
+        if (internalNotification is EntityPersistedNotification entityPersistedNotification) RouteToEntity(entityPersistedNotification);
+    }
+
+    private void RouteToEntity(EntityPersistedNotification entityPersistedNotification)
+    {
+        if(entityPersistedNotification?.PersistData.Entity is CourseDto)
+        {
+            NavigationManager.NavigateTo($"/course/{entityPersistedNotification.PersistData.Entity.Id}");
+            _popup?.CloseAsync();
+        }
+    }
+    
+    public void Dispose()
+    {
+        InternalNotificationStateService.OnNotificationsChanged -= StateHasChanged;
+    }
+}

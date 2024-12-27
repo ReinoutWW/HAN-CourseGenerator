@@ -2,15 +2,11 @@
 @implements IDisposable
 
 @using HAN.Services
-@using HAN.Services.DTOs
-@using HAN.Services.VolatilityDecomposition
-@using HAN.Services.VolatilityDecomposition.Notifications
-@using Radzen.Blazor.Rendering
 @using NotificationMessage = HAN.Client.Components.Base.SystemFeedbackNotificationMessage
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
+@using HAN.Client.Components.Base
 
 @inject InternalNotificationStateService InternalNotificationStateService
-@inject NavigationManager NavigationManager
 
 <RadzenComponents />
 
@@ -20,7 +16,7 @@
             <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
             <RadzenLabel Text="CourseGenerator" />
             <div class="ml-auto mr-3">
-                <RadzenButton Click="OpenExternalNotifications" @ref=@_buttonRef Variant="Variant.Flat" Shade="Shade.Lighter" Icon="@(_hasExternalNotifications ? "notifications_active" : "notifications")"/>
+                <RadzenButton Click="OpenExternalNotifications" @ref=@_buttonRef Variant="Variant.Flat" Shade="Shade.Lighter" Icon="@(HasExternalNotifications ? "notifications_active" : "notifications")"/>
             </div>
         </RadzenStack>
     </RadzenHeader>
@@ -46,38 +42,16 @@
     </RadzenBody>
 </RadzenLayout>
 
-<Popup @ref="_popup" Style="width: 350px;" class="han-popup" Show>
-    <div class="notification-container">
-        @if (InternalNotificationStateService.Notifications.Any())
-        {
-            <RadzenStack class="d-flex" Gap="8px">
-                @foreach (var notification in InternalNotificationStateService.Notifications)
-                {
-                    <div @onclick="@(() => OnNotificationClick(notification))" class="han-notification-item">
-                        <RadzenText TextStyle="TextStyle.Subtitle1" Level="1">
-                            @notification.Title
-                        </RadzenText>
-                    </div>
-                }
-            </RadzenStack>
-        }
-        else
-        {
-            <div Style="text-align: center;">
-                <RadzenText TextStyle="TextStyle.Subtitle1" Text="You're all set!" />
-                <RadzenText TextStyle="TextStyle.Body2" Text="No notifications to display at the moment." />
-            </div>
-        }
-    </div>
-</Popup>
+<NotificationPopup @ref="_notificationPopup"
+                   PopupElementTarget="@(_buttonRef?.Element)" />
 
 @code {
     [Inject] private NotificationService SystemFeedbackNotificationService { get; set; } = default!;
     
-    Popup _popup;
-    RadzenButton _buttonRef;
+    private NotificationPopup? _notificationPopup;
+    private RadzenButton? _buttonRef;
     
-    private bool _hasExternalNotifications => InternalNotificationStateService.Notifications.Any();
+    private bool HasExternalNotifications => InternalNotificationStateService.Notifications.Any();
     private bool _sidebar1Expanded = true;
     
     private IReadOnlyList<NotificationMessage> Notifications => SystemFeedbackNotificationService.SystemNotifications;
@@ -85,31 +59,25 @@
     protected override void OnInitialized()
     {
         SystemFeedbackNotificationService.OnSystemNotificationAdded += StateHasChanged;
-        InternalNotificationStateService.OnNotificationsChanged += StateHasChanged;
+    }
+    
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _buttonRef is not null)
+        {
+            StateHasChanged();
+        }
+
+        return Task.CompletedTask;
     }
     
     public void Dispose()
     {
         SystemFeedbackNotificationService.OnSystemNotificationAdded -= StateHasChanged;
-        InternalNotificationStateService.OnNotificationsChanged -= StateHasChanged;
     }
     
     private void OpenExternalNotifications()
     {
-        _popup.ToggleAsync(_buttonRef.Element);
-    }
-
-    private void OnNotificationClick(Notification internalNotification)
-    {
-        if (internalNotification is EntityPersistedNotification entityPersistedNotification) RouteToEntity(entityPersistedNotification);
-    }
-
-    private void RouteToEntity(EntityPersistedNotification entityPersistedNotification)
-    {
-        if(entityPersistedNotification?.PersistData.Entity is CourseDto)
-        {
-            NavigationManager.NavigateTo($"/course/{entityPersistedNotification.PersistData.Entity.Id}");
-            _popup.CloseAsync();
-        }
+        _notificationPopup?.OpenNotifications();
     }
 }

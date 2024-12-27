@@ -50,8 +50,6 @@ public static class ServiceCollectionExtensions
             return new NotificationManager(userPreferencesFactory, methodRegistry, messageBroker);
         });
 
-        services.AddScoped<NotificationManagerService>();
-
         return services;
     }
 }
