@@ -28,6 +28,8 @@ public class CourseService(ICourseRepository courseRepository,
         courseRepository.Add(courseEntity);
         
         var courseDto = mapper.Map<CourseDto>(courseEntity);
+        courseDto.Evls = course.Evls;
+        
         OnCourseCreated(courseDto);
 
         return courseDto;
