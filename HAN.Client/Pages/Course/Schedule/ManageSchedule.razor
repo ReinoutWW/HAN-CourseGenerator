@@ -137,7 +137,7 @@
     private void OnSelectionChanged(string uniqueKey, ScheduleLineDto scheduleLine)
     {
         var selectedComponent = groupedData.FirstOrDefault(g => g.UniqueKey == uniqueKey);
-        scheduleLine.CourseComponentId = selectedComponent?.ComponentId ?? throw new Exception("Invalid component selection.");
+        scheduleLine.CourseComponent = selectedComponent?.CourseComponent ?? throw new Exception("Invalid component selection.");
         
         if (selectedComponent != null)
         {
@@ -195,7 +195,7 @@
         schedule.ScheduleLines.Add(new ScheduleLineDto
         {
             WeekSequenceNumber = newSequenceNumber,
-            CourseComponentId = 0 // Default placeholder
+            CourseComponent = new() // Default placeholder
         });
 
         schedule.ScheduleLines = schedule.ScheduleLines.ToList(); // Ensure UI refresh
