@@ -61,7 +61,8 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
             return [];
 
         return _context.CourseComponents
-            .Where(c => c.EvlIds.Intersect(evlIds).Any()) // This will work as EF translates Intersect properly
+            .AsEnumerable() // Fetch all components and evaluate in memory
+            .Where(c => c.EvlIds.Any(id => evlIds.Contains(id)))
             .ToList();
     }
 

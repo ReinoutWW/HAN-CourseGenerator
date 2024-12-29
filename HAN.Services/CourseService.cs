@@ -76,7 +76,7 @@ public class CourseService(ICourseRepository courseRepository,
         var courseDto = mapper.Map<CourseDto>(course);
         courseDto.Evls = mapper.Map<List<EvlDto>>(evls);
         
-        return mapper.Map<CourseDto>(course);
+        return courseDto;
     }
 
     public IEnumerable<EvlDto> GetEvls(int courseId)
@@ -99,8 +99,17 @@ public class CourseService(ICourseRepository courseRepository,
     public List<CourseDto> GetAllCourses()
     {
         var courses = courseRepository.GetAll();
+
+        List<CourseDto> courseDtos = [];
+        foreach (var course in courses)
+        {
+            var evls = courseRepository.GetEvlsByCourseId(course.Id);
+            var courseDto = mapper.Map<CourseDto>(course);
+            courseDto.Evls = mapper.Map<List<EvlDto>>(evls);
+            courseDtos.Add(courseDto);
+        }
         
-        return mapper.Map<List<CourseDto>>(courses);
+        return courseDtos;
     }
 
     public ScheduleDto AddSchedule(ScheduleDto scheduleDto, int courseId)
