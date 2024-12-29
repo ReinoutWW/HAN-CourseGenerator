@@ -11,7 +11,8 @@ namespace HAN.Services;
 public abstract class AbstractCourseComponentService<TDto, TEntity>(
     ICourseComponentRepository<TEntity> repository,
     IValidationService validationService,
-    IMapper mapper) : 
+    IMapper mapper,
+    IEvlRepository evlRepository) : 
             ICourseComponentService<TDto> 
                 where TDto : CourseComponentDto 
                 where TEntity : CourseComponent
@@ -78,7 +79,11 @@ public abstract class AbstractCourseComponentService<TDto, TEntity>(
     public List<CourseComponentDto> GetAllCourseComponentsByEvlId(int evlId)
     {
         var entities = repository.GetAllCourseComponentsByEvlId(evlId);
+        
+        var evl = evlRepository.GetById(evlId);
+        var courseComponentDtos = mapper.Map<List<CourseComponentDto>>(entities);
+        courseComponentDtos.ForEach(c => c.Evls = [mapper.Map<EvlDto>(evl)]);
 
-        return mapper.Map<List<CourseComponentDto>>(entities);
+        return courseComponentDtos;
     }
 }

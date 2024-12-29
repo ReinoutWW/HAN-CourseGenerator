@@ -13,38 +13,33 @@ public class CourseProfile : Profile
     {
         // From - To (Easy to f* up)
         
-        // Persistence
-        CreateMap<CourseDto, Course>()
-            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
-        CreateMap<Course, CourseDto>();
-        
+
+        // DTO -> Entity
         CreateMap<EvlDto, Evl>();
-        CreateMap<Evl, EvlDto>();
-        
         CreateMap<UserDto, User>();
-        CreateMap<User, UserDto>();
-        
         CreateMap<FileDto, File>();
-        CreateMap<File, FileDto>();
-        
         CreateMap<ScheduleDto, Schedule>();
-        CreateMap<Schedule, ScheduleDto>();
-        
         CreateMap<ScheduleLineDto, ScheduleLine>();
-        CreateMap<ScheduleLine, ScheduleLineDto>();
-        
+        CreateMap<Course, CourseDto>();
+
         CreateMap<CourseComponentDto, CourseComponent>()
             .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
-
-        CreateMap<CourseComponent, CourseComponentDto>();
-
         CreateMap<LessonDto, Lesson>()
             .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
-        
         CreateMap<ExamDto, Exam>()
             .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
 
-        CreateMap<Exam, ExamDto>();
-        CreateMap<Lesson, LessonDto>();
+        // Entity -> DTO
+        CreateMap<Evl, EvlDto>();
+        CreateMap<User, UserDto>();
+        CreateMap<File, FileDto>();
+        CreateMap<Schedule, ScheduleDto>();
+        CreateMap<ScheduleLine, ScheduleLineDto>();
+        CreateMap<CourseDto, Course>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+
+        CreateMap<CourseComponent, CourseComponentDto>();
+        CreateMap<Lesson, LessonDto>().IncludeBase<CourseComponent, CourseComponentDto>();
+        CreateMap<Exam, ExamDto>().IncludeBase<CourseComponent, CourseComponentDto>();
     }
 }

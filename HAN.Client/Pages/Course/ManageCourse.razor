@@ -9,68 +9,84 @@
 @inject ICourseService CourseService
 @inject NavigationManager NavigationManager
 @inject NotificationService SystemFeedbackNotificationService
+@inject ICourseValidationService CourseValidationService
 
 <h3>@(course.Id == 0 ? "Create Course" : "Edit Course")</h3>
 
-<RadzenTemplateForm Data="@course" Submit="@((CourseDto args) => { Submit(args); })">
-    <RadzenFieldset Text="Course Info">
-        <RadzenStack Gap="1rem">
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenLabel Text="Name" Component="Name" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="8">
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="course.Name" Name="Name" />
-                    <RadzenRequiredValidator Component="Name" Text="Name is required." />
-                    <RadzenLengthValidator Component="Name" Min="5" Max="100" Text="Name must be between 5 and 100 characters." />
-                </RadzenColumn>
-            </RadzenRow>
+<div class="row">
+    <div class="col-8">
+        <RadzenTemplateForm Data="@course" Submit="@((CourseDto args) => { Submit(args); })">
+            <RadzenFieldset Text="Course Info">
+                <RadzenStack Gap="1rem">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Name" Component="Name" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox Style="width: 100%;" @bind-Value="course.Name" Name="Name" />
+                            <RadzenRequiredValidator Component="Name" Text="Name is required." />
+                            <RadzenLengthValidator Component="Name" Min="5" Max="100" Text="Name must be between 5 and 100 characters." />
+                        </RadzenColumn>
+                    </RadzenRow>
 
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenLabel Text="Description" Component="Description" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="8">
-                    <RadzenTextArea Style="width: 100%;" Rows="5" @bind-Value="course.Description" Name="Description" />
-                    <RadzenLengthValidator Component="Description" Max="450" Text="Description cannot exceed 450 characters." />
-                </RadzenColumn>
-            </RadzenRow>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Description" Component="Description" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextArea Style="width: 100%;" Rows="5" @bind-Value="course.Description" Name="Description" />
+                            <RadzenLengthValidator Component="Description" Max="450" Text="Description cannot exceed 450 characters." />
+                        </RadzenColumn>
+                    </RadzenRow>
 
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenLabel Text="Evaluations (Evls)" Component="Evls" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="8">
-                    <RadzenDropDown
-                        @bind-Value="selectedEvls"
-                        Data="@allEvls"
-                        Chips="true"
-                        AllowClear="true"
-                        Placeholder="Select evaluations"
-                        TextProperty="Name"
-                        ValueProperty="Id"
-                        Multiple="true"
-                        class="mb-2"
-                        Style="width: 100%;" />
-                    <RadzenLink Text="Create New Evaluation" Path="/evl/" />
-                </RadzenColumn>
-            </RadzenRow>
-        </RadzenStack>
-    </RadzenFieldset>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
-        <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
-        <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
-    </RadzenStack>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
-        <PrimaryButton Text="Navigate" Click="NavigateToSchedule" />
-    </RadzenStack>
-</RadzenTemplateForm>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Evaluations (Evls)" Component="Evls" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDropDown
+                                @bind-Value="selectedEvls"
+                                Data="@allEvls"
+                                Chips="true"
+                                AllowClear="true"
+                                Placeholder="Select evaluations"
+                                TextProperty="Name"
+                                ValueProperty="Id"
+                                Multiple="true"
+                                class="mb-2"
+                                Style="width: 100%;" />
+                            <RadzenLink Text="Create New Evaluation" Path="/evl/" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenFieldset>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" class="rz-mt-8 rz-mb-4">
+                <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+                <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-4">
+        <RadzenFieldset Text="Course validation">
+            <RadzenStack Orientation="Orientation.Vertical" Gap="16px">
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="8px">
+                    <RadzenText TextStyle="TextStyle.Subtitle1" Text="Course validation status:"/>
+                    <span>
+                        <RadzenBadge Text="@(IsCourseValid ? "Valid" : "Invalid")" Variant="Variant.Flat" BadgeStyle="@(IsCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
+                    </span>
+                </RadzenStack>
+                <PrimaryButton Text="Go to Course Schedule" Style="width: 100%" Click="NavigateToSchedule" Icon="calendar_month"/>
+            </RadzenStack>
+        </RadzenFieldset>
+    </div>
+</div>
 
 @code {
     [Parameter] public int? Id { get; set; } = null;
     
     private bool IsEditMode => Id.HasValue;
     private bool IsCreateMode => !Id.HasValue;
+    private bool IsCourseValid = false;
     private CourseDto course = new();
     private List<int> selectedEvls = new();
     private List<EvlDto> allEvls = new();
@@ -92,6 +108,9 @@
             
             selectedEvls = course.Evls.Select(e => e.Id).ToList();
         }
+        
+        if(course.Schedule != null)
+            IsCourseValid = CourseValidationService.ValidateCourse(course);
         
         base.OnInitialized();
     }
