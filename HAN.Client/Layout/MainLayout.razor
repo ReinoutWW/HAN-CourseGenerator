@@ -14,7 +14,10 @@
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
             <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
-            <RadzenLabel Text="CourseGenerator" />
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" class="d-flex align-items-center">
+                <RadzenIcon Icon="history_edu" />
+                <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H5" Text="Learning" />
+            </RadzenStack>
             <div class="ml-auto mr-3">
                 <RadzenButton Click="OpenExternalNotifications" @ref=@_buttonRef Variant="Variant.Flat" Shade="Shade.Lighter" Icon="@(HasExternalNotifications ? "notifications_active" : "notifications")"/>
             </div>
