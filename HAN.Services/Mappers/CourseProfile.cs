@@ -14,7 +14,8 @@ public class CourseProfile : Profile
         // From - To (Easy to f* up)
         
         // Persistence
-        CreateMap<CourseDto, Course>();
+        CreateMap<CourseDto, Course>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
         CreateMap<Course, CourseDto>();
         
         CreateMap<EvlDto, Evl>();
@@ -26,25 +27,24 @@ public class CourseProfile : Profile
         CreateMap<FileDto, File>();
         CreateMap<File, FileDto>();
         
-        CreateMap<LessonDto, Lesson>();
-        CreateMap<Lesson, LessonDto>();
-        
-        CreateMap<ExamDto, Exam>();
-        CreateMap<Exam, ExamDto>();
-
         CreateMap<ScheduleDto, Schedule>();
         CreateMap<Schedule, ScheduleDto>();
         
         CreateMap<ScheduleLineDto, ScheduleLine>();
         CreateMap<ScheduleLine, ScheduleLineDto>();
         
-        CreateMap<CourseComponentDto, CourseComponent>();
+        CreateMap<CourseComponentDto, CourseComponent>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+
         CreateMap<CourseComponent, CourseComponentDto>();
 
-        CreateMap<CourseComponentDto, CourseComponent>()
-            .Include<LessonDto, Lesson>();
+        CreateMap<LessonDto, Lesson>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+        
+        CreateMap<ExamDto, Exam>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
 
-        CreateMap<CourseComponent, CourseComponentDto>()
-            .Include<Lesson, LessonDto>();
+        CreateMap<Exam, ExamDto>();
+        CreateMap<Lesson, LessonDto>();
     }
 }

@@ -9,19 +9,18 @@ public class CourseRepository(AppDbContext context) : GenericRepository<Course>(
 {
     private readonly AppDbContext _context = context;
 
-    public override void Update(Course entity)
+     public override void Update(Course entity)
     {
-        var existingCourse = Context.Set<Course>()
-            .Include(c => c.Evls)
+        var existingCourse = _context.Courses
             .FirstOrDefault(c => c.Id == entity.Id);
 
         if (existingCourse == null)
             throw new InvalidOperationException($"Course with Id {entity.Id} not found.");
 
-        Context.Entry(existingCourse).CurrentValues.SetValues(entity);
-        SynchronizeCollection(existingCourse.Evls, entity.Evls);
+        _context.Entry(existingCourse).CurrentValues.SetValues(entity);
+        existingCourse.EvlIds = entity.EvlIds;
 
-        Context.SaveChanges();
+        _context.SaveChanges();
     }
 
     public override void Add(Course entity)
@@ -29,74 +28,63 @@ public class CourseRepository(AppDbContext context) : GenericRepository<Course>(
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
 
-        entity.Evls = ValidateAndResolveEvls(entity.Evls);
+        entity.EvlIds = ValidateAndResolveEvlIds(entity.EvlIds);
 
         Entity.Add(entity);
-        Context.SaveChanges();
+        _context.SaveChanges();
     }
-    
-    private List<Evl> ValidateAndResolveEvls(List<Evl> evls)
-    {
-        if (evls == null)
-            throw new ArgumentNullException(nameof(evls));
 
-        var resolvedEvls = new List<Evl>();
-        foreach (var evl in evls)
+    private List<int> ValidateAndResolveEvlIds(List<int> evlIds)
+    {
+        if (evlIds == null)
+            throw new ArgumentNullException(nameof(evlIds));
+
+        foreach (var id in evlIds)
         {
-            resolvedEvls.Add(GetExistingEvlOrThrow(evl));
+            var evlExists = _context.Evls.Any(e => e.Id == id);
+            if (!evlExists)
+                throw new InvalidOperationException($"Evl with Id {id} not found.");
         }
 
-        return resolvedEvls;
-    }
-
-    private Evl GetExistingEvlOrThrow(Evl evl)
-    {
-        if (evl.Id <= 0)
-            throw new InvalidOperationException("Cannot add a new Evl in this method. Only existing Evl references are allowed.");
-
-        var existingEvl = Context.Set<Evl>().Find(evl.Id);
-        if (existingEvl == null)
-            throw new InvalidOperationException($"Evl with Id {evl.Id} not found.");
-
-        return existingEvl;
+        return evlIds;
     }
 
     public override List<Course> GetAll()
     {
-        return _context.Courses
-            .Include(c => c.Evls)
-            .ToList();
+        return _context.Courses.ToList();
     }
 
     public IEnumerable<Evl> GetEvlsByCourseId(int id)
     {
-        var course = _context.Courses
-            .Include(c => c.Evls)
-            .FirstOrDefault(c => c.Id == id);
-        
-        if (course == null)
-            throw new KeyNotFoundException($"Course with id {id} does not exist. Please check the provided course ID.");
-        
-        return course.Evls;
+        var evlIds = _context.Courses
+            .Where(c => c.Id == id)
+            .Select(c => c.EvlIds)
+            .FirstOrDefault();
+
+        if (evlIds == null)
+            throw new KeyNotFoundException($"Course with id {id} does not exist.");
+
+        return _context.Evls.Where(e => evlIds.Contains(e.Id)).ToList();
     }
 
     public void AddEvlToCourse(int courseId, int evlId)
     {
-        var course = _context.Courses.Include(c => c.Evls)
-            .FirstOrDefault(c => c.Id == courseId);
+        var course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
 
         if (course == null)
             throw new KeyNotFoundException($"Course with ID {courseId} not found.");
 
-        var evl = _context.Evls.FirstOrDefault(e => e.Id == evlId);
+        if (!course.EvlIds.Contains(evlId))
+        {
+            if (!_context.Evls.Any(e => e.Id == evlId))
+                throw new KeyNotFoundException($"Evl with ID {evlId} not found.");
 
-        if (evl == null)
-            throw new KeyNotFoundException($"Evl with ID {evlId} not found.");
-
-        if (course.Evls.Any(e => e.Id == evlId))
+            course.EvlIds.Add(evlId);
+            _context.SaveChanges();
+        }
+        else
+        {
             throw new InvalidOperationException($"Evl with ID {evlId} is already associated with Course ID {courseId}.");
-
-        course.Evls.Add(evl);
-        _context.SaveChanges();
+        }
     }
 }

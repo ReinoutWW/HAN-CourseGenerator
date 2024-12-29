@@ -57,11 +57,15 @@ public abstract class AbstractCourseComponentService<TDto, TEntity>(
     public TDto GetCourseComponentById(int id)
     {
         var entity = repository.GetById(id);
+        var evls = GetEvlsForCourseComponent(id);
 
         if (entity == null)
             throw new KeyNotFoundException($"CourseComponent with ID {id} not found.");
 
-        return mapper.Map<TDto>(entity);
+        var courseComponentDto = mapper.Map<TDto>(entity);
+        courseComponentDto.Evls = mapper.Map<List<EvlDto>>(evls);
+
+        return courseComponentDto;
     }
     
     public List<TDto> GetAllCourseComponentByEvlIds(List<int> evlIds)

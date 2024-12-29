@@ -68,9 +68,13 @@ public class CourseService(ICourseRepository courseRepository,
     public CourseDto GetCourseById(int id)
     {
         var course = courseRepository.GetById(id);
+        var evls = courseRepository.GetEvlsByCourseId(id).ToList();
         
         if(course == null)
             throw new KeyNotFoundException($"Course with id {id} not found");
+
+        var courseDto = mapper.Map<CourseDto>(course);
+        courseDto.Evls = mapper.Map<List<EvlDto>>(evls);
         
         return mapper.Map<CourseDto>(course);
     }
