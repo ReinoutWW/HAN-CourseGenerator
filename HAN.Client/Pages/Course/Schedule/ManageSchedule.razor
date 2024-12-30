@@ -1,11 +1,13 @@
 ﻿@page "/course/{Id:int}/schedule"
 
+@using System.Collections
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Components.UI;
 @using HAN.Services
 @using HAN.Services.DTOs.CourseComponents
+@using HAN.Services.Validation
 
 @inject ICourseService CourseService
 @inject CourseComponentService CourseComponentService
@@ -13,14 +15,14 @@
 @inject NotificationService SystemFeedbackNotificationService
 @inject ICourseValidationService CourseValidationService
 
-<h3>@(schedule.Id == 0 ? "Create Schedule" : "Edit Schedule")</h3>
+<h3>@(_schedule.Id == 0 ? "Create Schedule" : "Edit Schedule")</h3>
 
 <div class="row">
     <div class="col-8">
-        <RadzenTemplateForm @bind-Data="@schedule" Submit="@((ScheduleDto args) => { Submit(args); })">
+        <RadzenTemplateForm @bind-Data="@_schedule" Submit="@((ScheduleDto args) => { Submit(args); })">
             <RadzenFieldset Text="Schedule Info">
                 <RadzenStack Gap="1rem">
-                    <RadzenDataGrid @bind-Data="@schedule.ScheduleLines" TItem="ScheduleLineDto" Editable="true" AutoGenerateColumns="false">
+                    <RadzenDataGrid @bind-Data="@_schedule.ScheduleLines" TItem="ScheduleLineDto" Editable="true" AutoGenerateColumns="false">
                         <Columns>
                             <RadzenDataGridColumn HeaderTooltip="true" Width="150px" TItem="ScheduleLineDto" Property="WeekSequenceNumber" Title="Week Number">
                                 <Template Context="scheduleLine">
@@ -35,13 +37,13 @@
                             <RadzenDataGridColumn Width="100%" TItem="ScheduleLineDto" Title="Component">
                                 <Template Context="scheduleLine">
                                     <RadzenDropDown
-                                        Data=@groupedData 
+                                        Data=@_groupedData 
                                         ValueProperty="UniqueKey" 
                                         TextProperty="DisplayName" 
                                         ItemRender="ItemRender"
                                         Style="width: 100%;"
                                         TValue="string"
-                                        Value="@(groupedData.FirstOrDefault(g => g.ComponentId == scheduleLine.CourseComponentId)?.UniqueKey)"
+                                        Value="@(_groupedData.FirstOrDefault(g => g.ComponentId == scheduleLine.CourseComponentId)?.UniqueKey)"
                                         ValueChanged="@((value) => OnSelectionChanged(value, scheduleLine))"
                                         Placeholder="Select component">
                                         <Template Context="selectionContext">
@@ -85,10 +87,24 @@
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="8px">
                     <RadzenText TextStyle="TextStyle.Subtitle1" Text="Course validation status:"/>
                     <span>
-                        <RadzenBadge Text="@(IsCourseValid ? "Valid" : "Invalid")" Variant="Variant.Flat" BadgeStyle="@(IsCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
+                        <RadzenBadge Text="@(_isCourseValid ? "Valid" : "Invalid")" Variant="Variant.Flat" BadgeStyle="@(_isCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
                     </span>
                 </RadzenStack>
-                <PrimaryButton Icon="check" Size="ButtonSize.Large" Text="Validate Schedule" Click="@ValidateSchedule" />
+                <RadzenStack Orientation="Orientation.Vertical" Gap="12px">
+                    @if (_courseValidationResult != null)
+                    {
+                        <div class="han-delimiter" ></div>
+                        <RadzenText TextStyle="TextStyle.Subtitle2" Text="Errors:" />
+                        @foreach (var message in _courseValidationResult.Errors)
+                        {
+                            <div>
+                                <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" BadgeStyle="BadgeStyle.Warning" Text="@message.ErrorCategory.GetDisplayDescription()"/> @message.Message
+                            </div>
+                        }
+                        <div class="han-delimiter" ></div>
+                    }
+                </RadzenStack>
+                <PrimaryButton Icon="check" Size="ButtonSize.Large" Text="Validate Schedule" Click="@ValidateSchedule"/>
             </RadzenStack>
         </RadzenFieldset>
     </div>
@@ -97,34 +113,35 @@
 @code {
     [Parameter] public int Id { get; set; }
 
-    private bool IsCourseValid = false;
+    private bool _isCourseValid = false;
     
-    private CourseDto course = new();
-    private ScheduleDto schedule = new()
+    private CourseDto _course = new();
+    private ScheduleDto _schedule = new()
     {
         ScheduleLines = new List<ScheduleLineDto>()
     };
-    private List<CourseComponentDto> allCourseComponents = new();
-    private IEnumerable<GroupData> groupedData;
+    private readonly List<CourseComponentDto> _allCourseComponents = new();
+    private IEnumerable<GroupData>? _groupedData;
+    private CourseValidationResult? _courseValidationResult;
 
     protected override void OnInitialized()
     {
         if (Id > 0)
         {
-            course = CourseService.GetCourseById(Id);
-            var courseEvls = course.Evls.Select(evl => evl.Id).ToList();
+            _course = CourseService.GetCourseById(Id);
+            var courseEvls = _course.Evls.Select(evl => evl.Id).ToList();
 
             foreach (var evlId in courseEvls)
             {
                 var courseComponents = CourseComponentService.GetAllCourseComponentsByEvlId(evlId).ToList();
-                allCourseComponents.AddRange(courseComponents);
+                _allCourseComponents.AddRange(courseComponents);
             }
 
-            schedule = course.Schedule == null ? CourseService.AddSchedule(new ScheduleDto(), Id) : CourseService.GetScheduleById(course.Schedule.Id);
+            _schedule = _course.Schedule == null ? CourseService.AddSchedule(new ScheduleDto(), Id) : CourseService.GetScheduleById(_course.Schedule.Id);
         }
         else
         {
-            schedule = new ScheduleDto();
+            _schedule = new ScheduleDto();
         }
 
         InitializeGroupedDropdown();
@@ -136,7 +153,7 @@
         
     private void OnSelectionChanged(string uniqueKey, ScheduleLineDto scheduleLine)
     {
-        var selectedComponent = groupedData.FirstOrDefault(g => g.UniqueKey == uniqueKey);
+        var selectedComponent = _groupedData.FirstOrDefault(g => g.UniqueKey == uniqueKey);
         scheduleLine.CourseComponent = selectedComponent?.CourseComponent ?? throw new Exception("Invalid component selection.");
         
         if (selectedComponent != null)
@@ -149,9 +166,9 @@
 
     private void InitializeGroupedDropdown()
     {
-        var evls = course.Evls;
+        var evls = _course.Evls;
 
-        groupedData = evls
+        _groupedData = evls
             .SelectMany(ev =>
             {
                 Console.WriteLine($"Evl: {ev.Name}");
@@ -163,7 +180,7 @@
                     UniqueKey = null
                 };
 
-                var components = allCourseComponents
+                var components = _allCourseComponents
                     .Where(cc => cc.Evls.Any(e => e.Id == ev.Id))
                     .Select(cc =>
                     {
@@ -183,45 +200,45 @@
             })
             .ToList();
 
-        groupedData.OrderBy(item => item.ComponentName is AssessmentDto).ThenBy(item => item.DisplayName);
+        _groupedData.OrderBy(item => item.ComponentName is AssessmentDto).ThenBy(item => item.DisplayName);
     }
 
     private void AddScheduleLine()
     {
-        var newSequenceNumber = schedule.ScheduleLines.Any()
-            ? schedule.ScheduleLines.Max(line => line.WeekSequenceNumber) + 1
+        var newSequenceNumber = _schedule.ScheduleLines.Any()
+            ? _schedule.ScheduleLines.Max(line => line.WeekSequenceNumber) + 1
             : 1;
 
-        schedule.ScheduleLines.Add(new ScheduleLineDto
+        _schedule.ScheduleLines.Add(new ScheduleLineDto
         {
             WeekSequenceNumber = newSequenceNumber,
             CourseComponent = new() // Default placeholder
         });
 
-        schedule.ScheduleLines = schedule.ScheduleLines.ToList(); // Ensure UI refresh
+        _schedule.ScheduleLines = _schedule.ScheduleLines.ToList(); // Ensure UI refresh
     }
 
     private void RemoveScheduleLine(ScheduleLineDto line)
     {
-        schedule.ScheduleLines.Remove(line);
-        schedule.ScheduleLines = schedule.ScheduleLines.ToList();
+        _schedule.ScheduleLines.Remove(line);
+        _schedule.ScheduleLines = _schedule.ScheduleLines.ToList();
         
         StateHasChanged();
     }
 
     private void Submit(ScheduleDto arg)
     {
-        if (!schedule.ScheduleLines.Any())
+        if (!_schedule.ScheduleLines.Any())
         {
             SystemFeedbackNotificationService.AddNotification("Please add at least one schedule line.");
             return;
         }
 
-        schedule.ScheduleLines = schedule.ScheduleLines
+        _schedule.ScheduleLines = _schedule.ScheduleLines
             .OrderBy(line => line.WeekSequenceNumber)
             .ToList();
 
-        CourseService.UpdateSchedule(schedule);
+        CourseService.UpdateSchedule(_schedule);
         NavigationManager.NavigateTo($"/course/{Id}");
         SystemFeedbackNotificationService.AddNotification("Schedule saved successfully!");
     }
@@ -233,10 +250,11 @@
 
     private void ValidateSchedule()
     {
-        course.Schedule = schedule;
-        var valid = ValidateCourse();
+        _course.Schedule = _schedule;
+        var validationResult = CourseValidationService.ValidateCourse(_course);
+        _courseValidationResult = validationResult;
         
-        if (valid)
+        if (validationResult.IsValid)
             SystemFeedbackNotificationService.AddNotification("Schedule is valid!");
         else
             SystemFeedbackNotificationService.AddNotification("Schedule is invalid!", AlertStyle.Danger);
@@ -244,8 +262,8 @@
 
     private bool ValidateCourse()
     {
-        IsCourseValid = CourseValidationService.ValidateCourse(course);
-        return IsCourseValid;
+        _isCourseValid = CourseValidationService.ValidateCourse(_course).IsValid;
+        return _isCourseValid;
     }
     
     class GroupData

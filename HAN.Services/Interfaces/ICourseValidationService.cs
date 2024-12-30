@@ -1,10 +1,12 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.Validation;
 
 namespace HAN.Services.Interfaces;
 
 public interface ICourseValidationService
 {
-    public bool ValidateCourse(int courseId);
-    public bool ValidateCourse(CourseDto courseDto);
-    public bool IsCourseComplete(CourseDto courseDto);
+    public CourseValidationResult ValidateCourse(int courseId);
+    public CourseValidationResult ValidateCourse(CourseDto courseDto);
+    public CourseValidationResult IsCourseComplete(CourseDto courseDto);
+    public CourseValidationResult HasCourseValidOrder(CourseDto courseDto);
 }

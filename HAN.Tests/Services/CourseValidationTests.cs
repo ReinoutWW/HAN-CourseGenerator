@@ -34,7 +34,7 @@ public class CourseValidationTests : TestBase
         var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
         course = _courseService.GetCourseById(courseId);
         
-        var complete = _courseValidationService.IsCourseComplete(course);
+        var complete = _courseValidationService.IsCourseComplete(course).IsValid;
         
         ScheduleShouldContainAllCourseComponents(schedule, courseComponents);
         Assert.NotNull(schedule);
@@ -64,7 +64,7 @@ public class CourseValidationTests : TestBase
 
         _courseService.AddSchedule(course.Schedule, course.Id);
         
-        var valid = _courseValidationService.ValidateCourse(course.Id);
+        var valid = _courseValidationService.ValidateCourse(course.Id).IsValid;
         
         Assert.True(valid);
     }
@@ -92,7 +92,7 @@ public class CourseValidationTests : TestBase
 
         _courseService.AddSchedule(course.Schedule, course.Id);
         
-        var valid = _courseValidationService.ValidateCourse(course.Id);
+        var valid = _courseValidationService.ValidateCourse(course.Id).IsValid;
         
         Assert.True(valid);
     }
@@ -114,7 +114,7 @@ public class CourseValidationTests : TestBase
         
         course = _courseService.GetCourseById(course.Id);
         
-        var complete = _courseValidationService.IsCourseComplete(course);
+        var complete = _courseValidationService.IsCourseComplete(course).IsValid;
         
         Assert.False(complete);
     }

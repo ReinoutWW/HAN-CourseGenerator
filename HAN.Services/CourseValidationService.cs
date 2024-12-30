@@ -1,6 +1,7 @@
 ﻿using HAN.Services.DTOs;
 using HAN.Services.DTOs.CourseComponents;
 using HAN.Services.Interfaces;
+using HAN.Services.Validation;
 
 namespace HAN.Services;
 
@@ -9,68 +10,166 @@ public class CourseValidationService(
     CourseComponentService courseComponentService
 ) : ICourseValidationService
 {
-    public bool ValidateCourse(int courseId)
+    public CourseValidationResult ValidateCourse(int courseId)
     {
         var course = courseService.GetCourseById(courseId);
+
         if (course.Schedule == null)
         {
-            throw new InvalidOperationException("Course does not have a schedule.");
+            return new CourseValidationResult
+            {
+                IsValid = false,
+                Message = "Course does not have a schedule.",
+                Errors = new List<CourseValidationError>
+                {
+                    new CourseValidationError
+                    {
+                        ErrorCategory = ErrorCategory.Missing,
+                        Message = "Schedule"
+                    }
+                }
+            };
         }
 
-        return IsCourseComplete(course) && HasCourseValidOrder(course);
+        var completenessResult = IsCourseComplete(course);
+        var orderResult = HasCourseValidOrder(course);
+
+        var errors = new List<CourseValidationError>();
+        errors.AddRange(completenessResult.Errors);
+        errors.AddRange(orderResult.Errors);
+
+        return new CourseValidationResult
+        {
+            IsValid = completenessResult.IsValid && orderResult.IsValid,
+            Message = completenessResult.IsValid && orderResult.IsValid
+                ? "Course validation succeeded."
+                : "Course validation failed.",
+            Errors = errors
+        };
     }
 
-    public bool ValidateCourse(CourseDto course)
-    {
-        if (course.Schedule == null)
-            return false;
-
-        return IsCourseComplete(course) && HasCourseValidOrder(course);
-    }
-
-    public bool IsCourseComplete(CourseDto courseDto)
+    public CourseValidationResult ValidateCourse(CourseDto courseDto)
     {
         if (courseDto.Schedule == null)
-            throw new InvalidOperationException("Course does not have a schedule.");
-        
+        {
+            return new CourseValidationResult
+            {
+                IsValid = false,
+                Message = "Course does not have a schedule.",
+                Errors = new List<CourseValidationError>
+                {
+                    new CourseValidationError
+                    {
+                        ErrorCategory = ErrorCategory.Missing,
+                        Message = "Schedule"
+                    }
+                }
+            };
+        }
+
+        var completenessResult = IsCourseComplete(courseDto);
+        var orderResult = HasCourseValidOrder(courseDto);
+
+        var errors = new List<CourseValidationError>();
+        errors.AddRange(completenessResult.Errors);
+        errors.AddRange(orderResult.Errors);
+
+        return new CourseValidationResult
+        {
+            IsValid = completenessResult.IsValid && orderResult.IsValid,
+            Message = completenessResult.IsValid && orderResult.IsValid
+                ? "Course validation succeeded."
+                : "Course validation failed.",
+            Errors = errors
+        };
+    }
+
+    public CourseValidationResult IsCourseComplete(CourseDto courseDto)
+    {
+        var result = new CourseValidationResult
+        {
+            IsValid = true,
+            Message = "Course completeness validation succeeded."
+        };
+
         var evlIds = courseDto.Evls.Select(evl => evl.Id).ToList();
         var allCourseComponents = courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
 
-        return allCourseComponents.All(
-            courseComponent => courseDto.Schedule.ScheduleLines.Any(sl => sl.CourseComponentId == courseComponent.Id)
-        );
-    }
-
-    public bool HasCourseValidOrder(CourseDto courseDto)
-    {
-        if (courseDto.Schedule == null)
-            throw new InvalidOperationException("Course does not have a schedule.");
-
-        return courseDto.Evls.All(evl => EvlHasValidOrder(evl, courseDto.Schedule));
-    }
-
-    private bool EvlHasValidOrder(EvlDto evl, ScheduleDto schedule)
-    {
-        var courseComponents = courseComponentService.GetAllCourseComponentsByEvlId(evl.Id);
-
-        foreach (var courseComponent in courseComponents)
+        foreach (var component in allCourseComponents)
         {
-            var scheduleLine = schedule.ScheduleLines.FirstOrDefault(sl => sl.CourseComponentId == courseComponent.Id);
-            if (scheduleLine == null)
-                continue;
-
-            if (courseComponent is ExamDto)
+            if (!courseDto.Schedule.ScheduleLines.Any(sl => sl.CourseComponentId == component.Id))
             {
-                var lessonsAfterExam = schedule.ScheduleLines
-                    .Where(sl => sl.CourseComponent is LessonDto)
-                    .Where(lesson => lesson.WeekSequenceNumber > scheduleLine.WeekSequenceNumber)
-                    .Select(lesson => lesson.CourseComponentId);
-
-                if (lessonsAfterExam.Any())
-                    return false;
+                result.IsValid = false;
+                result.Errors.Add(new CourseValidationError
+                {
+                    ErrorCategory = ErrorCategory.Missing,
+                    Message = $"CourseComponent: {component.Name}"
+                });
             }
         }
 
-        return true;
+        if (!result.IsValid)
+        {
+            result.Message = "Course is incomplete. Missing components.";
+        }
+
+        return result;
+    }
+
+    public CourseValidationResult HasCourseValidOrder(CourseDto courseDto)
+    {
+        var result = new CourseValidationResult
+        {
+            IsValid = true,
+            Message = "Course order validation succeeded."
+        };
+
+        foreach (var evl in courseDto.Evls)
+        {
+            var courseComponents = courseComponentService.GetAllCourseComponentsByEvlId(evl.Id);
+
+            foreach (var component in courseComponents)
+            {
+                var scheduleLine = courseDto.Schedule.ScheduleLines
+                    .FirstOrDefault(sl => sl.CourseComponentId == component.Id);
+
+                if (scheduleLine == null)
+                    continue;
+
+                if (component is ExamDto)
+                {
+                    var lessonsAfterExam = courseDto.Schedule.ScheduleLines
+                        .Where(sl => sl.CourseComponent is LessonDto)
+                        .Where(lesson => lesson.WeekSequenceNumber > scheduleLine.WeekSequenceNumber)
+                        .ToList();
+
+                    if (lessonsAfterExam.Any())
+                    {
+                        result.IsValid = false;
+                        result.Errors.Add(new CourseValidationError
+                        {
+                            ErrorCategory = ErrorCategory.OutOfOrder,
+                            Message = $"Exam: {component.Name}"
+                        });
+
+                        foreach (var lesson in lessonsAfterExam)
+                        {
+                            result.Errors.Add(new CourseValidationError
+                            {
+                                ErrorCategory = ErrorCategory.OutOfOrder,
+                                Message = $"Lesson: {lesson.CourseComponent.Name}"
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!result.IsValid)
+        {
+            result.Message = "Course has invalid order. Issues found.";
+        }
+
+        return result;
     }
 }

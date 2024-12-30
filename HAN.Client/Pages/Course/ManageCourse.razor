@@ -110,7 +110,7 @@
         }
         
         if(course.Schedule != null)
-            IsCourseValid = CourseValidationService.ValidateCourse(course);
+            IsCourseValid = CourseValidationService.ValidateCourse(course).IsValid;
         
         base.OnInitialized();
     }
