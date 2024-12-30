@@ -56,7 +56,7 @@
     color: var(--rz-on-primary-lighter);
 }
 
-html .han-validation-error-pill {
+.rz-badge.han-validation-error-pill {
     display: flex;
     padding: 0.25rem 0.5rem;
     height: 0.875rem;
