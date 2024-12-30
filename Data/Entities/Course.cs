@@ -21,6 +21,6 @@ public class Course : BaseEntity
     [DataType(DataType.DateTime)]
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-    public List<Evl> Evls { get; set; } = [];
-    public Schedule Schedule { get; set; }
+    public List<int> EvlIds { get; set; } = [];
+    public Schedule Schedule { get; set; } = new ();
 }

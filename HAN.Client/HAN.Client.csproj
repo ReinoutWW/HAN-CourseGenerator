@@ -18,6 +18,10 @@
       <ProjectReference Include="..\HAN.Services\HAN.Services.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\images\education-logo-2.png" />
+    </ItemGroup>
+
     <Target Name="RunTestsAfterBuild" AfterTargets="Build">
         <Exec Command="dotnet test" />
     </Target>

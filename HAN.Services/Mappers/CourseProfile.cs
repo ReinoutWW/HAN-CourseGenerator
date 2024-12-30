@@ -13,38 +13,34 @@ public class CourseProfile : Profile
     {
         // From - To (Easy to f* up)
         
-        // Persistence
-        CreateMap<CourseDto, Course>();
-        CreateMap<Course, CourseDto>();
-        
-        CreateMap<EvlDto, Evl>();
-        CreateMap<Evl, EvlDto>();
-        
-        CreateMap<UserDto, User>();
-        CreateMap<User, UserDto>();
-        
-        CreateMap<FileDto, File>();
-        CreateMap<File, FileDto>();
-        
-        CreateMap<LessonDto, Lesson>();
-        CreateMap<Lesson, LessonDto>();
-        
-        CreateMap<ExamDto, Exam>();
-        CreateMap<Exam, ExamDto>();
 
+        // DTO -> Entity
+        CreateMap<EvlDto, Evl>();
+        CreateMap<UserDto, User>();
+        CreateMap<FileDto, File>();
         CreateMap<ScheduleDto, Schedule>();
-        CreateMap<Schedule, ScheduleDto>();
-        
         CreateMap<ScheduleLineDto, ScheduleLine>();
-        CreateMap<ScheduleLine, ScheduleLineDto>();
-        
-        CreateMap<CourseComponentDto, CourseComponent>();
-        CreateMap<CourseComponent, CourseComponentDto>();
+        CreateMap<Course, CourseDto>();
 
         CreateMap<CourseComponentDto, CourseComponent>()
-            .Include<LessonDto, Lesson>();
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+        CreateMap<LessonDto, Lesson>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+        CreateMap<ExamDto, Exam>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
 
-        CreateMap<CourseComponent, CourseComponentDto>()
-            .Include<Lesson, LessonDto>();
+        // Entity -> DTO
+        CreateMap<Evl, EvlDto>();
+        CreateMap<User, UserDto>();
+        CreateMap<File, FileDto>();
+        CreateMap<Schedule, ScheduleDto>();
+        CreateMap<ScheduleLine, ScheduleLineDto>()
+            .ForMember(dest => dest.CourseComponentId, opt => opt.Ignore());
+        CreateMap<CourseDto, Course>()
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+
+        CreateMap<CourseComponent, CourseComponentDto>();
+        CreateMap<Lesson, LessonDto>().IncludeBase<CourseComponent, CourseComponentDto>();
+        CreateMap<Exam, ExamDto>().IncludeBase<CourseComponent, CourseComponentDto>();
     }
 }

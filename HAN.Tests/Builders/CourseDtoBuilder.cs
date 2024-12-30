@@ -54,7 +54,7 @@ public class CourseDtoBuilder
         {
             var scheduleLine = new ScheduleLineDto
             {
-                CourseComponentId = component.Id,
+                CourseComponent = component,
                 WeekSequenceNumber = weekSequenceNumber++
             };
             schedule.ScheduleLines.Add(scheduleLine);
@@ -82,7 +82,7 @@ public class CourseDtoBuilder
         {
             var scheduleLine = new ScheduleLineDto
             {
-                CourseComponentId = component.Id,
+                CourseComponent = component,
                 WeekSequenceNumber = weekSequenceNumber++
             };
             schedule.ScheduleLines.Add(scheduleLine);

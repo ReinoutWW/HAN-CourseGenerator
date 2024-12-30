@@ -16,6 +16,7 @@
     background-color: var(--rz-panel-background-color);
     border-radius: var(--rz-border-radius);
     border: var(--rz-grid-cell-border);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .han-notification-item {
@@ -54,4 +55,19 @@
 .han-notification-item .han-notification-item-time {
     font-size: 0.75rem;
     color: var(--rz-on-primary-lighter);
+}
+
+.rz-badge.han-validation-error-pill {
+    display: flex;
+    padding: 0.25rem 0.5rem;
+    height: 0.875rem;
+    width: 0.875rem;
+    max-height: 0.875rem;
+    border-radius: 50%;
+    background-color: var(--rz-error);
+    color: white;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    justify-content: center;
+    align-items: center;
 }
