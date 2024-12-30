@@ -8,10 +8,12 @@ namespace HAN.Services;
 
 public class ExamService(ICourseComponentRepository<Exam> repository, 
     IValidationService validationService, 
-    IMapper mapper) : AbstractCourseComponentService<ExamDto, Exam>(
+    IMapper mapper,
+    IEvlRepository evlRepository) : AbstractCourseComponentService<ExamDto, Exam>(
         repository, 
         validationService, 
-        mapper)
+        mapper,
+        evlRepository)
 {
     
 }

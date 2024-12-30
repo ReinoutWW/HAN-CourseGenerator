@@ -8,6 +8,6 @@ public class ScheduleLineDto
     public int Id { get; set; }
     [Required]
     public int WeekSequenceNumber { get; set; }
-    public int CourseComponentId { get; set; }
+    public int CourseComponentId => CourseComponent.Id;
     public CourseComponentDto CourseComponent { get; set; }
 }

@@ -60,7 +60,7 @@ public class PersistHelper
             .WithValidSchedule(courseComponents)
             .Build();
 
-        _courseService.AddSchedule(course.Schedule, course.Id);
+        _courseService.UpdateCourse(course);
         
         return course.Id;
     }

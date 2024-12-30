@@ -1,4 +1,6 @@
-﻿using HAN.Repositories.Extensions;
+﻿using System.ComponentModel;
+using System.Reflection;
+using HAN.Repositories.Extensions;
 using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 using HAN.Services.VolatilityDecomposition;
@@ -51,5 +53,19 @@ public static class ServiceCollectionExtensions
         });
 
         return services;
+    }
+    
+    public static TAttribute? GetAttribute<TAttribute>(this Enum enumValue) 
+        where TAttribute : Attribute
+    {
+        return enumValue.GetType()
+            .GetMember(enumValue.ToString()).First()
+            .GetCustomAttribute<TAttribute>();
+    }
+    
+    public static string? GetDescription(this Enum enumValue)
+    {
+        var attribute = enumValue.GetAttribute<DescriptionAttribute>();
+        return attribute?.Description ?? null;
     }
 }

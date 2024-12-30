@@ -29,14 +29,13 @@ public class CourseValidationTests : TestBase
         var course = _courseService.GetCourseById(courseId);
         var evlIds = course.Evls.Select(evl => evl.Id).ToList();
         
-        var schedule = _courseService.GetScheduleById(course.Schedule.Id);
-        
         var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
-
-        var complete = _courseValidationService.IsCourseComplete(courseId);
+        course = _courseService.GetCourseById(courseId);
         
-        ScheduleShouldContainAllCourseComponents(schedule, courseComponents);
-        Assert.NotNull(schedule);
+        var complete = _courseValidationService.IsCourseComplete(course).IsValid;
+        
+        ScheduleShouldContainAllCourseComponents(course.Schedule, courseComponents);
+        Assert.NotNull(course.Schedule);
         Assert.True(complete);
     }
     
@@ -61,9 +60,9 @@ public class CourseValidationTests : TestBase
             .WithValidSchedule(courseComponents)
             .Build();
 
-        _courseService.AddSchedule(course.Schedule, course.Id);
+        _courseService.UpdateCourse(course);
         
-        var valid = _courseValidationService.ValidateCourse(course.Id);
+        var valid = _courseValidationService.ValidateCourse(course.Id).IsValid;
         
         Assert.True(valid);
     }
@@ -89,11 +88,11 @@ public class CourseValidationTests : TestBase
             .WithInvalidSchedule(courseComponents)
             .Build();
 
-        _courseService.AddSchedule(course.Schedule, course.Id);
+        _courseService.UpdateCourse(course);
         
-        var valid = _courseValidationService.ValidateCourse(course.Id);
+        var valid = _courseValidationService.ValidateCourse(course.Id).IsValid;
         
-        Assert.True(valid);
+        Assert.False(valid);
     }
 
     [Fact]
@@ -108,10 +107,14 @@ public class CourseValidationTests : TestBase
         course = _courseService.CreateCourse(course);
         
         _persistHelper.SeedLessonToEvls(course.Evls);
+
+        course.Schedule = new ScheduleDto();
         
-        _courseService.AddSchedule(new ScheduleDto(), course.Id);
+        _courseService.UpdateCourse(course);
         
-        var complete = _courseValidationService.IsCourseComplete(course.Id);
+        course = _courseService.GetCourseById(course.Id);
+        
+        var complete = _courseValidationService.IsCourseComplete(course).IsValid;
         
         Assert.False(complete);
     }

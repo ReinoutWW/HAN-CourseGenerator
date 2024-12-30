@@ -18,6 +18,9 @@ html, body {
 .rz-layout .rz-body {
     background-color: white;
     border-radius: 10px;
+
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    z-index: 2;
 }
 
 .rz-layout .rz-header {
@@ -39,7 +42,6 @@ html, body {
 
 .han-delimiter {
     border-bottom: 1px solid lightgray;
-    padding: 0.5rem 0;
 }
 
 h1:focus {
@@ -142,9 +144,9 @@ a, .btn-link {
     inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
 }
 
-    .loading-progress-text:after {
-        content: var(--blazor-load-percentage-text, "Loading");
-    }
+.loading-progress-text:after {
+    content: var(--blazor-load-percentage-text, "Loading");
+}
 
 code {
     color: #c02d76;

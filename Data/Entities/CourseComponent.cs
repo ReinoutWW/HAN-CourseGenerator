@@ -11,7 +11,7 @@ public class CourseComponent : BaseEntity
     
     [DataType(DataType.Text)]
     public string Description { get; set; } = string.Empty;
-
-    public List<Evl> Evls { get; set; } = [];
-    public List<File> Files { get; set; } = [];
+    
+    public List<int> EvlIds { get; set; } = [];
+    public List<int> FileIds { get; set; } = [];
 }
