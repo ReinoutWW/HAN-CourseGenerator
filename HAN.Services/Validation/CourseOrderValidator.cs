@@ -25,7 +25,7 @@ public class CourseOrderValidator(CourseComponentService courseComponentService)
 
                 if (scheduleLine == null) continue;
 
-                if (component is ExamDto && HasLessonsAfter(scheduleLine, courseDto))
+                if (component is ExamDto && HasLessonsAfter(scheduleLine, courseDto, evl.Id))
                 {
                     result.IsValid = false;
                     result.Errors.Add(new CourseValidationError
@@ -46,10 +46,10 @@ public class CourseOrderValidator(CourseComponentService courseComponentService)
         return result;
     }
 
-    private bool HasLessonsAfter(ScheduleLineDto scheduleLine, CourseDto courseDto)
+    private static bool HasLessonsAfter(ScheduleLineDto scheduleLine, CourseDto courseDto, int evlId)
     {
         return courseDto.Schedule.ScheduleLines
-            .Where(sl => sl.CourseComponent is LessonDto)
+            .Where(sl => sl.CourseComponent is LessonDto && sl.CourseComponent.Evls.Select(evl => evl.Id).Contains(evlId))
             .Any(lesson => lesson.WeekSequenceNumber > scheduleLine.WeekSequenceNumber);
     }
 }
