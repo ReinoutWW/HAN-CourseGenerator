@@ -239,7 +239,7 @@
     {
         if (!_schedule.ScheduleLines.Any())
         {
-            SystemFeedbackNotificationService.AddNotification("Please add at least one schedule line.");
+            SystemFeedbackNotificationService.AddNotification("Please add at least one schedule line.", AlertStyle.Warning);
             return;
         }
 
@@ -247,6 +247,12 @@
             .OrderBy(line => line.WeekSequenceNumber)
             .ToList();
 
+        if(_schedule.ScheduleLines.ToList().Any(line => line.CourseComponentId == 0))
+        {
+            SystemFeedbackNotificationService.AddNotification("Please select a component for each schedule line.", AlertStyle.Warning);
+            return;
+        }
+        
         _course.Schedule = submittedScheduleDto;
         
         CourseService.UpdateCourse(_course);
