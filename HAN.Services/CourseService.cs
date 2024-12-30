@@ -77,7 +77,9 @@ public class CourseService(ICourseRepository courseRepository,
 
         var courseDto = mapper.Map<CourseDto>(course);
         courseDto.Evls = mapper.Map<List<EvlDto>>(evls);
-        courseDto.Schedule = GetScheduleById(course.Schedule.Id);
+        
+        if(courseDto.Schedule != null)
+            courseDto.Schedule = GetScheduleById(course.Schedule.Id);
         
         return courseDto;
     }
