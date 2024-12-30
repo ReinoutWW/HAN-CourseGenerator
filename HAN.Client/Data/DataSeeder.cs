@@ -21,47 +21,49 @@ public static class DataSeeder
     {
         var courseService = serviceProvider.GetRequiredService<ICourseService>();
 
-        var oopEvl = SeedOopEvl(serviceProvider);
-        var databaseEvl = SeedDatabaseEvl(serviceProvider);
+        var firstRandomEvl = SeedRandomEvl(serviceProvider);
+        var secondRandomEvl = SeedRandomEvl(serviceProvider);
         
         var courseName = GetRandomCourseName();
         var course = new CourseDto()
         {
             Name = courseName,
             Description = $"({iteration}): Introduction to {courseName}. After this course, you will be able to understand the basics of {courseName}.",
-            Evls = [oopEvl, databaseEvl]
+            Evls = [firstRandomEvl, secondRandomEvl]
         };
 
         courseService.CreateCourse(course);
     }
 
-    private static EvlDto SeedDatabaseEvl(IServiceProvider serviceProvider)
+    private static EvlDto SeedRandomEvl(IServiceProvider serviceProvider)
     {
         var evlService = serviceProvider.GetRequiredService<IEvlService>();
         var lessonService = serviceProvider.GetRequiredService<LessonService>();
         var examService = serviceProvider.GetRequiredService<ExamService>();
+
+        var randomEvlName = GetRandomEvlName();
         
-        var databaseEvl = new EvlDto()
+        var randomEvl = new EvlDto()
         {
-            Name = $"Database",
-            Description = "Database management",
+            Name = $"{randomEvlName}",
+            Description = $"Learning everything about {randomEvlName}",
         };
         
-        databaseEvl = evlService.CreateEvl(databaseEvl);
+        randomEvl = evlService.CreateEvl(randomEvl);
 
         var lessons = new List<LessonDto>()
         {
             new LessonDto()
             {
                 Name = $"Learning the basics",
-                Description = $"Introduction lesson to databases",
-                Evls = [databaseEvl]
+                Description = $"Introduction lesson to {randomEvlName}",
+                Evls = [randomEvl]
             },
             new LessonDto()
             {
-                Name = $"Learning the basics",
-                Description = $"Introduction to advanced databases",
-                Evls = [databaseEvl]
+                Name = $"Learning the advanced",
+                Description = $"Introduction to advanced {randomEvlName}",
+                Evls = [randomEvl]
             }
         };
 
@@ -69,58 +71,14 @@ public static class DataSeeder
 
         var exam = new ExamDto()
         {
-            Name = $"Final exam Database",
-            Description = $"Final exam for Database",
-            Evls = [databaseEvl]
+            Name = $"Final exam {randomEvlName}",
+            Description = $"Final exam for {randomEvlName}",
+            Evls = [randomEvl]
         };
         
         examService.CreateCourseComponent(exam);
         
-        return databaseEvl;
-    }
-
-    private static EvlDto SeedOopEvl(IServiceProvider serviceProvider)
-    {
-        var evlService = serviceProvider.GetRequiredService<IEvlService>();
-        var lessonService = serviceProvider.GetRequiredService<LessonService>();
-        var examService = serviceProvider.GetRequiredService<ExamService>();
-        
-        var oopEvl = new EvlDto()
-        {
-            Name = $"OOP",
-            Description = "Object Oriented Programming",
-        };
-        
-        oopEvl = evlService.CreateEvl(oopEvl);
-
-        var lessons = new List<LessonDto>()
-        {
-            new LessonDto()
-            {
-                Name = $"Learning the basics",
-                Description = $"Introduction lesson to OOP",
-                Evls = [oopEvl]
-            },
-            new LessonDto()
-            {
-                Name = $"Learning the basics",
-                Description = $"Introduction to advanced OOP",
-                Evls = [oopEvl]
-            }
-        };
-
-        lessons.ForEach(lesson => lessonService.CreateCourseComponent(lesson));
-
-        var exam = new ExamDto()
-        {
-            Name = $"Final exam OOP",
-            Description = $"Final exam for OOP",
-            Evls = [oopEvl]
-        };
-        
-        examService.CreateCourseComponent(exam);
-        
-        return oopEvl;
+        return randomEvl;
     }
 
     private static string GetRandomCourseName()
@@ -167,5 +125,29 @@ public static class DataSeeder
         
         var randomIndex = new Random().Next(0, courseNames.Length);
         return courseNames[randomIndex];
+    }
+
+    public static string GetRandomEvlName()
+    {
+        var evlNames = new []
+        {
+            "I-OOSE",
+            "Programming",
+            "UX Design",
+            "Web Development",
+            "Requirements Engineering",
+            "Software Testing",
+            "Software Architecture",
+            "Software Project Management",
+            "Software Quality Assurance",
+            "Software Development",
+            "Software Engineering",
+            "Software Maintenance",
+            "Software Design",
+            "Software Analysis",
+        };
+        
+        var randomIndex = new Random().Next(0, evlNames.Length);
+        return evlNames[randomIndex];
     }
 }
