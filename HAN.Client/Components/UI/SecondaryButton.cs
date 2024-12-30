@@ -9,6 +9,7 @@ public class SecondaryButton : RadzenButton
     {
         ButtonStyle = ButtonStyle.Light;
         Variant = Variant.Flat;
+        Shade = Shade.Lighter;
         base.OnInitialized();
     }
 }
