@@ -71,14 +71,38 @@ public class CourseService(ICourseRepository courseRepository,
 
         existingCourse.Name = courseDto.Name;
         existingCourse.Description = courseDto.Description;
+        existingCourse.EvlIds = courseDto.Evls.Select(e => e.Id).ToList();
 
         UpdateSchedule(existingCourse.Schedule, courseDto.Schedule);
 
         existingCourse.UpdatedAt = DateTime.UtcNow;
 
         courseRepository.Update(existingCourse);
+        
+        OnCourseUpdated(courseDto);
 
         return mapper.Map<CourseDto>(existingCourse);
+    }
+    
+    private void OnCourseUpdated(CourseDto course)
+    {
+        var notification = new EntityPersistedNotification
+        {
+            Title = "Course with name " + course.Name + " has been updated successfully!",
+            Message = "An entity has been successfully updated.",
+            Type = NotificationType.EntityPersisted,
+            PersistData = new EntityPersistedData
+            {
+                EntityName = course.Name,
+                Entity = course
+            }
+        };
+        
+        messageBroker.Publish(new NotificationEvent
+        {
+            Type = NotificationType.EntityPersisted,
+            Notification = notification
+        });
     }
 
     public CourseDto GetCourseById(int id)

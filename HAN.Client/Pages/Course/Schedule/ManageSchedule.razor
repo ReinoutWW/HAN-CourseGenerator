@@ -31,11 +31,6 @@
                                     <RadzenNumeric Style="width: 100%;" @bind-Value="scheduleLine.WeekSequenceNumber" Min="1" />
                                 </Template>
                             </RadzenDataGridColumn>
-                            <RadzenDataGridColumn HeaderTooltip="true" Width="150px" TItem="ScheduleLineDto" Property="WeekSequenceNumber" Title="Course component number">
-                                <EditTemplate Context="scheduleLine">
-                                    CC Id: @scheduleLine.CourseComponentId
-                                </EditTemplate>
-                            </RadzenDataGridColumn>
                             <RadzenDataGridColumn Width="100%" TItem="ScheduleLineDto" Title="Component">
                                 <Template Context="scheduleLine">
                                     <RadzenDropDown
