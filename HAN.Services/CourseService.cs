@@ -77,6 +77,7 @@ public class CourseService(ICourseRepository courseRepository,
 
         var courseDto = mapper.Map<CourseDto>(course);
         courseDto.Evls = mapper.Map<List<EvlDto>>(evls);
+        courseDto.Schedule = GetScheduleById(course.Schedule.Id);
         
         return courseDto;
     }
@@ -142,11 +143,18 @@ public class CourseService(ICourseRepository courseRepository,
             throw new KeyNotFoundException($"Schedule with id {id} not found");
         
         var scheduleDto = mapper.Map<ScheduleDto>(schedule);
-
-        foreach (var scheduleLine in scheduleDto.ScheduleLines)
+        scheduleDto.ScheduleLines = []; 
+        
+        foreach (var scheduleLine in schedule.ScheduleLines.ToList())
         {
-            scheduleLine.CourseComponent =
-                courseComponentService.GetCourseComponentById(scheduleLine.CourseComponentId);
+            var courseComponent = courseComponentService.GetCourseComponentById(scheduleLine.CourseComponentId);
+            scheduleDto.ScheduleLines.Add(
+                new ScheduleLineDto
+                {
+                    CourseComponent = courseComponent,
+                    WeekSequenceNumber = scheduleLine.WeekSequenceNumber
+                }
+            );
         }
         
         return scheduleDto;

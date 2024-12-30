@@ -34,7 +34,8 @@ public class CourseProfile : Profile
         CreateMap<User, UserDto>();
         CreateMap<File, FileDto>();
         CreateMap<Schedule, ScheduleDto>();
-        CreateMap<ScheduleLine, ScheduleLineDto>();
+        CreateMap<ScheduleLine, ScheduleLineDto>()
+            .ForMember(dest => dest.CourseComponentId, opt => opt.Ignore());
         CreateMap<CourseDto, Course>()
             .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
 

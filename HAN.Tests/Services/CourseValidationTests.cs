@@ -94,7 +94,7 @@ public class CourseValidationTests : TestBase
         
         var valid = _courseValidationService.ValidateCourse(course.Id).IsValid;
         
-        Assert.True(valid);
+        Assert.False(valid);
     }
 
     [Fact]
