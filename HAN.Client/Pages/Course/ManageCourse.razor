@@ -72,7 +72,7 @@
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="8px">
                     <RadzenText TextStyle="TextStyle.Subtitle1" Text="Course validation status:"/>
                     <span>
-                        <RadzenBadge Text="@(IsCourseValid ? "Valid" : "Invalid")" Variant="Variant.Flat" BadgeStyle="@(IsCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
+                        <RadzenBadge IsPill="true" Shade="Shade.Lighter" Text="@(IsCourseValid ? "Valid" : "Invalid")" Variant="Variant.Flat" BadgeStyle="@(IsCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
                     </span>
                 </RadzenStack>
                 <PrimaryButton Text="Go to Course Schedule" Style="width: 100%" Click="NavigateToSchedule" Icon="calendar_month"/>

@@ -13,6 +13,7 @@ public class CourseValidationError
 {
     public ErrorCategory ErrorCategory { get; set; } = ErrorCategory.Invalid;
     public string Message { get; set; }
+    public int CourseComponentId { get; set; }
 }
 
 public enum ErrorCategory

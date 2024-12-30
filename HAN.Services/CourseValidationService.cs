@@ -56,14 +56,14 @@ public class CourseValidationService(
             {
                 IsValid = false,
                 Message = "Course does not have a schedule.",
-                Errors = new List<CourseValidationError>
-                {
+                Errors =
+                [
                     new CourseValidationError
                     {
                         ErrorCategory = ErrorCategory.Missing,
                         Message = "Schedule"
                     }
-                }
+                ]
             };
         }
 
@@ -100,10 +100,12 @@ public class CourseValidationService(
             if (!courseDto.Schedule.ScheduleLines.Any(sl => sl.CourseComponentId == component.Id))
             {
                 result.IsValid = false;
+                var evlNames = string.Join(", ", component.Evls.Select(evl => evl.Name));
                 result.Errors.Add(new CourseValidationError
                 {
                     ErrorCategory = ErrorCategory.Missing,
-                    Message = $"CourseComponent: {component.Name}"
+                    Message = $"{evlNames} : {component.Name}",
+                    CourseComponentId = component.Id
                 });
             }
         }
@@ -149,7 +151,8 @@ public class CourseValidationService(
                         result.Errors.Add(new CourseValidationError
                         {
                             ErrorCategory = ErrorCategory.OutOfOrder,
-                            Message = $"Exam: {component.Name}"
+                            Message = $"Exam: {component.Name}",
+                            CourseComponentId = component.Id
                         });
 
                         foreach (var lesson in lessonsAfterExam)
@@ -157,7 +160,8 @@ public class CourseValidationService(
                             result.Errors.Add(new CourseValidationError
                             {
                                 ErrorCategory = ErrorCategory.OutOfOrder,
-                                Message = $"Lesson: {lesson.CourseComponent.Name}"
+                                Message = $"Lesson: {lesson.CourseComponent.Name}",
+                                CourseComponentId = component.Id
                             });
                         }
                     }

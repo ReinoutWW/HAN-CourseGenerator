@@ -39,7 +39,6 @@ html, body {
 
 .han-delimiter {
     border-bottom: 1px solid lightgray;
-    padding: 0.5rem 0;
 }
 
 h1:focus {

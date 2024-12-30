@@ -55,3 +55,18 @@
     font-size: 0.75rem;
     color: var(--rz-on-primary-lighter);
 }
+
+html .han-validation-error-pill {
+    display: flex;
+    padding: 0.25rem 0.5rem;
+    height: 0.875rem;
+    width: 0.875rem;
+    max-height: 0.875rem;
+    border-radius: 50%;
+    background-color: var(--rz-error);
+    color: white;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}

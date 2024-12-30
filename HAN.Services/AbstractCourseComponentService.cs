@@ -73,7 +73,16 @@ public abstract class AbstractCourseComponentService<TDto, TEntity>(
     {
         var entities = repository.GetAllCourseComponentByEvlIds(evlIds);
 
-        return mapper.Map<List<TDto>>(entities);
+        List<TDto> dtoList = [];
+        foreach (var entity in entities)
+        {
+            var evls = GetEvlsForCourseComponent(entity.Id);
+            var dto = mapper.Map<TDto>(entity);
+            dto.Evls = mapper.Map<List<EvlDto>>(evls);
+            dtoList.Add(dto);
+        }
+
+        return dtoList;
     }
 
     public List<CourseComponentDto> GetAllCourseComponentsByEvlId(int evlId)

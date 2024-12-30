@@ -1,12 +1,14 @@
 ﻿@page "/course/{Id:int}/schedule"
 
 @using System.Collections
+@using System.ComponentModel
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Components.UI;
 @using HAN.Services
 @using HAN.Services.DTOs.CourseComponents
+@using HAN.Services.Extensions
 @using HAN.Services.Validation
 
 @inject ICourseService CourseService
@@ -57,6 +59,10 @@
                                                     <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" class="d-flex align-items-center">
                                                         <RadzenIcon Icon="@(selectionContext.CourseComponent is AssessmentDto ? "quiz" : "import_contacts")" />
                                                         @selectionContext.DisplayName
+                                                        @if (HasValidationError(selectionContext.CourseComponent))
+                                                        {
+                                                            <RadzenBadge class="han-validation-error-pill" Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="!" BadgeStyle="BadgeStyle.Warning"/>
+                                                        }
                                                     </RadzenStack>
                                                 }
                                             </span>
@@ -83,22 +89,22 @@
     </div>
     <div class="col-4">
         <RadzenFieldset Text="Course validation">
-            <RadzenStack Orientation="Orientation.Vertical" Gap="16px">
+            <RadzenStack Orientation="Orientation.Vertical" Gap="8px">
                 <RadzenStack Orientation="Orientation.Horizontal" Gap="8px">
                     <RadzenText TextStyle="TextStyle.Subtitle1" Text="Course validation status:"/>
                     <span>
-                        <RadzenBadge Text="@(_isCourseValid ? "Valid" : "Invalid")" Variant="Variant.Flat" BadgeStyle="@(_isCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
+                        <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="@(_isCourseValid ? "Valid" : "Invalid")" BadgeStyle="@(_isCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
                     </span>
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Vertical" Gap="12px">
                     @if (_courseValidationResult != null)
                     {
                         <div class="han-delimiter" ></div>
-                        <RadzenText TextStyle="TextStyle.Subtitle2" Text="Errors:" />
+                        
                         @foreach (var message in _courseValidationResult.Errors)
                         {
                             <div>
-                                <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" BadgeStyle="BadgeStyle.Warning" Text="@message.ErrorCategory.GetDisplayDescription()"/> @message.Message
+                                <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" BadgeStyle="BadgeStyle.Warning" Text="@(message.ErrorCategory.GetDescription() ?? "Error")" /> @message.Message
                             </div>
                         }
                         <div class="han-delimiter" ></div>
@@ -253,6 +259,7 @@
         _course.Schedule = _schedule;
         var validationResult = CourseValidationService.ValidateCourse(_course);
         _courseValidationResult = validationResult;
+        _isCourseValid = validationResult.IsValid;
         
         if (validationResult.IsValid)
             SystemFeedbackNotificationService.AddNotification("Schedule is valid!");
@@ -291,5 +298,14 @@
             // Indent CourseComponents under Evls
             args.Attributes.Add("style", "margin-inline-start: 1rem");
         }
+    }
+
+    private bool HasValidationError(CourseComponentDto courseComponent)
+    {
+        if(_courseValidationResult == null)
+            return false;
+        
+        var errors = _courseValidationResult.Errors;
+        return errors.Any(e => e.CourseComponentId == courseComponent.Id);
     }
 }
