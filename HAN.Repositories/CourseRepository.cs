@@ -12,6 +12,8 @@ public class CourseRepository(AppDbContext context) : GenericRepository<Course>(
      public override void Update(Course entity)
     {
         var existingCourse = _context.Courses
+            .Include(c => c.Schedule)
+                .ThenInclude(s => s.ScheduleLines)
             .FirstOrDefault(c => c.Id == entity.Id);
 
         if (existingCourse == null)
@@ -29,6 +31,7 @@ public class CourseRepository(AppDbContext context) : GenericRepository<Course>(
             throw new ArgumentNullException(nameof(entity));
 
         entity.EvlIds = ValidateAndResolveEvlIds(entity.EvlIds);
+        entity.Schedule ??= new Schedule();
 
         Entity.Add(entity);
         _context.SaveChanges();

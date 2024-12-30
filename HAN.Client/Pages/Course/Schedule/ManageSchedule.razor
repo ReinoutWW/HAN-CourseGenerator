@@ -143,7 +143,15 @@
                 _allCourseComponents.AddRange(courseComponents);
             }
 
-            _schedule = _course.Schedule == null ? CourseService.AddSchedule(new ScheduleDto(), Id) : CourseService.GetScheduleById(_course.Schedule.Id);
+            if (_course.Schedule == null)
+            {
+                _course.Schedule = new ScheduleDto();
+                _schedule = CourseService.UpdateCourse(_course).Schedule;
+            }
+            else
+            {
+                _schedule = CourseService.GetCourseById(_course.Id).Schedule;
+            }
         }
         else
         {
@@ -232,7 +240,7 @@
         StateHasChanged();
     }
 
-    private void Submit(ScheduleDto arg)
+    private void Submit(ScheduleDto submittedScheduleDto)
     {
         if (!_schedule.ScheduleLines.Any())
         {
@@ -244,7 +252,9 @@
             .OrderBy(line => line.WeekSequenceNumber)
             .ToList();
 
-        CourseService.UpdateSchedule(_schedule);
+        _course.Schedule = submittedScheduleDto;
+        
+        CourseService.UpdateCourse(_course);
         NavigationManager.NavigateTo($"/course/{Id}");
         SystemFeedbackNotificationService.AddNotification("Schedule saved successfully!");
     }

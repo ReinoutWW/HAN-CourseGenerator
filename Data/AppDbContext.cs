@@ -11,6 +11,8 @@ public class AppDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Course> Courses { get; set; }
+    public DbSet<Schedule> Schedules { get; set; }
+    public DbSet<ScheduleLine> ScheduleLines { get; set; }
     public DbSet<Evl> Evls { get; set; }
     public DbSet<CourseComponent> CourseComponents { get; set; }
     public DbSet<File> Files { get; set; }
@@ -25,8 +27,16 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Course>()
-            .Property(c => c.CreatedAt)
-            .ValueGeneratedOnAdd();
+            .HasOne(c => c.Schedule)
+            .WithOne(s => s.Course)
+            .HasForeignKey<Schedule>(s => s.CourseId)
+            .OnDelete(DeleteBehavior.Cascade); // Enforce cascading delete
+        
+        modelBuilder.Entity<Schedule>()
+            .HasMany(s => s.ScheduleLines)
+            .WithOne(sl => sl.Schedule)
+            .HasForeignKey(sl => sl.ScheduleId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<CourseComponent>()
             .HasDiscriminator<string>("ComponentType")

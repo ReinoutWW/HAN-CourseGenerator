@@ -8,9 +8,6 @@ public interface ICourseService
     CourseDto UpdateCourse(CourseDto course);
     CourseDto GetCourseById(int id);
     IEnumerable<EvlDto> GetEvls(int courseId);
-    public ScheduleDto AddSchedule(ScheduleDto scheduleDto, int courseId);
-    public ScheduleDto GetScheduleById(int id);
-    public ScheduleDto UpdateSchedule(ScheduleDto scheduleDto);
     void AddEvlToCourse(int courseId, int evlId);
     public List<CourseDto> GetAllCourses();
 }

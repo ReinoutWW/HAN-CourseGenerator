@@ -5,6 +5,7 @@ using HAN.Services.Interfaces;
 using HAN.Tests.Base;
 using HAN.Tests.Builders;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit.Sdk;
 
 namespace HAN.Tests.Services;
 
@@ -196,34 +197,20 @@ public class CourseServiceTests : TestBase
     }
     
     [Fact]
-    public void AddSchedule_ShouldAddSchedule()
-    {
-        var courseId = _persistHelper.SeedValidCourse();
-
-        var scheduleDto = new ScheduleDto();
-
-        _courseService.AddSchedule(scheduleDto, courseId);
-        
-        var course = _courseService.GetCourseById(courseId);
-        
-        Assert.NotNull(course.Schedule);
-        Assert.Equal(scheduleDto.ScheduleLines.Count, course.Schedule.ScheduleLines.Count);
-    }
-    
-    [Fact]
     public void GetSchedule_ShouldReturnSchedule()
     {
         var courseId = _persistHelper.SeedValidCourse();
-        var scheduleDto = new ScheduleDto();
-
-        _courseService.AddSchedule(scheduleDto, courseId);
         
         var course = _courseService.GetCourseById(courseId);
+        course.Schedule = new ScheduleDto();
         
-        var schedule = _courseService.GetScheduleById(course.Schedule.Id);
+        _courseService.UpdateCourse(course);
+        course = _courseService.GetCourseById(courseId);
+        
+        var schedule = _courseService.GetCourseById(course.Id).Schedule;
                 
         Assert.NotNull(schedule);
-        Assert.Equal(scheduleDto.ScheduleLines.Count, schedule.ScheduleLines.Count);
+        Assert.Empty(schedule.ScheduleLines);
     }
 
     [Fact]
@@ -243,9 +230,9 @@ public class CourseServiceTests : TestBase
             .WithInvalidSchedule(courseComponents)
             .Build();
         
-        var schedule = _courseService.AddSchedule(course.Schedule, course.Id);
+        var updatedCourse = _courseService.UpdateCourse(course);
         
-        Assert.NotNull(schedule);
-        Assert.Equal(course.Schedule.ScheduleLines.Count, schedule.ScheduleLines.Count);
+        Assert.NotNull(updatedCourse);
+        Assert.Equal(course.Schedule.ScheduleLines.Count, updatedCourse.Schedule.ScheduleLines.Count);
     }
 }
