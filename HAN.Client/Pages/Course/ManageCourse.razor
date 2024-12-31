@@ -5,13 +5,11 @@
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Components.UI;
 @using HAN.Client.Pages.Course.Schedule
-@using HAN.Services.Validation
 
 @inject IEvlService EvlService
 @inject ICourseService CourseService
 @inject NavigationManager NavigationManager
 @inject NotificationService SystemFeedbackNotificationService
-@inject ICourseValidationService CourseValidationService
 
 <h3>@(_course.Id == 0 ? "Create Course" : "Edit Course")</h3>
 
