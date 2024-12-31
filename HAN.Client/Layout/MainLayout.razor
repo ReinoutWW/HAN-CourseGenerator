@@ -1,12 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @implements IDisposable
 
-@using HAN.Services
 @using NotificationMessage = HAN.Client.Components.Base.SystemFeedbackNotificationMessage
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Components.Base
-
-@inject InternalNotificationStateService InternalNotificationStateService
 
 <RadzenComponents />
 
@@ -16,10 +13,10 @@
             <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
             <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" class="d-flex align-items-center">
                 <RadzenIcon Icon="history_edu" />
-                <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H6" Text="Learning" />
+                <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H6" Text="Learning | Student" />
             </RadzenStack>
             <div class="ml-auto mr-3">
-                <RadzenButton Click="OpenExternalNotifications" @ref=@_buttonRef Variant="Variant.Flat" Shade="Shade.Lighter" Icon="@(HasExternalNotifications ? "notifications_active" : "notifications")"/>
+                <RadzenButton Variant="Variant.Flat" Shade="Shade.Lighter" Icon="person" />
             </div>
         </RadzenStack>
     </RadzenHeader>
@@ -27,7 +24,6 @@
         <RadzenPanelMenu>
             <RadzenPanelMenuItem Text="Home" Path="/" Icon="home" />
             <RadzenPanelMenuItem Text="Courses" Path="/course/overview" Icon="School" />
-            <RadzenPanelMenuItem Text="Evls" Path="/evl/overview" Icon="workspace_premium" />
         </RadzenPanelMenu>
     </RadzenSidebar>
     <RadzenBody>
@@ -52,16 +48,11 @@
     </RadzenBody>
 </RadzenLayout>
 
-<NotificationPopup @ref="_notificationPopup"
-                   PopupElementTarget="@(_buttonRef?.Element)" />
-
 @code {
     [Inject] private NotificationService SystemFeedbackNotificationService { get; set; } = default!;
     
-    private NotificationPopup? _notificationPopup;
     private RadzenButton? _buttonRef;
     
-    private bool HasExternalNotifications => InternalNotificationStateService.Notifications.Any();
     private bool _sidebar1Expanded = true;
     
     private IReadOnlyList<NotificationMessage> Notifications => SystemFeedbackNotificationService.SystemNotifications;
@@ -84,10 +75,5 @@
     public void Dispose()
     {
         SystemFeedbackNotificationService.OnSystemNotificationAdded -= StateHasChanged;
-    }
-    
-    private void OpenExternalNotifications()
-    {
-        _notificationPopup?.OpenNotifications();
     }
 }

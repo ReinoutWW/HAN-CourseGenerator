@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Utilities", "HAN.Utilit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Client.Server", "HAN.Client.Server\HAN.Client.Server.csproj", "{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Client.API", "HAN.Client.API\HAN.Client.API.csproj", "{096EBD5D-574C-4F97-9C19-D50A199A10EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{096EBD5D-574C-4F97-9C19-D50A199A10EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096EBD5D-574C-4F97-9C19-D50A199A10EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096EBD5D-574C-4F97-9C19-D50A199A10EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096EBD5D-574C-4F97-9C19-D50A199A10EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

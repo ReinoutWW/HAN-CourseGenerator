@@ -15,11 +15,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HAN.Services\HAN.Services.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\images\education-logo-2.png" />
+      <_ContentIncludedByDefault Remove="Pages\Evl\EvlOverview.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Evl\ManageEvl.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Course\CourseOverview.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Course\ManageCourse.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Course\Schedule\CourseValidationOverview.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Course\Schedule\ManageSchedule.razor" />
     </ItemGroup>
 
     <Target Name="RunTestsAfterBuild" AfterTargets="Build">
