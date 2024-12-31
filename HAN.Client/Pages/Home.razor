@@ -5,7 +5,14 @@
 
 <PageTitle>Home</PageTitle>
 
-Welcome!
+<AuthorizeView>
+    <Authorized>
+        <p>Welcome, authenticated user!</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to view this content.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     
