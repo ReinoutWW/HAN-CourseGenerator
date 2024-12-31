@@ -53,7 +53,7 @@
                                                         @selectionContext.DisplayName
                                                         @if (HasValidationError(selectionContext.CourseComponent))
                                                         {
-                                                            <RadzenBadge class="han-validation-error-pill" Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="!" BadgeStyle="BadgeStyle.Warning"/>
+                                                            <RadzenBadge class="han-validation-error-pill" Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="!" BadgeStyle="BadgeStyle.Danger"/>
                                                         }
                                                     </RadzenStack>
                                                 }
@@ -252,6 +252,7 @@
     private void OnCourseValidate(CourseValidationResult validationResult)
     {
         _courseValidationResult = validationResult;
+        StateHasChanged();
     }
     
     class GroupData
