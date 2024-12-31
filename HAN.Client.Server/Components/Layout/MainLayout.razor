@@ -1,0 +1,93 @@
+﻿@inherits LayoutComponentBase
+@implements IDisposable
+
+@using HAN.Services
+@using NotificationMessage = HAN.Client.Server.Components.Base.SystemFeedbackNotificationMessage
+@using NotificationService = HAN.Client.Server.Components.Base.SystemFeedbackNotificationService
+@using HAN.Client.Server.Components.Base
+
+@inject InternalNotificationStateService InternalNotificationStateService
+
+<RadzenComponents @rendermode="InteractiveServer" />
+
+<RadzenLayout>
+    <RadzenHeader>
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
+            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" class="d-flex align-items-center">
+                <RadzenIcon Icon="history_edu" />
+                <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H6" Text="Learning" />
+            </RadzenStack>
+            <div class="ml-auto mr-3">
+                <RadzenButton Click="OpenExternalNotifications" @ref=@_buttonRef Variant="Variant.Flat" Shade="Shade.Lighter" Icon="@(HasExternalNotifications ? "notifications_active" : "notifications")"/>
+            </div>
+        </RadzenStack>
+    </RadzenHeader>
+    <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
+        <RadzenPanelMenu>
+            <RadzenPanelMenuItem Text="Home" Path="/" Icon="home" />
+            <RadzenPanelMenuItem Text="Courses" Path="/course/overview" Icon="School" />
+            <RadzenPanelMenuItem Text="Evls" Path="/evl/overview" Icon="workspace_premium" />
+        </RadzenPanelMenu>
+    </RadzenSidebar>
+    <RadzenBody>
+        @* <ErrorBoundary> *@
+        @*     <ChildContent> *@
+                <div class="rz-p-4">
+                    <RadzenStack class="mt-2" Gap="16px">
+                        <div>
+                            @foreach (var notification in Notifications)
+                            {
+                                <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter"/>
+                            }
+                        </div>
+                        @Body
+                    </RadzenStack>
+                </div>
+        @*     </ChildContent> *@
+        @*     <ErrorContent> *@
+        @*         <ErrorComponent PrimaryText="Whoops." SecondaryText="Something went wrong on our end." /> *@
+        @*     </ErrorContent> *@
+        @* </ErrorBoundary> *@
+    </RadzenBody>
+</RadzenLayout>
+
+<NotificationPopup @ref="_notificationPopup"
+                   PopupElementTarget="@(_buttonRef?.Element)" />
+
+@code {
+    [Inject] private NotificationService SystemFeedbackNotificationService { get; set; } = default!;
+
+    private NotificationPopup? _notificationPopup;
+    private RadzenButton? _buttonRef;
+
+    private bool HasExternalNotifications => InternalNotificationStateService.Notifications.Any();
+    private bool _sidebar1Expanded = true;
+
+    private IReadOnlyList<NotificationMessage> Notifications => SystemFeedbackNotificationService.SystemNotifications;
+
+    protected override void OnInitialized()
+    {
+        SystemFeedbackNotificationService.OnSystemNotificationAdded += StateHasChanged;
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _buttonRef is not null)
+        {
+            StateHasChanged();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        SystemFeedbackNotificationService.OnSystemNotificationAdded -= StateHasChanged;
+    }
+
+    private void OpenExternalNotifications()
+    {
+        _notificationPopup?.OpenNotifications();
+    }
+}

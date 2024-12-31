@@ -3,17 +3,12 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using HAN.Client;
 using HAN.Client.Components.Base;
 using HAN.Client.Data;
-using HAN.Data;
 using HAN.Services.Extensions;
-using Microsoft.EntityFrameworkCore;
 using Radzen;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
-
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseInMemoryDatabase("InMem"));
 
 builder.Services.AddRadzenComponents();
 builder.Services.AddCourseServices();

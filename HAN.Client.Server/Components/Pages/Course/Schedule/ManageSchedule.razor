@@ -1,0 +1,290 @@
+﻿@page "/course/{Id:int}/schedule"
+@rendermode InteractiveServer
+
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+@using NotificationService = HAN.Client.Server.Components.Base.SystemFeedbackNotificationService
+@using HAN.Services
+@using HAN.Services.DTOs.CourseComponents
+@using HAN.Services.Validation
+@using HAN.Client.Server.Components.UI
+
+@inject ICourseService CourseService
+@inject CourseComponentService CourseComponentService
+@inject NavigationManager NavigationManager
+@inject NotificationService SystemFeedbackNotificationService
+
+<h3>@(_schedule.Id == 0 ? "Create Schedule" : "Edit Schedule")</h3>
+
+<div class="row">
+    <div class="col-8">
+        <RadzenTemplateForm @bind-Data="@_schedule" Submit="@((ScheduleDto args) => { Submit(args); })">
+            <RadzenFieldset Text="Schedule Info">
+                <RadzenStack Gap="1rem">
+                    <RadzenDataGrid @bind-Data="@_schedule.ScheduleLines" TItem="ScheduleLineDto" Editable="true" AutoGenerateColumns="false">
+                        <Columns>
+                            <RadzenDataGridColumn HeaderTooltip="true" Width="150px" TItem="ScheduleLineDto" Property="WeekSequenceNumber" Title="Week Number">
+                                <Template Context="scheduleLine">
+                                    <RadzenNumeric Style="width: 100%;" @bind-Value="scheduleLine.WeekSequenceNumber" Min="1" />
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn Width="100%" TItem="ScheduleLineDto" Title="Component">
+                                <Template Context="scheduleLine">
+                                    <RadzenDropDown
+                                        Data="@_groupedData" 
+                                        ValueProperty="UniqueKey" 
+                                        TextProperty="DisplayName" 
+                                        ItemRender="ItemRender"
+                                        Style="width: 100%;"
+                                        TValue="string"
+                                        Value="@(_groupedData.FirstOrDefault(g => g.ComponentId == scheduleLine.CourseComponentId)?.UniqueKey)"
+                                        ValueChanged="@((value) => OnSelectionChanged(value, scheduleLine))"
+                                        Placeholder="Select component">
+                                        <Template Context="selectionContext">
+                                            <span style="display:inline-block; font-weight: @(selectionContext.EvlName != null ? "bold" : "normal");">
+                                                @if (selectionContext.EvlName != null)
+                                                {
+                                                    @selectionContext.EvlName
+                                                }
+                                                else
+                                                {
+                                                    <RadzenStack Orientation="Orientation.Horizontal" Gap="4px" class="d-flex align-items-center">
+                                                        <RadzenIcon Icon="@(selectionContext.CourseComponent is AssessmentDto ? "quiz" : "import_contacts")" />
+                                                        @selectionContext.DisplayName
+                                                        @if (HasValidationError(selectionContext.CourseComponent))
+                                                        {
+                                                            <RadzenBadge class="han-validation-error-pill" Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="!" BadgeStyle="BadgeStyle.Warning"/>
+                                                        }
+                                                    </RadzenStack>
+                                                }
+                                            </span>
+                                        </Template>
+                                    </RadzenDropDown>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn Width="75px" TItem="ScheduleLineDto" Context="scheduleLine">
+                                <Template Context="scheduleLine">
+                                    <PrimaryButton Icon="delete" Size="ButtonSize.Medium" Click="@(() => RemoveScheduleLine(scheduleLine))" />
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                    </RadzenDataGrid>
+                    <SecondaryButton Icon="add" Size="ButtonSize.Medium" Text="Add Schedule Line" Click="@AddScheduleLine" />
+                </RadzenStack>
+            </RadzenFieldset>
+
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left" Gap="1rem" class="rz-mt-8 rz-mb-4">
+                <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
+                <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-4">
+        <CourseValidationOverview 
+            @ref="@_courseValidationOverview"
+            Course="_course"
+            Schedule="_schedule"
+            HasValidateAction="true"
+            ShowValidationDetails="true"
+            OnCourseValidation="@OnCourseValidate"
+        />
+    </div>
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    
+    private CourseDto _course = new();
+    private ScheduleDto _schedule = new()
+    {
+        ScheduleLines = new List<ScheduleLineDto>()
+    };
+    
+    private bool ScheduleHasLines => _schedule.ScheduleLines.Any();
+    
+    private readonly List<CourseComponentDto> _allCourseComponents = new();
+    private IEnumerable<GroupData>? _groupedData;
+    private CourseValidationResult? _courseValidationResult;
+
+    private CourseValidationOverview? _courseValidationOverview;
+
+    protected override void OnInitialized()
+    {
+        if (Id > 0)
+        {
+            _course = CourseService.GetCourseById(Id);
+            var courseEvls = _course.Evls.Select(evl => evl.Id).ToList();
+
+            GetAllCourseComponents(courseEvls);
+
+            _schedule = CourseService.GetCourseById(_course.Id).Schedule;
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/404");
+        }
+
+        InitializeGroupedDropdown();
+        
+        base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender && ScheduleHasLines)
+            _courseValidationOverview?.ValidateSchedule();
+        
+        base.OnAfterRender(firstRender);
+    }
+
+    private void GetAllCourseComponents(List<int> courseEvls)
+    {
+        foreach (var evlId in courseEvls)
+        {
+            var courseComponents = CourseComponentService.GetAllCourseComponentsByEvlId(evlId).ToList();
+            _allCourseComponents.AddRange(courseComponents);
+        }
+    }
+
+    private void OnSelectionChanged(string uniqueKey, ScheduleLineDto scheduleLine)
+    {
+        if (_groupedData == null)
+            throw new Exception($"{nameof(_groupedData)} can not be null");
+        
+        var selectedComponent = _groupedData.FirstOrDefault(g => g.UniqueKey == uniqueKey);
+        scheduleLine.CourseComponent = selectedComponent?.CourseComponent ?? throw new Exception("Invalid component selection.");
+        
+        StateHasChanged();
+    }
+
+    private void InitializeGroupedDropdown()
+    {
+        var evls = _course.Evls;
+
+        _groupedData = evls
+            .SelectMany(ev =>
+            {
+                Console.WriteLine($"Evl: {ev.Name}");
+                var groupHeader = new GroupData
+                {
+                    EvlName = ev.Name,
+                    ComponentId = null,
+                    ComponentName = null,
+                    UniqueKey = null
+                };
+
+                var components = _allCourseComponents
+                    .Where(cc => cc.Evls.Any(e => e.Id == ev.Id))
+                    .Select(cc =>
+                    {
+                        Console.WriteLine($"Component for {ev.Name}: {cc.Name}");
+
+                        return new GroupData
+                        {
+                            EvlName = null, 
+                            ComponentId = cc.Id,
+                            ComponentName = cc.Name,
+                            CourseComponent = cc,
+                            UniqueKey = $"{ev.Id}_{cc.Id}"
+                        };
+                    });
+
+                return new[] { groupHeader }.Concat(components);
+            })
+            .ToList();
+
+        _groupedData.OrderBy(item => item.ComponentName is AssessmentDto).ThenBy(item => item.DisplayName);
+    }
+
+    private void AddScheduleLine()
+    {
+        var newSequenceNumber = _schedule.ScheduleLines.Any()
+            ? _schedule.ScheduleLines.Max(line => line.WeekSequenceNumber) + 1
+            : 1;
+
+        _schedule.ScheduleLines.Add(new ScheduleLineDto
+        {
+            WeekSequenceNumber = newSequenceNumber,
+            CourseComponent = new() // Default placeholder
+        });
+
+        _schedule.ScheduleLines = _schedule.ScheduleLines.ToList(); // Ensure UI refresh
+    }
+
+    private void RemoveScheduleLine(ScheduleLineDto line)
+    {
+        _schedule.ScheduleLines.Remove(line);
+        _schedule.ScheduleLines = _schedule.ScheduleLines.ToList();
+        
+        StateHasChanged();
+    }
+
+    private void Submit(ScheduleDto submittedScheduleDto)
+    {
+        if (!_schedule.ScheduleLines.Any())
+        {
+            SystemFeedbackNotificationService.AddNotification("Please add at least one schedule line.", AlertStyle.Warning);
+            return;
+        }
+
+        _schedule.ScheduleLines = _schedule.ScheduleLines
+            .OrderBy(line => line.WeekSequenceNumber)
+            .ToList();
+
+        if(_schedule.ScheduleLines.ToList().Any(line => line.CourseComponentId == 0))
+        {
+            SystemFeedbackNotificationService.AddNotification("Please select a component for each schedule line.", AlertStyle.Warning);
+            return;
+        }
+        
+        _course.Schedule = submittedScheduleDto;
+        
+        CourseService.UpdateCourse(_course);
+        NavigationManager.NavigateTo($"/course/{Id}");
+        SystemFeedbackNotificationService.AddNotification("Schedule saved successfully!");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo($"/course/{Id}");
+    }
+
+    private void OnCourseValidate(CourseValidationResult validationResult)
+    {
+        _courseValidationResult = validationResult;
+    }
+    
+    class GroupData
+    {
+        public string EvlName { get; set; } 
+        public int? ComponentId { get; set; } 
+        public string ComponentName { get; set; }
+        public string UniqueKey { get; set; }
+        public CourseComponentDto CourseComponent { get; set; }
+
+        public string DisplayName => EvlName ?? ComponentName;
+    }
+
+    static void ItemRender(dynamic args)
+    {
+        var data = (GroupData)args.Item;
+        if (!string.IsNullOrEmpty(data.EvlName))
+        {
+            args.Disabled = true;
+            args.Attributes.Add("style", "opacity: 1");
+        }
+        else
+        {
+            args.Attributes.Add("style", "margin-inline-start: 1rem");
+        }
+    }
+
+    private bool HasValidationError(CourseComponentDto courseComponent)
+    {
+        if(_courseValidationResult == null)
+            return false;
+        
+        var errors = _courseValidationResult.Errors;
+        return errors.Any(e => e.CourseComponentId == courseComponent.Id);
+    }
+}

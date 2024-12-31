@@ -1,4 +1,7 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+
+@using System.Security.Claims
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
 @using HAN.Client.Components.UI;
@@ -42,6 +45,10 @@
 </RadzenDataList>
 
 @code {
+    [CascadingParameter]
+
+    public ClaimsPrincipal AuthenticatedUser { get; set; }
+    
     private List<CourseDto> _courses = [];
     string pagingSummaryFormat = "Displaying page {0} of {1} (total {2} records)";
     int pageSize = 6;

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Console", "HAN.Console\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Utilities", "HAN.Utilities\HAN.Utilities.csproj", "{DF553E83-7959-4C9C-A3E9-6B22CC16EFAB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Client.Server", "HAN.Client.Server\HAN.Client.Server.csproj", "{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{DF553E83-7959-4C9C-A3E9-6B22CC16EFAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF553E83-7959-4C9C-A3E9-6B22CC16EFAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF553E83-7959-4C9C-A3E9-6B22CC16EFAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB0119CC-D847-4B66-8BE0-3E7D3792DFAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

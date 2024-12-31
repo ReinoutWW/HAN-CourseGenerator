@@ -1,0 +1,65 @@
+﻿@page "/course/overview"
+@rendermode InteractiveServer
+
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+@using HAN.Client.Server.Components.UI;
+
+@inject NavigationManager NavigationManager
+@inject ICourseService CourseService
+
+<h3>Course Overview</h3>
+
+<div class="mb-4">
+    <PrimaryButton Text="New" Click="@NavigateToNewCourse"></PrimaryButton>
+</div>
+<div>
+    <RadzenDataGrid Data="@_courses"
+                    TItem="CourseDto"
+                    AllowFiltering="true"
+                    AllowColumnResize="true"
+                    AllowAlternatingRows="false"
+                    FilterMode="FilterMode.Advanced"
+                    AllowSorting="true"
+                    PageSize="20"
+                    AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Left"
+                    ShowPagingSummary="true"
+                    ColumnWidth="300px"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    RowClick="@NavigateToEditCourse"
+                    RowRender="@RowRender"
+                    SelectionMode="DataGridSelectionMode.Single">
+        <Columns>
+            <RadzenDataGridColumn Filterable="false" Frozen="true" Width="20px">
+                <Template>
+                    <RadzenIcon Icon="school"></RadzenIcon>
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Property="@nameof(CourseDto.Id)" Filterable="false" Title="ID" Frozen="true" Width="20px" TextAlign="TextAlign.Center"/>
+            <RadzenDataGridColumn Property="@nameof(CourseDto.Name)" Title="Name" Width="50px"/>
+            <RadzenDataGridColumn Property="@nameof(CourseDto.Description)" Title="Description" Width="200px"/>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+
+@code {
+    private List<CourseDto> _courses = [];
+    private List<CourseDto> _selectedCourse;
+    
+    protected override Task OnInitializedAsync()
+    {
+        _courses = CourseService.GetAllCourses();
+        StateHasChanged();
+        
+        return base.OnInitializedAsync();
+    }
+    
+    private void NavigateToNewCourse() => NavigationManager.NavigateTo("/course/");
+    private void NavigateToEditCourse(DataGridRowMouseEventArgs<CourseDto> args) => NavigationManager.NavigateTo($"/course/{args.Data.Id}");
+
+    private void RowRender(RowRenderEventArgs<CourseDto> obj)
+    {
+        obj.Attributes.Add("han-clickable", true);
+    }
+}

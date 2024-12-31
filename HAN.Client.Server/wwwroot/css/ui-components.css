@@ -1,0 +1,74 @@
+﻿/* RADZEN */
+
+.rz-data-grid .rz-data-row[han-clickable]:hover {
+    td {
+        background-color: #f5f5f5;
+        cursor: pointer;
+    }
+}
+
+.han-popup {
+    display: none;
+    position: absolute;
+    overflow: hidden;
+    padding: 1rem;
+    border: var(--rz-panel-border);
+    background-color: var(--rz-panel-background-color);
+    border-radius: var(--rz-border-radius);
+    border: var(--rz-grid-cell-border);
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    max-height: 50vh;
+}
+
+.han-notification-item {
+    display: flex;
+    border-radius: 5px 5px 0 0;
+    padding: 0.5rem;
+}
+
+.han-notification-item:not(:last-child) {
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.han-notification-item:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.han-notification-item:not(.notification-read) .notification-text::before {
+    display: inline-block;
+    content: "";
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+    min-height: 10px;
+    margin-right: 0.5rem;
+    background-color: var(--rz-on-primary-lighter);
+    border-radius: 50%;
+    opacity: 50%;
+    margin-top: 5px;
+}
+
+.han-notification-item .notification-text {
+    font-size: 0.875rem;
+}
+
+.han-notification-item .han-notification-item-time {
+    font-size: 0.75rem;
+    color: var(--rz-on-primary-lighter);
+}
+
+.rz-badge.han-validation-error-pill {
+    display: flex;
+    padding: 0.25rem 0.5rem;
+    height: 0.875rem;
+    width: 0.875rem;
+    max-height: 0.875rem;
+    border-radius: 50%;
+    background-color: var(--rz-error);
+    color: white;
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+    justify-content: center;
+    align-items: center;
+}

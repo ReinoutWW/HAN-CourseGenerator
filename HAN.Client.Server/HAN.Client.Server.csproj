@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\HAN.Services\HAN.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Radzen.Blazor" Version="5.7.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Base\ErrorComponent.razor" />
+      <AdditionalFiles Include="Components\Base\NotificationPopup.razor" />
+      <AdditionalFiles Include="Components\Pages\Course\CourseOverview.razor" />
+      <AdditionalFiles Include="Components\Pages\Course\ManageCourse.razor" />
+      <AdditionalFiles Include="Components\Pages\Course\Schedule\CourseValidationOverview.razor" />
+      <AdditionalFiles Include="Components\Pages\Course\Schedule\ManageSchedule.razor" />
+      <AdditionalFiles Include="Components\Pages\Evl\EvlOverview.razor" />
+      <AdditionalFiles Include="Components\Pages\Evl\ManageEvl.razor" />
+    </ItemGroup>
+
+</Project>
