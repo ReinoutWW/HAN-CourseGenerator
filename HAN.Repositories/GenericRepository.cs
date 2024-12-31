@@ -1,5 +1,4 @@
 ﻿using HAN.Data;
-using HAN.Data.EF;
 using HAN.Data.Entities;
 using HAN.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +9,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
 {
     protected DbSet<T> Entity => Context.Set<T>();
     protected readonly AppDbContext Context;
-    private readonly EntityCollectionSynchronizer _collectionSynchronizer;
 
     protected GenericRepository(AppDbContext context)
     {
         Context = context;
-        _collectionSynchronizer = new EntityCollectionSynchronizer(context);
     }
     
     public virtual void Add(T entity)
@@ -64,10 +61,5 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         }
 
         Context.SaveChanges();
-    }
-    
-    protected void SynchronizeCollection<TU>(ICollection<TU> existing, ICollection<TU> updated) where TU : BaseEntity
-    {
-        _collectionSynchronizer.SynchronizeCollection(existing, updated);
     }
 }
