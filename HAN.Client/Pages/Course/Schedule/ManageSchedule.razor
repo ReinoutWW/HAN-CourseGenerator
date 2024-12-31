@@ -15,7 +15,6 @@
 @inject CourseComponentService CourseComponentService
 @inject NavigationManager NavigationManager
 @inject NotificationService SystemFeedbackNotificationService
-@inject ICourseValidationService CourseValidationService
 
 <h3>@(_schedule.Id == 0 ? "Create Schedule" : "Edit Schedule")</h3>
 
@@ -34,7 +33,7 @@
                             <RadzenDataGridColumn Width="100%" TItem="ScheduleLineDto" Title="Component">
                                 <Template Context="scheduleLine">
                                     <RadzenDropDown
-                                        Data=@_groupedData 
+                                        Data="@_groupedData" 
                                         ValueProperty="UniqueKey" 
                                         TextProperty="DisplayName" 
                                         ItemRender="ItemRender"
@@ -83,47 +82,33 @@
         </RadzenTemplateForm>
     </div>
     <div class="col-4">
-        <RadzenFieldset Text="Course validation">
-            <RadzenStack Orientation="Orientation.Vertical" Gap="8px">
-                <RadzenStack Orientation="Orientation.Horizontal" Gap="8px">
-                    <RadzenText TextStyle="TextStyle.Subtitle1" Text="Course validation status:"/>
-                    <span>
-                        <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="@(_isCourseValid ? "Valid" : "Invalid")" BadgeStyle="@(_isCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
-                    </span>
-                </RadzenStack>
-                <RadzenStack Orientation="Orientation.Vertical" Gap="12px">
-                    @if (_courseValidationResult != null)
-                    {
-                        <div class="han-delimiter" ></div>
-                        
-                        @foreach (var message in _courseValidationResult.Errors)
-                        {
-                            <div>
-                                <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" BadgeStyle="BadgeStyle.Warning" Text="@(message.ErrorCategory.GetDescription() ?? "Error")" /> @message.Message
-                            </div>
-                        }
-                        <div class="han-delimiter" ></div>
-                    }
-                </RadzenStack>
-                <PrimaryButton Icon="check" Size="ButtonSize.Large" Text="Validate Schedule" Click="@ValidateSchedule"/>
-            </RadzenStack>
-        </RadzenFieldset>
+        <CourseValidationOverview 
+            @ref="@_courseValidationOverview"
+            Course="_course"
+            Schedule="_schedule"
+            HasValidateAction="true"
+            ShowValidationDetails="true"
+            OnCourseValidation="@OnCourseValidate"
+        />
     </div>
 </div>
 
 @code {
     [Parameter] public int Id { get; set; }
-
-    private bool _isCourseValid = false;
     
     private CourseDto _course = new();
     private ScheduleDto _schedule = new()
     {
         ScheduleLines = new List<ScheduleLineDto>()
     };
+    
+    private bool ScheduleHasLines => _schedule.ScheduleLines.Any();
+    
     private readonly List<CourseComponentDto> _allCourseComponents = new();
     private IEnumerable<GroupData>? _groupedData;
     private CourseValidationResult? _courseValidationResult;
+
+    private CourseValidationOverview? _courseValidationOverview;
 
     protected override void OnInitialized()
     {
@@ -132,43 +117,44 @@
             _course = CourseService.GetCourseById(Id);
             var courseEvls = _course.Evls.Select(evl => evl.Id).ToList();
 
-            foreach (var evlId in courseEvls)
-            {
-                var courseComponents = CourseComponentService.GetAllCourseComponentsByEvlId(evlId).ToList();
-                _allCourseComponents.AddRange(courseComponents);
-            }
+            GetAllCourseComponents(courseEvls);
 
-            if (_course.Schedule == null)
-            {
-                _course.Schedule = new ScheduleDto();
-                _schedule = CourseService.UpdateCourse(_course).Schedule;
-            }
-            else
-            {
-                _schedule = CourseService.GetCourseById(_course.Id).Schedule;
-            }
+            _schedule = CourseService.GetCourseById(_course.Id).Schedule;
         }
         else
         {
-            _schedule = new ScheduleDto();
+            NavigationManager.NavigateTo("/404");
         }
 
         InitializeGroupedDropdown();
-        ValidateCourse();
         
         base.OnInitialized();
     }
-    
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender && ScheduleHasLines)
+            _courseValidationOverview?.ValidateSchedule();
         
+        base.OnAfterRender(firstRender);
+    }
+
+    private void GetAllCourseComponents(List<int> courseEvls)
+    {
+        foreach (var evlId in courseEvls)
+        {
+            var courseComponents = CourseComponentService.GetAllCourseComponentsByEvlId(evlId).ToList();
+            _allCourseComponents.AddRange(courseComponents);
+        }
+    }
+
     private void OnSelectionChanged(string uniqueKey, ScheduleLineDto scheduleLine)
     {
+        if (_groupedData == null)
+            throw new Exception($"{nameof(_groupedData)} can not be null");
+        
         var selectedComponent = _groupedData.FirstOrDefault(g => g.UniqueKey == uniqueKey);
         scheduleLine.CourseComponent = selectedComponent?.CourseComponent ?? throw new Exception("Invalid component selection.");
-        
-        if (selectedComponent != null)
-        {
-            Console.WriteLine($"Selected Component: {selectedComponent.ComponentName}");
-        }
         
         StateHasChanged();
     }
@@ -265,23 +251,9 @@
         NavigationManager.NavigateTo($"/course/{Id}");
     }
 
-    private void ValidateSchedule()
+    private void OnCourseValidate(CourseValidationResult validationResult)
     {
-        _course.Schedule = _schedule;
-        var validationResult = CourseValidationService.ValidateCourse(_course);
         _courseValidationResult = validationResult;
-        _isCourseValid = validationResult.IsValid;
-        
-        if (validationResult.IsValid)
-            SystemFeedbackNotificationService.AddNotification("Schedule is valid!");
-        else
-            SystemFeedbackNotificationService.AddNotification("Schedule is invalid!", AlertStyle.Danger);
-    }
-
-    private bool ValidateCourse()
-    {
-        _isCourseValid = CourseValidationService.ValidateCourse(_course).IsValid;
-        return _isCourseValid;
     }
     
     class GroupData
@@ -294,19 +266,17 @@
 
         public string DisplayName => EvlName ?? ComponentName;
     }
-    
-    void ItemRender(dynamic args)
+
+    static void ItemRender(dynamic args)
     {
         var data = (GroupData)args.Item;
-        if (data.EvlName != null)
+        if (!string.IsNullOrEmpty(data.EvlName))
         {
-            // Disable group headers (Evls)
             args.Disabled = true;
             args.Attributes.Add("style", "opacity: 1");
         }
         else
         {
-            // Indent CourseComponents under Evls
             args.Attributes.Add("style", "margin-inline-start: 1rem");
         }
     }

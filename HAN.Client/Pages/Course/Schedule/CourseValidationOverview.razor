@@ -1,0 +1,83 @@
+﻿@using HAN.Client.Components.Base
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+@using HAN.Services.Validation
+@using HAN.Client.Components.UI;
+@using HAN.Services.Extensions
+
+@inject ICourseValidationService CourseValidationService
+@inject SystemFeedbackNotificationService SystemFeedbackNotificationService
+
+<RadzenFieldset Text="Course validation">
+    <RadzenStack Orientation="Orientation.Vertical" Gap="8px">
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="8px">
+            <RadzenText TextStyle="TextStyle.Subtitle1" Text="Course validation status:"/>
+            <span>
+                <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" Text="@(IsCourseValid ? "Valid" : "Invalid")" BadgeStyle="@(IsCourseValid ? BadgeStyle.Success : BadgeStyle.Danger)"/>
+            </span>
+        </RadzenStack>
+        @if (ShowValidationDetails)
+        {
+            <RadzenStack Orientation="Orientation.Vertical" Gap="12px">
+                @if (_courseValidationResult != null && !IsCourseValid)
+                {
+                    <div class="han-delimiter" ></div>
+
+                    @foreach (var message in _courseValidationResult.Errors)
+                    {
+                        <div>
+                            <RadzenBadge Variant="Variant.Flat" IsPill="true" Shade="Shade.Lighter" BadgeStyle="BadgeStyle.Warning" Text="@(message.ErrorCategory.GetDescription() ?? "Error")" /> @message.Message
+                        </div>
+                    }
+                    <div class="han-delimiter" ></div>
+                }
+            </RadzenStack>
+        }
+        @if (HasValidateAction)
+        {
+            <PrimaryButton Icon="check" Size="ButtonSize.Large" Text="Validate Schedule" Click="@ValidateSchedule"/>
+        }
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+    </RadzenStack>
+</RadzenFieldset>
+
+@code {
+    private CourseValidationResult? _courseValidationResult;
+    private bool IsCourseValid => _courseValidationResult?.IsValid ?? false;
+    
+    [Parameter]
+    public CourseDto? Course { get; set; }
+    
+    [Parameter]
+    public ScheduleDto? Schedule { get; set; }
+
+    [Parameter]
+    public EventCallback<CourseValidationResult> OnCourseValidation { get; set; }
+    
+    [Parameter]
+    public bool HasValidateAction { get; set; } = false;
+
+    [Parameter]
+    public bool ShowValidationDetails { get; set; } = false;
+    
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    
+    public void ValidateSchedule()
+    {
+        if (Course == null)
+            throw new ArgumentException($"{nameof(Course)} can not be null");
+        
+        if(Schedule == null)
+            throw new ArgumentException($"{nameof(Schedule)} can not be null");
+        
+        Course.Schedule = Schedule;
+        var validationResult = CourseValidationService.ValidateCourse(Course);
+        _courseValidationResult = validationResult;
+
+        OnCourseValidation.InvokeAsync(validationResult);
+    }
+}
