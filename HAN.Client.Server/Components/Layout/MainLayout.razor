@@ -5,8 +5,10 @@
 @using NotificationMessage = HAN.Client.Server.Components.Base.SystemFeedbackNotificationMessage
 @using NotificationService = HAN.Client.Server.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Server.Components.Base
+@using HAN.Services.VolatilityDecomposition
 
 @inject InternalNotificationStateService InternalNotificationStateService
+@inject NotificationManager NotificationManager
 
 @rendermode InteractiveServer
 
@@ -31,25 +33,16 @@
         </RadzenPanelMenu>
     </RadzenSidebar>
     <RadzenBody>
-        @* <ErrorBoundary> *@
-        @*     <ChildContent> *@
-                <div class="rz-p-4">
-                    <RadzenStack class="mt-2" Gap="16px">
-                        <div>
-                            @foreach (var notification in Notifications)
-                            {
-                                <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter"/>
-                            }
-                        </div>
-                        @Body
-                    </RadzenStack>
-                </div>
-        @*     </ChildContent> *@
-        @*     <ErrorContent> *@
-        @*         <ErrorComponent PrimaryText="Whoops." SecondaryText="Something went wrong on our end." /> *@
-        @*     </ErrorContent> *@
-        @* </ErrorBoundary> *@
-    </RadzenBody>
+        <RadzenStack class="mt-2" Gap="16px">
+            <div>
+                @foreach (var notification in Notifications)
+                {
+                    <RadzenAlert Text="@notification.Text" AlertStyle="notification.Type" Variant="Variant.Flat" Shade="Shade.Lighter"/>
+                }
+            </div>
+            @Body
+        </RadzenStack>
+</RadzenBody>
 </RadzenLayout>
 
 <NotificationPopup @ref="_notificationPopup"
