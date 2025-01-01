@@ -1,7 +1,11 @@
 ﻿@page "/course/overview"
-@using HAN.Client.Services
 @using HAN.Client.Services.Models
+@using HAN.Client.Components.UI
+@using CourseService = HAN.Client.Services.CourseService
 
+@using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
+
+@inject NotificationService NotificationService;
 @inject CourseService CourseService;
 
 <div class="mb-3">
@@ -9,34 +13,49 @@
     <RadzenText TextStyle="TextStyle.Subtitle1" Text="This overview shows all courses that are available on the platform." /> 
 </div>
 
-@if (_courses == null)
+@if (_courses.Count == 0 && !_isLoading)
 {
-    <RadzenText Text="Loading courses..." />
-}
-else if (_courses.Count == 0)
-{
-    <RadzenText Text="No courses found." />
+    <RadzenText Text="No courses available at the moment." />
 }
 else
 {
-    <RadzenDataList WrapItems="true" AllowPaging="false" Data="@_courses" TItem="Course">
-        <Template Context="course">
-            <RadzenCard Variant="Variant.Outlined">
-                <RadzenHeading Size="H3" Text="@course.Name" />
-                <RadzenText Text="@course.Description" />
-            </RadzenCard>
-        </Template>
-    </RadzenDataList>
+    <CustomRadzenDataList WrapItems="false" 
+              AllowPaging="true" 
+              IsLoading="@_isLoading" 
+              Data="@_courses" 
+              TItem="Course"
+        >
+        <ChildContent Context="item">
+            <div>
+                <RadzenHeading Size="H3" Text="@item.Name" />
+                <RadzenText Text="@item.Description" />
+            </div>
+        </ChildContent>
+    </CustomRadzenDataList>
 }
 
 @code {
     List<Course> _courses = [];
 
+    private bool _isLoading = true;
+
     protected override async Task<Task> OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _courses = await CourseService.GetCoursesAsync() ?? new List<Course>();
+
+        try
+        {
+            _courses = await CourseService.GetCoursesAsync() ?? new List<Course>();
+        } 
+        catch (Exception ex)
+        {
+            NotificationService.AddNotification(
+                 "An error occurred while loading the courses. Please try again later.",
+                 AlertStyle.Danger
+            );
+        }
         
+        _isLoading = false;
         return Task.CompletedTask;
     }
 }

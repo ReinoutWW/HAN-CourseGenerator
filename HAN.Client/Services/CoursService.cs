@@ -6,6 +6,12 @@ public class CourseService(ICourseApiAdapter adapter)
 {
     public async Task<List<Course>> GetCoursesAsync()
     {
-        return await adapter.FetchCoursesAsync();
+        try
+        {
+            return await adapter.FetchCoursesAsync();
+        } catch (HttpRequestException e)
+        {
+            throw new Exception("Failed to fetch courses. Please try again later.");
+        }
     }
 }

@@ -1,0 +1,48 @@
+﻿@typeparam TItem
+
+@if (IsLoading)
+{
+    <RadzenDataList WrapItems="false"
+                    AllowPaging="@AllowPaging"
+                    Data="@_skeletonItems"
+                    TItem="int">
+        <Template>
+            <div class="han-skeleton-loading"></div>
+        </Template>
+    </RadzenDataList>
+}
+else
+{
+    <RadzenDataList WrapItems="@WrapItems" 
+                    AllowPaging="@AllowPaging" 
+                    Data="@Data" 
+                    TItem="TItem">
+        <Template Context="item">
+            @if (ChildContent != null)
+            {
+                @ChildContent(item)
+            }
+        </Template>
+    </RadzenDataList>
+
+}
+
+@code {
+    private List<int> _skeletonItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    [Parameter]
+    public List<TItem> Data { get; set; } = [];
+    
+    [Parameter] 
+    public bool IsLoading { get; set; } = true;
+    
+    [Parameter]
+    public RenderFragment<TItem>? ChildContent { get; set; }
+    
+    [Parameter]
+    public bool WrapItems { get; set; } = true;
+    
+    [Parameter] 
+    public bool AllowPaging { get; set; } = false;
+
+}
