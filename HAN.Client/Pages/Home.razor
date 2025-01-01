@@ -7,12 +7,19 @@
 
 <PageTitle>Home</PageTitle>
 
+<RadzenHeading class="mb-4" Size="H1" Text="Welcome to the Home Page!" />
 <AuthorizeView>
     <Authorized>
-        <p>Welcome, @context.User.Identity.Name!</p>
+        <RadzenCard Variant="Variant.Flat" Shade="Shade.Lighter" Style="padding: 20px; background-color: #f9f9f9;">
+            <RadzenHeading Size="H3" Text="@($"Hello, {@context.User.Identity.Name}!")" />
+            <p>Thank you for logging in. Feel free to explore our application.</p>
+        </RadzenCard>
     </Authorized>
     <NotAuthorized>
-        <p>Please log in.</p>
+        <RadzenCard Variant="Variant.Flat" Shade="Shade.Lighter" Style="padding: 20px; background-color: #fff3cd; border: 1px solid #ffeeba;">
+            <RadzenHeading Size="H3" Text="Access Denied" />
+            <p>Please log in to access the full features of this page.</p>
+        </RadzenCard>
     </NotAuthorized>
 </AuthorizeView>
 

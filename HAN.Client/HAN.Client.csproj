@@ -25,6 +25,10 @@
       <_ContentIncludedByDefault Remove="Pages\Course\Schedule\ManageSchedule.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services\" />
+    </ItemGroup>
+
     <Target Name="RunTestsAfterBuild" AfterTargets="Build">
         <Exec Command="dotnet test" />
     </Target>
