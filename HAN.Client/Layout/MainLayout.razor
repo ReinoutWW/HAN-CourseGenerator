@@ -25,8 +25,8 @@
                     <Authorized>
                         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="8px">
                             <RadzenText class="mb-0" TextStyle="TextStyle.Body1">@context.User.Identity.Name</RadzenText>
-                            <RadzenButton @ref="_buttonRef" Variant="Variant.Flat" Shade="Shade.Lighter" Icon="person"/>
-                            <SecondaryButton Click="Logout">Logout</SecondaryButton>
+                            <PrimaryButton @ref="_buttonRef" Icon="person"/>
+                            <SecondaryButton Click="Logout" Icon="logout" />
                         </RadzenStack>
                     </Authorized>
                 </AuthorizeView>
