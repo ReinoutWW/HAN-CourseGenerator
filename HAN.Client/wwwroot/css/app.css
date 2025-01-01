@@ -1,5 +1,6 @@
 @import url('fonts.css');
 @import url('ui-components.css');
+@import url('utility.css');
 @import url('Pages/error-page.css');
 
 :root {
@@ -10,6 +11,10 @@ html, body {
     font-family: "Poppins", serif !important;
     font-weight: 400;
     font-style: normal;
+}
+
+.rz-form-input-wrapper.rz-login-buttons {
+    display: none !important;
 }
 
 .rz-layout {
@@ -23,7 +28,7 @@ html, body {
     background-color: white;
     border-radius: 10px;
 
-    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    box-shadow: var(--han-shadow-medium);
     z-index: 2;
 }
 
@@ -42,6 +47,20 @@ html, body {
 
 .rz-layout .rz-header > div {
     background-color: var(--han-layout-background-color);
+}
+
+.rz-panel-menu .rz-navigation-item {
+    border-radius: 10px;
+}
+
+.han-sticky-header {
+    top: 0;
+    position: sticky;
+    border-radius: 5px;
+    padding: 1rem;
+    backdrop-filter: blur(4000px);
+    box-shadow: var(--han-shadow-light);
+    z-index: 1;
 }
 
 .han-delimiter {
