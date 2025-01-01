@@ -1,4 +1,3 @@
-using HAN.Client.API;
 using HAN.Services.Dummy;
 using HAN.Services.Extensions;
 using HAN.Services.Interfaces;
