@@ -15,10 +15,12 @@
 <RadzenLayout>
     <RadzenHeader>
         <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" class="d-flex align-items-center">
-                <RadzenIcon Icon="history_edu" />
-                <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H6" Text="Learning | Student" />
+            <RadzenStack class="ml-2" Orientation="Orientation.Horizontal" Gap="16px">
+                <PrimaryButton Icon="menu_open" Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="8px" class="d-flex align-items-center">
+                    <RadzenIcon Icon="history_edu" />
+                    <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H6" Text="Learning | Student" />
+                </RadzenStack>
             </RadzenStack>
             <div class="ml-auto mr-3">
                 <AuthorizeView>

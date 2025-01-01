@@ -5,6 +5,7 @@
 
 :root {
     --han-layout-background-color: #f1fcff;
+    --han-layout-sidebar: 200px;
 }
 
 html, body {
@@ -24,6 +25,10 @@ html, body {
     background-color: var(--han-layout-background-color);
 }
 
+.rz-header > div {
+    height: 100%;
+}
+
 .rz-layout .rz-body {
     background-color: white;
     border-radius: 10px;
@@ -39,6 +44,7 @@ html, body {
 
 .rz-layout .rz-sidebar {
     border-inline-end: unset;
+    width: var(--han-layout-sidebar);
 }
 
 .rz-layout .rz-header .rz-sidebar-toggle {
@@ -49,7 +55,7 @@ html, body {
     background-color: var(--han-layout-background-color);
 }
 
-.rz-panel-menu .rz-navigation-item {
+.rz-navigation-item {
     border-radius: 10px;
 }
 
@@ -201,4 +207,24 @@ code {
 
 .mr-5 {
     margin-right: 3rem;
+}
+
+.ml-1 {
+    margin-left: 0.25rem;
+}
+
+.ml-2 {
+    margin-left: 0.5rem;
+}
+
+.ml-3 {
+    margin-left: 1rem;
+}
+
+.ml-4 {
+    margin-left: 1.5rem;
+}
+
+.ml-5 {
+    margin-left: 3rem;
 }
