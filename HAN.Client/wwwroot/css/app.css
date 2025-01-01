@@ -6,6 +6,22 @@
 :root {
     --han-layout-background-color: #f1fcff;
     --han-layout-sidebar: 200px;
+    --rz-text-font-family: "Poppins", serif !important;
+}
+
+.rz-text-h1,
+.rz-text-h2,
+.rz-text-h3,
+.rz-text-h4,
+.rz-text-h5,
+.rz-text-h6,
+.rz-text-body1,
+.rz-text-body2,
+.rz-text-caption,
+.rz-text-overline,
+.rz-text-subtitle1,
+.rz-text-subtitle2 {
+    --rz-text-font-family: "Poppins", serif !important;
 }
 
 html, body {

@@ -140,3 +140,7 @@
     text-overflow: ellipsis;
     max-height: 60px;
 }
+
+.han-text-shadow {
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
