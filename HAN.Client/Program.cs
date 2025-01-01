@@ -2,7 +2,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using HAN.Client;
-using HAN.Client.Authentication;
+using HAN.Client.Auth;
 using HAN.Client.Components.Base;
 using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
@@ -17,8 +17,8 @@ builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddAuthorizationCore();
 
 var app = builder.Build();
 

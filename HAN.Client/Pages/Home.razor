@@ -1,19 +1,20 @@
 ﻿@page "/"
-@using HAN.Client.Components.UI;
+@using Microsoft.AspNetCore.Authorization
 
 @inject NavigationManager NavigationManager
+
+@attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 
 <AuthorizeView>
     <Authorized>
-        <p>Welcome, authenticated user!</p>
+        <p>Welcome, @context.User.Identity.Name!</p>
     </Authorized>
     <NotAuthorized>
-        <p>You are not authorized to view this content.</p>
+        <p>Please log in.</p>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    
 }

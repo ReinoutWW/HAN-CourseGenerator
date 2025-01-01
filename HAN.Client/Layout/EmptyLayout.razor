@@ -5,40 +5,20 @@
 @using NotificationMessage = HAN.Client.Components.Base.SystemFeedbackNotificationMessage
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Components.Base
-@using HAN.Client.Components.UI
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
 
 <RadzenComponents />
 
 <RadzenLayout>
     <RadzenHeader>
-        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
-            <RadzenSidebarToggle Click="@(() => _sidebar1Expanded = !_sidebar1Expanded)" />
+        <RadzenStack Style="height: 100%; padding-left: 1rem;" Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0">
             <RadzenStack Orientation="Orientation.Horizontal" Gap="8px" class="d-flex align-items-center">
                 <RadzenIcon Icon="history_edu" />
                 <RadzenText Style="margin-bottom: 0" TextStyle="TextStyle.H6" Text="Learning | Student" />
             </RadzenStack>
-            <div class="ml-auto mr-3">
-                <AuthorizeView>
-                    <Authorized>
-                        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="8px">
-                            <RadzenText class="mb-0" TextStyle="TextStyle.Caption">Welcome, @context.User.Identity.Name!</RadzenText>
-                            <RadzenButton Variant="Variant.Flat" Shade="Shade.Lighter" Icon="person"/>
-                            <SecondaryButton Click="Logout">Logout</SecondaryButton>
-                        </RadzenStack>
-                    </Authorized>
-                </AuthorizeView>
-            </div>
         </RadzenStack>
     </RadzenHeader>
-    <RadzenSidebar @bind-Expanded="@_sidebar1Expanded">
-        <RadzenPanelMenu>
-            <RadzenPanelMenuItem Text="Home" Path="/" Icon="home" />
-            <RadzenPanelMenuItem Text="Courses" Path="/course/overview" Icon="School" />
-        </RadzenPanelMenu>
-    </RadzenSidebar>
     <RadzenBody>
         <ErrorBoundary>
             <ChildContent>
@@ -63,18 +43,18 @@
 
 @code {
     [Inject] private NotificationService SystemFeedbackNotificationService { get; set; } = default!;
-    
+
     private RadzenButton? _buttonRef;
-    
+
     private bool _sidebar1Expanded = true;
-    
+
     private IReadOnlyList<NotificationMessage> Notifications => SystemFeedbackNotificationService.SystemNotifications;
 
     protected override void OnInitialized()
     {
         SystemFeedbackNotificationService.OnSystemNotificationAdded += StateHasChanged;
     }
-    
+
     protected override Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && _buttonRef is not null)
@@ -85,17 +65,28 @@
         return Task.CompletedTask;
     }
 
+    private async Task Login()
+    {
+        if (AuthenticationStateProvider is CustomAuthStateProvider authStateProvider)
+        {
+            authStateProvider.NotifyUserAuthentication("TestUser");
+        }
+    }
+
     private async Task Logout()
     {
         if (AuthenticationStateProvider is CustomAuthStateProvider authStateProvider)
         {
             authStateProvider.NotifyUserLogout();
-            NavigationManager.NavigateTo("/authentication/login");
         }
     }
-    
+
     public void Dispose()
     {
         SystemFeedbackNotificationService.OnSystemNotificationAdded -= StateHasChanged;
     }
+}
+
+@code {
+    
 }
