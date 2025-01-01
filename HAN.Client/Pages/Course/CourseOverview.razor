@@ -4,7 +4,10 @@
 
 @inject CourseService CourseService;
 
-<RadzenHeading class="mb-4" Size="H1" Text="Your Courses. One Page." />
+<div class="mb-3">
+    <RadzenHeading class="mb-1" Size="H1" Text="Your Courses. One Page." />
+    <RadzenText TextStyle="TextStyle.Subtitle1" Text="This overview shows all courses that are available on the platform." /> 
+</div>
 
 @if (_courses == null)
 {
@@ -16,13 +19,14 @@ else if (_courses.Count == 0)
 }
 else
 {
-    @foreach(var course in _courses)
-    {
-        <RadzenCard class="mb-2" Variant="Variant.Outlined">
-            <RadzenHeading Size="H3" Text="@course.Name" />
-            <RadzenText Text="@course.Description" />
-        </RadzenCard>
-    }
+    <RadzenDataList WrapItems="true" AllowPaging="false" Data="@_courses" TItem="Course">
+        <Template Context="course">
+            <RadzenCard Variant="Variant.Outlined">
+                <RadzenHeading Size="H3" Text="@course.Name" />
+                <RadzenText Text="@course.Description" />
+            </RadzenCard>
+        </Template>
+    </RadzenDataList>
 }
 
 @code {
