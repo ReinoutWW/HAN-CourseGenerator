@@ -20,6 +20,14 @@
     max-height: 50vh;
 }
 
+.han-inner-shadow {
+    box-shadow: inset 6px 6px 10px 0 rgba(0, 0, 0, 0.2), inset -6px -6px 10px 0 rgba(255, 255, 255, 0.5);
+}
+
+.han-gray-transparent {
+    color: #00000082 !important;
+}
+
 .han-notification-item {
     display: flex;
     border-radius: 5px 5px 0 0;
