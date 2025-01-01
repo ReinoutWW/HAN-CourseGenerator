@@ -25,6 +25,10 @@
       <_ContentIncludedByDefault Remove="Pages\Course\Schedule\ManageSchedule.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\HAN.Services\HAN.Services.csproj" />
+    </ItemGroup>
+
     <Target Name="RunTestsAfterBuild" AfterTargets="Build">
         <Exec Command="dotnet test" />
     </Target>

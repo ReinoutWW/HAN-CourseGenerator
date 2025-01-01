@@ -1,8 +1,38 @@
 ﻿@page "/course/overview"
+@using HAN.Client.Services
+@using HAN.Client.Services.Models
+
+@inject CourseService CourseService;
 
 <RadzenHeading class="mb-4" Size="H1" Text="Your Courses. One Page." />
 
+@if (_courses == null)
+{
+    <RadzenText Text="Loading courses..." />
+}
+else if (_courses.Count == 0)
+{
+    <RadzenText Text="No courses found." />
+}
+else
+{
+    @foreach(var course in _courses)
+    {
+        <RadzenCard class="mb-2" Variant="Variant.Outlined">
+            <RadzenHeading Size="H3" Text="@course.Name" />
+            <RadzenText Text="@course.Description" />
+        </RadzenCard>
+    }
+}
 
 @code {
-    
+    List<Course> _courses = [];
+
+    protected override async Task<Task> OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _courses = await CourseService.GetCoursesAsync() ?? new List<Course>();
+        
+        return Task.CompletedTask;
+    }
 }

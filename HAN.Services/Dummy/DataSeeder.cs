@@ -2,14 +2,15 @@
 using HAN.Services.DTOs;
 using HAN.Services.DTOs.CourseComponents;
 using HAN.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace HAN.Client.Server.Data;
+namespace HAN.Services.Dummy;
 
 public static class DataSeeder
 {
     public static void SeedCourseData(IServiceProvider serviceProvider)
     {
-        int iterations = 10;
+        int iterations = 15;
         
         for (int i = 0; i < iterations; i++)
         {

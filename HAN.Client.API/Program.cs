@@ -1,4 +1,7 @@
 using HAN.Client.API;
+using HAN.Services.Dummy;
+using HAN.Services.Extensions;
+using HAN.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,27 +37,24 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
+builder.Services.AddCourseServices();
+
 var app = builder.Build();
 
-// Use authentication and authorization middleware
-app.UseAuthentication();
-app.UseAuthorization();
+var scope = app.Services.CreateScope();
+DataSeeder.SeedCourseData(scope.ServiceProvider);
 
-app.MapGet("/auth-callback", (string code, string state) =>
+app.MapGet("/course", (ICourseService courseService) =>
 {
-    var token = new Guid().ToString("n");
-    
-    return Task.FromResult(Results.Redirect($"https://localhost:7149/auth?success=true&token={token}"));
+    var courses = courseService.GetAllCourses();
+    return Results.Ok(courses);
 });
 
-
-// Secured endpoint: Accessible only to authenticated users
 app.MapGet("/api/secure-data", [Authorize] () =>
 {
     return Results.Ok(new { message = "This is secure data accessible to authenticated users." });
 });
 
-// Admin-only endpoint: Accessible only to users with the Admin role
 app.MapGet("/api/admin-data", [Authorize(Policy = "AdminPolicy")] () =>
 {
     return Results.Ok(new { message = "This is admin-only data." });
