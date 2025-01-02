@@ -38,25 +38,4 @@ public class FileExporterServiceTests : TestBase
         fileDto.Content = "Hello PDF\nThis is a PDF file.";
         _exporterService.ExportToPdf(fileDto);
     }
-
-// SonarQube: Can't scan with broken tests :D So will comment out for now. Once it's all working, we can uncomment and run the tests.
-    // * Or while developing of course
-    
-    // [Fact]
-    // public void CreateAndExportFile_ShouldCreateAndExportFile()
-    // {
-    //     FileDto file = new()
-    //     {
-    //         Name = "testfile.txt",
-    //         Content = "Test Content"
-    //     };
-    //     
-    //     var createdFile = _fileService.CreateFile(file);
-    //     
-    //     // Assert.NotNull(createdFile);
-    //     // Assert.Equal(file.Name, createdFile.Name);
-    //     // Assert.Equal(file.Name, createdFile.Name);
-    //     
-    //     _exporterService.Export(createdFile.Content);
-    // }
 }
