@@ -2,15 +2,15 @@
 
 namespace HAN.Services.Exporters;
 
-public class WordExporter() : FileExporter(new WordWriter())
+public class PdfExporter() : FileExporter(new PdfWriter())
 {
     protected override void PrepareFile()
     {
-        Console.WriteLine("Preparing Word file...");
+        Console.WriteLine("Preparing PDF file...");
     }
 
     protected override void FinalizeFile()
     {
-        Console.WriteLine("Word export finalized.");
+        Console.WriteLine("PDF export finalized.");
     }
 }

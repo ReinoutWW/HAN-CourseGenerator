@@ -1,21 +1,17 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.Writers;
 
 namespace HAN.Services.Exporters;
 
-public class MarkdownExporter : FileExporter
+public class MarkdownExporter() : FileExporter(new MarkdownWriter())
 {
-    public MarkdownExporter(FileDto file) : base(file) { }
-
-    public override void Export(string content)
+    protected override void PrepareFile()
     {
-        Console.WriteLine($"Exporting to Markdown file: {File.Name}");
-        // Add logic to write content to a .md file
-        System.IO.File.WriteAllText(File.Name, content);
-        Console.WriteLine("Markdown export completed.");
+        Console.WriteLine("Preparing Markdown file...");
     }
-    
-    public string ToMarkdown() 
+
+    protected override void FinalizeFile()
     {
-        return "this should be a markdown string";
+        Console.WriteLine("Markdown export finalized.");
     }
 }
