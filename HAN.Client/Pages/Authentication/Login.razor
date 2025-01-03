@@ -1,11 +1,14 @@
 ﻿@page "/authentication/Login"
 @using HAN.Client.Auth
 @using HAN.Client.Components.UI
+@using HAN.Client.Services.Models
+@using UserService = HAN.Client.Services.UserService
 
 @layout EmptyLayout
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject UserService UserService
 
 <PageTitle>Login</PageTitle>
 
@@ -33,19 +36,45 @@ else
             </RadzenCard>
         </RadzenColumn>
     </RadzenRow>
+    <div>
+        <iframe style="width: 500px; height: 500px;" src="https://localhost:5005/profile"></iframe>
+    </div>
 }
 
 @code {
     private bool isLoading = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await HandleLogin();
+    }
+    
     private async Task HandleLogin()
     {
         isLoading = true;
+        const string authUrl = "https://localhost:5005/login";
         
         if (AuthenticationStateProvider is CustomAuthStateProvider authStateProvider)
         {
-            authStateProvider.NotifyUserAuthentication("Mallie Plante");
-            NavigationManager.NavigateTo("/");
+            try
+            {
+                Profile userProfile = await UserService.GetUserProfile();
+            
+                authStateProvider.NotifyUserAuthentication(userProfile.Name);
+                NavigationManager.NavigateTo("/");
+            } catch (UnauthorizedAccessException ex)
+            {
+                NavigationManager.NavigateTo(authUrl);
+            }
+            catch (Exception ex)
+            {
+                //
+            }
+            finally
+            {
+                isLoading = false;
+            }
         }
     }
 }
