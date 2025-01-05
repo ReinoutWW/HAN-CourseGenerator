@@ -2,6 +2,10 @@
 This project is a course generator and validator system. 
 It is a project for the course I-OOSE at the HAN University of Applied Sciences.
 
+## Architecture
+![Design-phase-ClassDiagram-Page-9](https://github.com/user-attachments/assets/b5e3a7b1-8a43-4cd4-a874-6cc297ea6327)
+
+
 ## Used Technologies
 [![sonarcloud](https://img.shields.io/badge/SonarCloud-Quality_Gate-2A2F40?style=for-the-badge&logo=sonarcloud&logoColor=white)](https://sonarcloud.io/summary/new_code?id=ReinoutWW_HAN-CourseGenerator)
 [![C#](https://img.shields.io/badge/C%23-Programming-239120?style=for-the-badge&logo=csharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
