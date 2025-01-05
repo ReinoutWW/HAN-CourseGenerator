@@ -1,0 +1,6 @@
+@HAN.IdentityServer_HostAddress = http://localhost:5047
+
+GET {{HAN.IdentityServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
