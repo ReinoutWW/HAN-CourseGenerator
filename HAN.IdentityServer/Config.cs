@@ -7,7 +7,7 @@ public static class Config
     public static IEnumerable<ApiScope> ApiScopes =>
         new List<ApiScope>
         {
-            new ApiScope("api1", "My API")
+            new ApiScope("courseapi", "HAN Course API")
         };
 
     public static IEnumerable<Client> Clients =>
@@ -21,7 +21,7 @@ public static class Config
                 {
                     new Secret("secret".Sha256())
                 },
-                AllowedScopes = { "api1" }
+                AllowedScopes = { "courseapi" }
             }
         };
 
@@ -39,15 +39,21 @@ public static class Config
                 SubjectId = "2",
                 Username = "bob",
                 Password = "password"
+            },
+            new TestUser
+            {
+                SubjectId = "2",
+                Username = "RG",
+                Password = "password420"
             }
         };
     
     public static IEnumerable<ApiResource> ApiResources =>
         new List<ApiResource>
         {
-            new ApiResource("api1", "My API")
+            new ApiResource("courseapi", "HAN Course API")
             {
-                Scopes = { "api1" }
+                Scopes = { "courseapi" }
             }
         };
 }

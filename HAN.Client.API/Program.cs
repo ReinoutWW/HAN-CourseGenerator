@@ -12,7 +12,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.Authority = identityServerAuthority; 
-        options.Audience = "api1";
+        options.Audience = "courseapi";
         options.RequireHttpsMetadata = true; 
 
         options.TokenValidationParameters = new TokenValidationParameters
@@ -20,7 +20,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidIssuer = identityServerAuthority,
             ValidateAudience = true,
-            ValidAudience = "api1",
+            ValidAudience = "courseapi",
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true
         };
