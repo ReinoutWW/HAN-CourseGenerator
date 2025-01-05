@@ -7,6 +7,7 @@
     --han-layout-background-color: #f1fcff;
     --han-layout-sidebar: 200px;
     --rz-text-font-family: "Poppins", serif !important;
+    --han-premium-gradient: linear-gradient(269.84deg, rgba(0, 56, 255, 0.016) 33.88%, rgba(143, 0, 255, 0.055) 79.06%, rgba(120, 189, 228, 0.094) 100%);
 }
 
 .rz-text-h1,
