@@ -1,4 +1,6 @@
-﻿using HAN.Client.Services.Models;
+﻿using System.Diagnostics;
+using HAN.Client.Services.Http;
+using HAN.Client.Services.Models;
 
 namespace HAN.Client.Services;
 
@@ -9,9 +11,9 @@ public class CourseService(ICourseApiAdapter adapter)
         try
         {
             return await adapter.FetchCoursesAsync();
-        } catch (HttpRequestException e)
+        } catch (UnreachableException e)
         {
-            throw new Exception("Failed to fetch courses. Please try again later.");
+            throw new UnreachableException("Failed to fetch courses. Please try again later.");
         }
     }
 }

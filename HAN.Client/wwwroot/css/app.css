@@ -30,10 +30,6 @@ html, body {
     font-style: normal;
 }
 
-.rz-form-input-wrapper.rz-login-buttons {
-    display: none !important;
-}
-
 .rz-layout {
     --rz-layout-background-color: var(--han-layout-background-color);
     --rz-panel-menu-item-background-color: var(--han-layout-background-color);
@@ -109,6 +105,12 @@ a, .btn-link {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
+}
+
+.rz-login-custom .rz-button {
+    background-color: #f1fcff;
+    border-radius: 10px;
+    box-shadow: var(--han-shadow-medium);
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {

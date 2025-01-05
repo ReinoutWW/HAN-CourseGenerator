@@ -2,11 +2,11 @@
 @using HAN.Client.Services.Models
 @using HAN.Client.Components.UI
 @using CourseService = HAN.Client.Services.CourseService
-
 @using NotificationService = HAN.Client.Components.Base.SystemFeedbackNotificationService
 
 @inject NotificationService NotificationService;
 @inject CourseService CourseService;
+@inject NavigationManager NavigationManager;
 
 <div class="mb-3">
     <RadzenHeading class="mb-1" Size="H1" Text="Your Courses. One Page." />
@@ -46,12 +46,20 @@ else
         try
         {
             _courses = await CourseService.GetCoursesAsync() ?? new List<Course>();
-        } 
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            NotificationService.AddNotification(
+                "You are not logged in. Please log in to view the courses.",
+                AlertStyle.Danger
+            );
+            NavigationManager.NavigateTo("/authentication/Login");
+        }
         catch (Exception ex)
         {
             NotificationService.AddNotification(
-                 "An error occurred while loading the courses. Please try again later.",
-                 AlertStyle.Danger
+                "An error occurred while loading the courses. Please try again later.",
+                AlertStyle.Danger
             );
         }
         

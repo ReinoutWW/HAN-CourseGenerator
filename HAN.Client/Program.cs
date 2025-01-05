@@ -5,6 +5,7 @@ using HAN.Client;
 using HAN.Client.Auth;
 using HAN.Client.Components.Base;
 using HAN.Client.Services;
+using HAN.Client.Services.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 
@@ -19,28 +20,38 @@ builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<UserService>();
 
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddTransient<AuthorizationHttpHandler>();
 
-builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddHttpClient("AuthorizedClient", client =>
+    {
+        client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+    })
+    .AddHttpMessageHandler<AuthorizationHttpHandler>();
 
 // WebAPI Backend
-builder.Services.AddScoped(sp => new Uri("https://localhost:5005"));
+var apiBaseUri = new Uri(builder.Configuration["CourseApi:BaseUrl"] ?? throw new ArgumentNullException(nameof(builder.Configuration), "CourseApi:BaseUrl is not configured."));
+builder.Services.AddScoped(sp => apiBaseUri); // Web API Base URL
 
 builder.Services.AddScoped<ICourseApiAdapter, CourseApiAdapter>(sp =>
 {
-    var httpClient = sp.GetRequiredService<HttpClient>();
+    // Resolve the named HttpClient
+    var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient("AuthorizedClient");
     var baseUri = sp.GetRequiredService<Uri>();
     return new CourseApiAdapter(httpClient, baseUri);
 });
 
 builder.Services.AddScoped<IProfileApiAdapter, ProfileApiAdapter>(sp =>
 {
-    var httpClient = sp.GetRequiredService<HttpClient>();
+    // Resolve the named HttpClient
+    var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient("AuthorizedClient");
     var baseUri = sp.GetRequiredService<Uri>();
     return new ProfileApiAdapter(httpClient, baseUri);
 });
-
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 var app = builder.Build();
 
