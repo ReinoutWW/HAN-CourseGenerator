@@ -1,6 +1,7 @@
+using HAN.Client.API;
+using HAN.Client.API.RabbitMQ;
 using HAN.Services.Dummy;
 using HAN.Services.Extensions;
-using HAN.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -71,6 +72,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCourseServices();
 
+builder.Services.AddHostedService<RabbitMqListenerService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -89,11 +92,7 @@ app.UseAuthorization();
 var scope = app.Services.CreateScope();
 DataSeeder.SeedCourseData(scope.ServiceProvider);
 
-app.MapGet("/course", (ICourseService courseService) =>
-{
-    var courses = courseService.GetAllCourses();
-    return Results.Ok(courses);
-}).RequireAuthorization();
+app.MapCourseEndpoints();
 
 app.MapGet("/", () => "Minimal API is running.").AllowAnonymous();
 
