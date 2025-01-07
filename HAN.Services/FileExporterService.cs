@@ -24,6 +24,7 @@ public class FileExporterService : IExporterService
 
     public void ExportToMarkdown(FileDto file)
     {
+        Console.WriteLine($"Writing file to: {Path.Combine(Directory.GetCurrentDirectory(), file.Name)}.md");
         _markdownExporter.Export(file);
     }
 

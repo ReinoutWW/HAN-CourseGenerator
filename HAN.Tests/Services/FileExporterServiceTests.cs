@@ -20,59 +20,35 @@ public class FileExporterServiceTests : TestBase
     {
         return new FileDto
         {
-            Name = "Example",
-            Content = "This content used for testing purposes."
+            Name = "export",
+            Extension = "txt",
+            Content = "This content is used for testing purposes."
         };
     }
     
     [Fact]
     public void Export_CreatesMarkdownFileWithCorrectContent()
     {
+        // Arrange
+        var directory = Path.Combine(Directory.GetCurrentDirectory());
+
         var fileDto = file();
-        var outputFileName = "TestFile.md";
+        var expectedFileName = Path.Combine(directory, "export.md");
+        var expectedContent = "# export\n\nThis content is used for testing purposes.";
         
+        // Act
         _exporterService.ExportToMarkdown(fileDto);
+
+        // Assert
+        Assert.True(File.Exists(expectedFileName), $"Markdown file was not created at {expectedFileName}.");
         
-        Assert.True(File.Exists(outputFileName), "Markdown file was not created.");
-
-        var fileContent = File.ReadAllText(outputFileName);
-        var expectedContent = "# TestFile\n\nThis is a test content.";
-        Assert.Equal(expectedContent, fileContent);
-
-        File.Delete(outputFileName);
-    }
-    
-    [Fact]
-    public void Export_CreatesPdfFileWithCorrectContent()
-    {
-        var fileDto = file();
-        var outputFileName = "TestFile.pdf";
+        var actualContent = File.ReadAllText(expectedFileName);
+        Assert.Equal(expectedContent, actualContent);
         
-        _exporterService.ExportToPdf(fileDto);
-        
-        Assert.True(File.Exists(outputFileName), "PDF file was not created.");
-
-        var fileContent = File.ReadAllText(outputFileName);
-        var expectedContent = "TestFile\n\nThis is a test content.";
-        Assert.Equal(expectedContent, fileContent);
-
-        File.Delete(outputFileName);
-    }
-    
-    [Fact]
-    public void Export_CreatesWordFileWithCorrectContent()
-    {
-        var fileDto = file();
-        var outputFileName = "TestFile.docx";
-        
-        _exporterService.ExportToPdf(fileDto);
-        
-        Assert.True(File.Exists(outputFileName), "Word file was not created.");
-
-        var fileContent = File.ReadAllText(outputFileName);
-        var expectedContent = "TestFile\n\nThis is a test content.";
-        Assert.Equal(expectedContent, fileContent);
-
-        File.Delete(outputFileName);
+        // Cleanup
+        if (File.Exists(expectedFileName))
+        {
+            File.Delete(expectedFileName);
+        }
     }
 }

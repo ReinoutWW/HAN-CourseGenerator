@@ -1,17 +1,27 @@
 ﻿using HAN.Services.DTOs;
-using HAN.Services.Writers;
 
 namespace HAN.Services.Exporters;
 
-public class MarkdownExporter() : FileExporter(new MarkdownWriter())
+public class MarkdownExporter() : FileExporter()
 {
-    protected override void PrepareFile()
+    protected override void WriteContent(FileDto fileDto)
     {
-        Console.WriteLine("Preparing Markdown file...");
-    }
+        if (fileDto == null) throw new ArgumentNullException(nameof(fileDto), "FileDto cannot be null.");
+        if (string.IsNullOrWhiteSpace(fileDto.Name)) throw new ArgumentException("File name cannot be empty.", nameof(fileDto.Name));
+        if (string.IsNullOrWhiteSpace(fileDto.Content)) throw new ArgumentException("File content cannot be empty.", nameof(fileDto.Content));
+        
+        string fileName = fileDto.Name.EndsWith(".md") ? fileDto.Name : $"{fileDto.Name}.md";
+        
+        string markdownContent = TransformToMarkdown(fileDto);
+        
+        Console.WriteLine($"Writing Markdown content to {fileName}...");
+        File.WriteAllText(fileName, markdownContent);
 
-    protected override void FinalizeFile()
+        Console.WriteLine("Markdown content successfully written.");
+    }
+    
+    private static string TransformToMarkdown(FileDto fileDto)
     {
-        Console.WriteLine("Markdown export finalized.");
+        return $"# {fileDto.Name}\n\n{fileDto.Content}";
     }
 }

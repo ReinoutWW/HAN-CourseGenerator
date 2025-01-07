@@ -5,7 +5,7 @@ using ValidationException = HAN.Services.Exceptions.ValidationException;
 
 namespace HAN.Services.Exporters;
 
-public abstract class FileExporter(IFileTypeWriter fileTypeWriter)
+public abstract class FileExporter()
 {
     public void Export(FileDto fileDto)
     {
@@ -14,7 +14,7 @@ public abstract class FileExporter(IFileTypeWriter fileTypeWriter)
         var fileName = fileDto.Name;
         Console.WriteLine($"Preparing to export to: {fileName}");
         PrepareFile();
-        fileTypeWriter.WriteContent(fileName, fileDto.Content);
+        WriteContent(fileDto);
         FinalizeFile();
         Console.WriteLine($"Export completed for: {fileName}");
     }
@@ -39,4 +39,6 @@ public abstract class FileExporter(IFileTypeWriter fileTypeWriter)
     {
         Console.WriteLine("Default finalization after export...");
     }
+
+    protected abstract void WriteContent(FileDto fileDto);
 }
