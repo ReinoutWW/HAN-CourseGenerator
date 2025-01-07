@@ -30,6 +30,7 @@ public class FileExporterService : IExporterService
 
     public void ExportToWord(FileDto file)
     {
+        Console.WriteLine($"Writing file to: {Path.Combine(Directory.GetCurrentDirectory(), file.Name)}.docx");
         _wordExporter.Export(file);
     }
 

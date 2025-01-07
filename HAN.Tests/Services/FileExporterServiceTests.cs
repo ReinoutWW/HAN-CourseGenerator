@@ -53,6 +53,32 @@ public class FileExporterServiceTests : TestBase
     }
     
     [Fact]
+    public void Export_CreatesWordFileWithCorrectContent()
+    {
+        // Arrange
+        var directory = Path.Combine(Directory.GetCurrentDirectory());
+
+        var fileDto = file();
+        var expectedFileName = Path.Combine(directory, "export.docx");
+        var expectedContent = $"Title: export\n\nThis content is used for testing purposes.";
+
+        // Act
+        _exporterService.ExportToWord(fileDto);
+
+        // Assert
+        Assert.True(File.Exists(expectedFileName), $"Word file was not created at {expectedFileName}.");
+
+        var actualContent = File.ReadAllText(expectedFileName).Replace("\r\n", "\n").TrimEnd();
+        Assert.Equal(expectedContent, actualContent);
+
+        // Cleanup
+        if (File.Exists(expectedFileName))
+        {
+            File.Delete(expectedFileName);
+        }
+    }
+    
+    [Fact]
     public void Export_CreatesPdfFileWithCorrectContent()
     {
         // Arrange
