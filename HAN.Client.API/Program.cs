@@ -2,6 +2,9 @@ using HAN.Client.API;
 using HAN.Client.API.RabbitMQ;
 using HAN.Services.Dummy;
 using HAN.Services.Extensions;
+using HAN.Services.Interfaces;
+using HAN.Services.Messages;
+using HAN.Utilities.Messaging.Abstractions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -72,7 +75,14 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddCourseServices();
 
-builder.Services.AddHostedService<RabbitMqListenerService>();
+builder.Services.AddSingleton<IServiceMessageHandler<CourseMessage>, CourseMessageHandler>(sp =>
+{
+    var courseService = sp.CreateScope().ServiceProvider.GetRequiredService<ICourseService>();
+    return new CourseMessageHandler(courseService);
+});
+
+builder.Services.AddSingleton<IMessageBackgroundListenerService, RabbitMqListenerService>();
+builder.Services.AddHostedService<MessageHandlerBackgroundService>();
 
 var app = builder.Build();
 

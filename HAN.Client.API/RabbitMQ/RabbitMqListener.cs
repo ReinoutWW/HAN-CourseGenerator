@@ -1,66 +1,23 @@
-﻿using System.Text;
-using System.Text.Json;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+﻿using System.Diagnostics;
+using HAN.Services.Messages;
+using HAN.Utilities.Messaging.Abstractions;
+using HAN.Utilities.Messaging.RabbitMQ;
 
 namespace HAN.Client.API.RabbitMQ;
 
-public class RabbitMqListenerService : BackgroundService
+public class RabbitMqListenerService(IServiceMessageHandler<CourseMessage> courseMessageHandler) : RabbitMqMessageHandler<CourseMessage>
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public override void Handle(IMessage message)
     {
-        var factory = new ConnectionFactory
+        switch (message)
         {
-            HostName = "localhost"
-        };
-
-        await using var connection = await factory.CreateConnectionAsync(stoppingToken);
-        await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);
-
-        await channel.QueueDeclareAsync(
-            queue: "CourseAPI",
-            durable: false,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null, cancellationToken: stoppingToken);
-
-        var consumer = new AsyncEventingBasicConsumer(channel);
-
-        consumer.ReceivedAsync += async (sender, ea) =>
-        {
-            try
-            {
-                var body = ea.Body.ToArray();
-                var messageJson = Encoding.UTF8.GetString(body);
-                var messageObject = JsonSerializer.Deserialize<Message>(messageJson);
-
-                if (messageObject is null)
-                    return; // Or handle invalid message
-
-                // Create a dispatcher instance
-                var httpClient = new HttpClient();
-                var dispatcher = new MessageDispatcher(httpClient);
-
-                // Dispatch the message to the endpoint
-                var responseContent = await dispatcher.DispatchAsync(messageObject);
-
-                Console.WriteLine($"Dispatched to {messageObject.Endpoint} - Response: {responseContent}");
-            }
-            catch (Exception ex)
-            {
-                // Log or handle any error
-                Console.Error.WriteLine(ex.ToString());
-            }
-        };
-
-        await channel.BasicConsumeAsync(
-            queue: "CourseAPI",
-            autoAck: true,
-            consumer: consumer, cancellationToken: stoppingToken);
-
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await Task.Delay(1000, stoppingToken);
+            case null:
+                throw new ArgumentNullException(nameof(message));
+            case CourseMessage courseMessage:
+                courseMessageHandler.Handle(courseMessage);
+                break;
         }
+        
+        Console.WriteLine("> Message processed.");
     }
 }
