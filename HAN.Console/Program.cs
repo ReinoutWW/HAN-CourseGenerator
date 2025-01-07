@@ -1,22 +1,31 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using HAN.Client.API.RabbitMQ;
 using HAN.Console;
+using HAN.Services.Messages;
+using HAN.Utilities.Messaging.RabbitMQ;
 
-var course = new Course
+MessagePublisher messagePublisher = new("localhost");
+
+var running = true;
+while (running)
 {
-    Name = "HAN I-OOSE",
-    Description = "The magical course "
-};
+    var course = new Course
+    {
+        Name = "HAN I-OOSE",
+        Description = "The magical course "
+    };
 
-var httpClient = new HttpClient();
-var authService = new AuthService(httpClient);
+    var message = new CourseMessage
+    {
+        CourseAction = CourseAction.CreateCourse,
+        Action = "CreateCourse",
+        Payload = System.Text.Json.JsonSerializer.Serialize(course)
+    };
 
-var accessToken = await authService.LoginAsync("alice", "password");
+    messagePublisher.Publish(message, "CourseAPI");
 
-var courseService = new CourseService();
+    Console.WriteLine("Message sent!");
+    var res = Console.ReadLine();
 
-courseService.CreateCourse(course, accessToken);
-
-Console.WriteLine("Message sent!");
-Console.ReadLine();
+    running = res != "exit";
+}
