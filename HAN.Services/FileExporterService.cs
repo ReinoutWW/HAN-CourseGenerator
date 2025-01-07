@@ -35,6 +35,7 @@ public class FileExporterService : IExporterService
 
     public void ExportToPdf(FileDto file)
     {
+        Console.WriteLine($"Writing file to: {Path.Combine(Directory.GetCurrentDirectory(), file.Name)}.pdf");
         _pdfExporter.Export(file);
     }
 }
