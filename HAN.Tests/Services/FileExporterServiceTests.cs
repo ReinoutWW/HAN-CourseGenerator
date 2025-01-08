@@ -21,7 +21,6 @@ public class FileExporterServiceTests : TestBase
         return new FileDto
         {
             Name = "export",
-            Extension = "txt",
             Content = "This content is used for testing purposes."
         };
     }
