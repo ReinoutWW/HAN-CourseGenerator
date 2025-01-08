@@ -6,17 +6,18 @@ using File = HAN.Data.Entities.File;
 
 namespace HAN.Repositories;
 
-public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericRepository<TEntity>(context: context), ICourseComponentRepository<TEntity> where TEntity : CourseComponent
+public class CourseComponentRepository<TEntity>(AppDbContext context)
+    : GenericRepository<TEntity>(context: context), ICourseComponentRepository<TEntity> where TEntity : CourseComponent
 {
     private readonly AppDbContext _context = context;
-    
-        public override void Add(TEntity entity)
+
+    public override void Add(TEntity entity)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
-
-        // Ensure EvlIds are correctly set
-        entity.EvlIds = entity.EvlIds ?? new List<int>();
+        
+        entity.EvlIds = ValidateAndResolveEvlIds(entity.EvlIds);
+        entity.FileIds = ValidateAndResolveFileIds(entity.FileIds);
 
         Entity.Add(entity);
         _context.SaveChanges();
@@ -83,7 +84,8 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
         }
         else
         {
-            throw new InvalidOperationException($"Evl with ID {evlId} is already associated with CourseComponent ID {courseComponentId}.");
+            throw new InvalidOperationException(
+                $"Evl with ID {evlId} is already associated with CourseComponent ID {courseComponentId}.");
         }
     }
 
@@ -104,8 +106,38 @@ public class CourseComponentRepository<TEntity>(AppDbContext context) : GenericR
         }
         else
         {
-            throw new InvalidOperationException($"File with ID {fileId} is already associated with CourseComponent ID {courseComponentId}.");
+            throw new InvalidOperationException(
+                $"File with ID {fileId} is already associated with CourseComponent ID {courseComponentId}.");
         }
     }
-}
+    
+    private List<int> ValidateAndResolveEvlIds(List<int> evlIds)
+    {
+        if (evlIds == null)
+            throw new ArgumentNullException(nameof(evlIds));
 
+        foreach (var id in evlIds)
+        {
+            var evlExists = _context.Evls.Any(e => e.Id == id);
+            if (!evlExists)
+                throw new InvalidOperationException($"Evl with Id {id} not found.");
+        }
+
+        return evlIds;
+    }
+
+    private List<int> ValidateAndResolveFileIds(List<int> fileIds)
+    {
+        if (fileIds == null)
+            throw new ArgumentNullException(nameof(fileIds));
+
+        foreach (var id in fileIds)
+        {
+            var fileExists = _context.Files.Any(e => e.Id == id);
+            if (!fileExists)
+                throw new InvalidOperationException($"File with Id {id} not found.");
+        }
+
+        return fileIds;
+    }
+}

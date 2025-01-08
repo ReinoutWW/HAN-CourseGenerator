@@ -23,11 +23,14 @@ public class CourseProfile : Profile
         CreateMap<Course, CourseDto>();
 
         CreateMap<CourseComponentDto, CourseComponent>()
-            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()))
+            .ForMember(dest => dest.FileIds, opt => opt.MapFrom(src => src.Files.Select(e => e.Id).ToList()));
         CreateMap<LessonDto, Lesson>()
-            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()))
+            .ForMember(dest => dest.FileIds, opt => opt.MapFrom(src => src.Files.Select(e => e.Id).ToList()));
         CreateMap<ExamDto, Exam>()
-            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()));
+            .ForMember(dest => dest.EvlIds, opt => opt.MapFrom(src => src.Evls.Select(e => e.Id).ToList()))
+            .ForMember(dest => dest.FileIds, opt => opt.MapFrom(src => src.Files.Select(e => e.Id).ToList()));
 
         // Entity -> DTO
         CreateMap<Evl, EvlDto>();

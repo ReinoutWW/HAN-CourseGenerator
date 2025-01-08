@@ -30,6 +30,20 @@ public abstract class AbstractCourseComponentService<TDto, TEntity>(
         // Map entity back to DTO
         return mapper.Map<TDto>(entity);
     }
+    
+    public TDto UpdateCourseComponent(TDto courseComponentDto)
+    {
+        validationService.Validate(courseComponentDto);
+
+        // Map DTO to entity
+        var entity = mapper.Map<TEntity>(courseComponentDto);
+
+        // Persist entity
+        repository.Update(entity);
+        
+        // Map entity back to DTO
+        return mapper.Map<TDto>(entity);
+    }
 
     public void AddEvlToCourseComponent(int courseComponentId, int evlId)
     {
