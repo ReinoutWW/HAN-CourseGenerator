@@ -5,52 +5,95 @@
 @using HAN.Services.Interfaces
 @using NotificationService = HAN.Client.Server.Components.Base.SystemFeedbackNotificationService
 @using HAN.Client.Server.Components.UI
+@using HAN.Data.Entities
+@using HAN.Services
+@using HAN.Services.DTOs.CourseComponents
 
 @inject IEvlService EvlService
+@inject CourseComponentService CourseComponentService
 @inject NavigationManager NavigationManager
 @inject NotificationService SystemFeedbackNotificationService
 
 <h3>@(evl.Id == 0 ? "Create Evl" : "Edit Evl")</h3>
 
-<RadzenTemplateForm Data="@evl" Submit="@((EvlDto args) => { Submit(args); })">
-    <RadzenFieldset Text="Evl Info">
-        <RadzenStack Gap="1rem">
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenLabel Text="Name" Component="Name" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="8">
-                    <RadzenTextBox Style="width: 100%;" @bind-Value="evl.Name" Name="Name" />
-                    <RadzenRequiredValidator Component="Name" Text="Name is required." />
-                    <RadzenLengthValidator Component="Name" Min="2" Max="100" Text="Name must be between 2 and 100 characters." />
-                </RadzenColumn>
-            </RadzenRow>
+<div class="row">
+    <div class="col-8">
+        <RadzenTemplateForm Data="@evl" Submit="@((EvlDto args) => { Submit(args); })">
+            <RadzenFieldset Text="Evl Info">
+                <RadzenStack Gap="1rem">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Name" Component="Name"/>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox Style="width: 100%;" @bind-Value="evl.Name" Name="Name"/>
+                            <RadzenRequiredValidator Component="Name" Text="Name is required."/>
+                            <RadzenLengthValidator Component="Name" Min="2" Max="100"
+                                                   Text="Name must be between 2 and 100 characters."/>
+                        </RadzenColumn>
+                    </RadzenRow>
 
-            <RadzenRow AlignItems="AlignItems.Center">
-                <RadzenColumn Size="12" SizeMD="4">
-                    <RadzenLabel Text="Description" Component="Description" />
-                </RadzenColumn>
-                <RadzenColumn Size="12" SizeMD="8">
-                    <RadzenTextArea Style="width: 100%;" Rows="5" @bind-Value="evl.Description" Name="Description" />
-                    <RadzenRequiredValidator Component="Description" Text="Description is required." />
-                    <RadzenLengthValidator Component="Description" Min="5" Max="450" Text="Description must be between 5 and 450 characters." />
-                </RadzenColumn>
-            </RadzenRow>
-        </RadzenStack>
-    </RadzenFieldset>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left" Gap="1rem" class="rz-mt-8 rz-mb-4">
-        <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
-        <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save" />
-    </RadzenStack>
-</RadzenTemplateForm>
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Description" Component="Description"/>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextArea Style="width: 100%;" Rows="5" @bind-Value="evl.Description"
+                                            Name="Description"/>
+                            <RadzenRequiredValidator Component="Description" Text="Description is required."/>
+                            <RadzenLengthValidator Component="Description" Min="5" Max="450"
+                                                   Text="Description must be between 5 and 450 characters."/>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenFieldset>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left" Gap="1rem"
+                         class="rz-mt-8 rz-mb-4">
+                <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel"/>
+                <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save"/>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-4">
+        <RadzenFieldset Text="Course Components">
+            <RadzenStack Gap="1rem">
+                
+                <RadzenDataGrid Data="@courseComponents"
+                                TItem="CourseComponentDto"
+                                AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="true"
+                                FilterMode="FilterMode.Advanced"
+                                AllowSorting="true"
+                                PageSize="20"
+                                RowClick="@NavigateToEditCourseComponent"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                ColumnWidth="200px"
+                                SelectionMode="DataGridSelectionMode.Single">
+                    <Columns>
+                        <RadzenDataGridColumn Property="@nameof(CourseComponentDto.Id)" Title="ID" Width="50px"
+                                              TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn Property="@nameof(CourseComponentDto.Name)" Title="Name" Width="150px"/>
+                    </Columns>
+                </RadzenDataGrid>
+
+            </RadzenStack>
+        </RadzenFieldset>
+        
+    </div>
+</div>
 
 @code {
     [Parameter] public int? Id { get; set; } = null;
-    
+
     private bool IsEditMode => Id.HasValue;
     private bool IsCreateMode => !Id.HasValue;
 
     private EvlDto evl = new();
+
+    private List<CourseComponentDto> courseComponents = new();
 
     protected override void OnInitialized()
     {
@@ -59,6 +102,7 @@
             try
             {
                 evl = EvlService.GetEvlById(Id.Value);
+                courseComponents = CourseComponentService.GetAllCourseComponentsByEvlId(Id.Value);
             }
             catch (KeyNotFoundException)
             {
@@ -72,7 +116,7 @@
     void Submit(EvlDto arg)
     {
         var evlDto = IsCreateMode ? EvlService.CreateEvl(arg) : EvlService.UpdateEvl(arg);
-        
+
         NavigationManager.NavigateTo("/evl/overview");
         SystemFeedbackNotificationService.AddNotification($"Evl ({evlDto.Id}) saved successfully!");
     }
@@ -81,4 +125,7 @@
     {
         NavigationManager.NavigateTo("/evl/overview");
     }
+
+    private void NavigateToEditCourseComponent(DataGridRowMouseEventArgs<CourseComponentDto> args) => NavigationManager.NavigateTo($"/course-component/{args.Data.Id}");
+
 }

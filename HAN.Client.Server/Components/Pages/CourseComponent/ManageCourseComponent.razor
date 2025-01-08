@@ -1,0 +1,180 @@
+﻿@page "/course-component/{Id:int?}"
+@rendermode InteractiveServer
+
+@using System.Text.Json
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+@using HAN.Client.Server.Components.UI
+@using HAN.Services
+@using HAN.Services.DTOs.CourseComponents
+@using NotificationService = HAN.Client.Server.Components.Base.SystemFeedbackNotificationService
+
+@inject CourseComponentService CourseComponentService
+@inject NavigationManager NavigationManager
+@inject NotificationService SystemFeedbackNotificationService
+@inject DialogService DialogService
+
+<h3>@(courseComponent.Id == 0 ? "Create Course Component" : "Edit Course Component")</h3>
+
+<div class="row">
+    <div class="col-8">
+        <RadzenTemplateForm Data="@courseComponent" Submit="@((CourseComponentDto args) => { Submit(args); })">
+            <RadzenFieldset Text="Course Component Info">
+                <RadzenStack Gap="1rem">
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Name" Component="Name"/>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox Style="width: 100%;" @bind-Value="courseComponent.Name" Name="Name"/>
+                            <RadzenRequiredValidator Component="Name" Text="Name is required."/>
+                            <RadzenLengthValidator Component="Name" Min="2" Max="100"
+                                                   Text="Name must be between 2 and 100 characters."/>
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Description" Component="Description"/>
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextArea Style="width: 100%;" Rows="5" @bind-Value="courseComponent.Description"
+                                            Name="Description"/>
+                            <RadzenRequiredValidator Component="Description" Text="Description is required."/>
+                            <RadzenLengthValidator Component="Description" Min="5" Max="450"
+                                                   Text="Description must be between 5 and 450 characters."/>
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+            </RadzenFieldset>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left" Gap="1rem"
+                         class="rz-mt-8 rz-mb-4">
+                <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel"/>
+                <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save"/>
+            </RadzenStack>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-4">
+        <RadzenFieldset Text="Files">
+            <RadzenStack Gap="1rem">
+
+                <RadzenDataGrid Data="@files"
+                                TItem="FileDto"
+                                AllowFiltering="false"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="true"
+                                FilterMode="FilterMode.Advanced"
+                                AllowSorting="false"
+                                PageSize="10"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                ColumnWidth="200px"
+                                RowClick="@FileExportDialog"
+                                SelectionMode="DataGridSelectionMode.Single">
+                    <Columns>
+                        <RadzenDataGridColumn Property="@nameof(EvlDto.Id)" Title="ID" Width="50px"
+                                              TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn Property="@nameof(EvlDto.Name)" Title="Name" Width="150px"/>
+                    </Columns>
+                </RadzenDataGrid>
+
+            </RadzenStack>
+        </RadzenFieldset>
+        
+        <RadzenFieldset Text="Evl">
+            <RadzenStack Gap="1rem">
+
+                <RadzenDataGrid Data="@relatedEvls"
+                                TItem="EvlDto"
+                                AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="true"
+                                FilterMode="FilterMode.Advanced"
+                                AllowSorting="true"
+                                PageSize="10"
+                                RowClick="@NavigateToEditEvl"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                ColumnWidth="200px"
+                                SelectionMode="DataGridSelectionMode.Single">
+                    <Columns>
+                        <RadzenDataGridColumn Property="@nameof(EvlDto.Id)" Title="ID" Width="50px"
+                                              TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn Property="@nameof(EvlDto.Name)" Title="Name" Width="150px"/>
+                    </Columns>
+                </RadzenDataGrid>
+
+            </RadzenStack>
+        </RadzenFieldset>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; } = null;
+
+    private bool IsEditMode => Id.HasValue;
+    private bool IsCreateMode => !Id.HasValue;
+
+    private CourseComponentDto courseComponent = new();
+    private List<EvlDto> relatedEvls = new();
+    private List<FileDto> files = new();
+
+    protected override void OnInitialized()
+    {
+        if (IsEditMode)
+        {
+            try
+            {
+                courseComponent = CourseComponentService.GetCourseComponentById(Id.Value);
+                relatedEvls = CourseComponentService.GetEvlsForCourseComponent(Id.Value);
+                files = CourseComponentService.GetFilesForCourseComponent(Id.Value);
+            }
+            catch (KeyNotFoundException)
+            {
+                NavigationManager.NavigateTo("/404");
+            }
+        }
+
+        base.OnInitialized();
+    }
+
+    void Submit(CourseComponentDto arg)
+    {
+        var componentDto = IsCreateMode
+            ? CourseComponentService.CreateCourseComponent(arg)
+            : CourseComponentService.UpdateCourseComponent(arg);
+
+        NavigationManager.NavigateTo("/course-component/overview");
+        SystemFeedbackNotificationService.AddNotification($"Course Component ({componentDto.Id}) saved successfully!");
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/course-component/overview");
+    }
+
+    private void NavigateToEditEvl(DataGridRowMouseEventArgs<EvlDto> args)
+        => NavigationManager.NavigateTo($"/evl/{args.Data.Id}");
+
+    private async void FileExportDialog(DataGridRowMouseEventArgs<FileDto> args)
+    {
+        var file = args.Data;
+
+        await DialogService.OpenAsync<FileExportDialog>($"File: {file.Id}",
+            new Dictionary<string, object>() { { "FileID", file.Id } },
+            new DialogOptions() 
+            {
+                Resizable = true, 
+                Draggable = true,
+                // Resize = OnResize,
+                // Drag = OnDrag,
+                Width = "700px", 
+                Height = "512px",
+                // Left = Settings != null ? Settings.Left : null, 
+                // Top = Settings != null ? Settings.Top : null
+            });
+    }
+
+}
