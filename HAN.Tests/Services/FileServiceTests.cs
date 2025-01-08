@@ -21,6 +21,7 @@ public class FileServiceTests: TestBase
         FileDto file = new()
         {
             Name = "Filename",
+            Extension = ".md",
             Content = "Content"
         };
 
