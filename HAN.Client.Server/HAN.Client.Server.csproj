@@ -11,6 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="DocumentFormat.OpenXml" Version="3.2.0" />
+      <PackageReference Include="QuestPDF" Version="2024.12.2" />
       <PackageReference Include="Radzen.Blazor" Version="5.7.2" />
     </ItemGroup>
 
@@ -23,6 +25,10 @@
       <AdditionalFiles Include="Components\Pages\Course\Schedule\ManageSchedule.razor" />
       <AdditionalFiles Include="Components\Pages\Evl\EvlOverview.razor" />
       <AdditionalFiles Include="Components\Pages\Evl\ManageEvl.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Downloads\" />
     </ItemGroup>
 
 </Project>

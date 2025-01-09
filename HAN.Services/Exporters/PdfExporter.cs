@@ -1,38 +1,40 @@
-﻿using System;
-using System.IO;
+﻿using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using HAN.Services.DTOs;
+using QuestPDF.Helpers;
 
 namespace HAN.Services.Exporters
 {
     public class PdfExporter : FileExporter
     {
-        protected override void WriteContent(FileDto fileDto)
+        protected override FileDto WriteContent(FileDto fileDto)
         {
             if (fileDto == null) throw new ArgumentNullException(nameof(fileDto), "FileDto cannot be null.");
             if (string.IsNullOrWhiteSpace(fileDto.Name)) throw new ArgumentException("File name cannot be empty.", nameof(fileDto.Name));
             if (string.IsNullOrWhiteSpace(fileDto.Content)) throw new ArgumentException("File content cannot be empty.", nameof(fileDto.Content));
+
+            var fileName = fileDto.Name.EndsWith(".pdf") ? fileDto.Name : $"{fileDto.Name}.pdf";
+            var filePath = GetExportFilePath(fileName);
+
+            Console.WriteLine($"Generating PDF file at: {filePath}");
             
-            string fileName = fileDto.Name.EndsWith(".pdf") ? fileDto.Name : $"{fileDto.Name}.pdf";
-
-            Console.WriteLine($"Writing PDF content to {fileName}...");
-
-            try
+            Document.Create(container =>
             {
-                using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-                using (var writer = new StreamWriter(fileStream))
+                container.Page(page =>
                 {
-                    writer.WriteLine($"Title: {fileDto.Name}");
-                    writer.WriteLine();
-                    writer.WriteLine(fileDto.Content);
-                }
-
-                Console.WriteLine("PDF content successfully written.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while writing the PDF: {ex.Message}");
-                throw;
-            }
+                    page.Size(PageSizes.A4);
+                    page.Margin(2, Unit.Centimetre);
+                    page.Content().Column(column =>
+                    {
+                        column.Item().Text($"Title: {fileDto.Name}")
+                            .FontSize(20)
+                            .Bold();
+                        column.Item().Text(fileDto.Content).FontSize(12);
+                    });
+                });
+            }).GeneratePdf(filePath);
+            
+            return fileDto;
         }
     }
 }

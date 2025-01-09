@@ -2,9 +2,13 @@ using HAN.Client.Server.Components.Base;
 using HAN.Client.Server.Components;
 using HAN.Services.Dummy;
 using HAN.Services.Extensions;
+using QuestPDF.Infrastructure;
 using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure QuestPDF license
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

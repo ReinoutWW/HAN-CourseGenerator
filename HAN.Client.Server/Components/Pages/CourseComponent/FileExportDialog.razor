@@ -1,1 +1,53 @@
-﻿<h3>Hello</h3>
+﻿@using HAN.Services
+@using HAN.Services.DTOs
+@using HAN.Services.Interfaces
+@inject IExporterService FileExporterService
+@inject DialogService DialogService
+
+<RadzenTemplateForm Data="@File"
+                    Style="max-width: 500px;">
+    <RadzenFieldset Text="File Export">
+        <RadzenStack Gap="1rem">
+            <RadzenRow>
+                <RadzenColumn Size="12">
+                    <RadzenLabel Text="Name" Style="font-weight: bold"/>
+                    <p>@File.Name</p> <!-- Weergave van de naam zonder bewerkbaar veld -->
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow>
+                <RadzenColumn Size="12">
+                    <RadzenLabel Text="Content" Style="font-weight: bold"/>
+                    <p>@File.Content</p> <!-- Weergave van de inhoud zonder bewerkbaar veld -->
+                </RadzenColumn>
+            </RadzenRow>
+        </RadzenStack>
+    </RadzenFieldset>
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem"
+                 class="rz-mt-8 rz-mb-4">
+        <RadzenButton Text="Export as MD" Click="@(() => Export("MD"))" Style="min-width: 100px;" />
+        <RadzenButton Text="Export as DOCX" Click="@(() => Export("DOCX"))" Style="min-width: 100px;" />
+        <RadzenButton Text="Export as PDF" Click="@(() => Export("PDF"))" Style="min-width: 100px;" />
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter] public FileDto File { get; set; }
+
+    private void Export(string format)
+    {
+        switch (format)
+        {
+            case "MD":
+                FileExporterService.ExportToMarkdown(File);
+                break;
+            case "DOCX":
+                FileExporterService.ExportToWord(File);
+                break;
+            case "PDF":
+                FileExporterService.ExportToPdf(File);
+                break;
+            default:
+                throw new ArgumentException($"Unknown format: {format}");
+        }
+    }
+}

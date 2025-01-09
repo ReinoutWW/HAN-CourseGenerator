@@ -7,16 +7,12 @@ namespace HAN.Services.Exporters;
 
 public abstract class FileExporter()
 {
-    public void Export(FileDto fileDto)
+    public const string ExportDirectory = "Downloads";
+    
+    public FileDto Export(FileDto fileDto)
     {
         ValidateFile(fileDto);
-
-        var fileName = fileDto.Name;
-        Console.WriteLine($"Preparing to export to: {fileName}");
-        PrepareFile();
-        WriteContent(fileDto);
-        FinalizeFile();
-        Console.WriteLine($"Export completed for: {fileName}");
+        return WriteContent(fileDto);
     }
 
     private static void ValidateFile(FileDto fileDto)
@@ -29,16 +25,17 @@ public abstract class FileExporter()
             throw new ValidationException($"FileDto validation failed: ", validationResults);
         }
     }
-
-    protected virtual void PrepareFile()
+    
+    protected static string GetExportFilePath(string fileName)
     {
-        Console.WriteLine("Default preparation before export...");
+        string exportDirectory = Path.Combine(Directory.GetCurrentDirectory(), ExportDirectory);
+        if (!Directory.Exists(exportDirectory))
+        {
+            Directory.CreateDirectory(exportDirectory);
+        }
+        
+        return Path.Combine(exportDirectory, fileName);
     }
 
-    protected virtual void FinalizeFile()
-    {
-        Console.WriteLine("Default finalization after export...");
-    }
-
-    protected abstract void WriteContent(FileDto fileDto);
+    protected abstract FileDto WriteContent(FileDto fileDto);
 }

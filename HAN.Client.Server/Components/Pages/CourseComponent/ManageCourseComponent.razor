@@ -81,33 +81,7 @@
 
             </RadzenStack>
         </RadzenFieldset>
-        
-        <RadzenFieldset Text="Evl">
-            <RadzenStack Gap="1rem">
 
-                <RadzenDataGrid Data="@relatedEvls"
-                                TItem="EvlDto"
-                                AllowFiltering="true"
-                                AllowColumnResize="true"
-                                AllowAlternatingRows="true"
-                                FilterMode="FilterMode.Advanced"
-                                AllowSorting="true"
-                                PageSize="10"
-                                RowClick="@NavigateToEditEvl"
-                                AllowPaging="true"
-                                PagerHorizontalAlign="HorizontalAlign.Left"
-                                ShowPagingSummary="true"
-                                ColumnWidth="200px"
-                                SelectionMode="DataGridSelectionMode.Single">
-                    <Columns>
-                        <RadzenDataGridColumn Property="@nameof(EvlDto.Id)" Title="ID" Width="50px"
-                                              TextAlign="TextAlign.Center"/>
-                        <RadzenDataGridColumn Property="@nameof(EvlDto.Name)" Title="Name" Width="150px"/>
-                    </Columns>
-                </RadzenDataGrid>
-
-            </RadzenStack>
-        </RadzenFieldset>
     </div>
 </div>
 
@@ -161,20 +135,16 @@
     private async void FileExportDialog(DataGridRowMouseEventArgs<FileDto> args)
     {
         var file = args.Data;
-
-        await DialogService.OpenAsync<FileExportDialog>($"File: {file.Id}",
-            new Dictionary<string, object>() { { "FileID", file.Id } },
-            new DialogOptions() 
+        await DialogService.OpenAsync<FileExportDialog>(
+            "Export File",
+            new Dictionary<string, object> { { "File", file } },
+            new DialogOptions
             {
-                Resizable = true, 
-                Draggable = true,
-                // Resize = OnResize,
-                // Drag = OnDrag,
-                Width = "700px", 
-                Height = "512px",
-                // Left = Settings != null ? Settings.Left : null, 
-                // Top = Settings != null ? Settings.Top : null
+                Width = "500px",
+                Height = "auto",
+                CloseDialogOnOverlayClick = true
             });
     }
+
 
 }

@@ -1,37 +1,38 @@
 ﻿using System;
 using System.IO;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using HAN.Services.DTOs;
+using Document = System.Reflection.Metadata.Document;
 
 namespace HAN.Services.Exporters
 {
     public class WordExporter : FileExporter
     {
-        protected override void WriteContent(FileDto fileDto)
+        protected override FileDto WriteContent(FileDto fileDto)
         {
             if (fileDto == null) throw new ArgumentNullException(nameof(fileDto), "FileDto cannot be null.");
             if (string.IsNullOrWhiteSpace(fileDto.Name)) throw new ArgumentException("File name cannot be empty.", nameof(fileDto.Name));
             if (string.IsNullOrWhiteSpace(fileDto.Content)) throw new ArgumentException("File content cannot be empty.", nameof(fileDto.Content));
-            
-            string fileName = fileDto.Name.EndsWith(".docx") ? fileDto.Name : $"{fileDto.Name}.docx";
+    
+            var fileName = fileDto.Name.EndsWith(".docx") ? fileDto.Name : $"{fileDto.Name}.docx";
+            var filePath = GetExportFilePath(fileName);
 
-            Console.WriteLine($"Writing Word content to {fileName}...");
+            Console.WriteLine($"Generating Word file at: {filePath}");
 
-            try
+            using (var wordDocument = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
             {
-                using (var writer = new StreamWriter(fileName))
-                {
-                    writer.WriteLine($"Title: {fileDto.Name}");
-                    writer.WriteLine();
-                    writer.WriteLine(fileDto.Content);
-                }
+                var mainPart = wordDocument.AddMainDocumentPart();
+                mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
+                var body = mainPart.Document.AppendChild(new Body());
+                var paragraph = body.AppendChild(new Paragraph());
+                var run = paragraph.AppendChild(new Run());
+                run.AppendChild(new Text(fileDto.Content));
+            }
 
-                Console.WriteLine("Word content successfully written.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred while writing the Word file: {ex.Message}");
-                throw;
-            }
+            return fileDto;
         }
+
     }
 }

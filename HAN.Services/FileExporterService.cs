@@ -24,19 +24,19 @@ public class FileExporterService : IExporterService
 
     public void ExportToMarkdown(FileDto file)
     {
-        Console.WriteLine($"Writing file to: {Path.Combine(Directory.GetCurrentDirectory(), file.Name)}.md");
+        Console.WriteLine($"Downloading file: {file.Name}.md");
         _markdownExporter.Export(file);
     }
 
     public void ExportToWord(FileDto file)
     {
-        Console.WriteLine($"Writing file to: {Path.Combine(Directory.GetCurrentDirectory(), file.Name)}.docx");
+        Console.WriteLine($"Downloading file: {file.Name}.docx");
         _wordExporter.Export(file);
     }
 
     public void ExportToPdf(FileDto file)
     {
-        Console.WriteLine($"Writing file to: {Path.Combine(Directory.GetCurrentDirectory(), file.Name)}.pdf");
+        Console.WriteLine($"Downloading file: {file.Name}.pdf");
         _pdfExporter.Export(file);
     }
 }
