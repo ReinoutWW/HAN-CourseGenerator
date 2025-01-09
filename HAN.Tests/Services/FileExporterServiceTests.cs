@@ -2,20 +2,16 @@
 using HAN.Services.Interfaces;
 using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
 using QuestPDF.Infrastructure;
 
 namespace HAN.Tests.Services;
 
 public class FileExporterServiceTests : TestBase
 {
-    private readonly IFileService _fileService;
     private readonly IExporterService _exporterService;
 
     public FileExporterServiceTests()
     {
-        _fileService = ServiceProvider.GetRequiredService<IFileService>();
         _exporterService = ServiceProvider.GetRequiredService<IExporterService>();
         
         // Configure QuestPDF license for tests
