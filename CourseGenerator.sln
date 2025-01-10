@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Client.API", "HAN.Clien
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.IdentityServer", "HAN.IdentityServer\HAN.IdentityServer.csproj", "{E472CD60-30CB-4700-8215-99C53B8BBECB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAN.Blockchain", "HAN.Blockchain\HAN.Blockchain.csproj", "{8CB1253F-B0C7-4CA4-9A57-B9E9EFB08F2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{E472CD60-30CB-4700-8215-99C53B8BBECB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E472CD60-30CB-4700-8215-99C53B8BBECB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E472CD60-30CB-4700-8215-99C53B8BBECB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB1253F-B0C7-4CA4-9A57-B9E9EFB08F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CB1253F-B0C7-4CA4-9A57-B9E9EFB08F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CB1253F-B0C7-4CA4-9A57-B9E9EFB08F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CB1253F-B0C7-4CA4-9A57-B9E9EFB08F2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
