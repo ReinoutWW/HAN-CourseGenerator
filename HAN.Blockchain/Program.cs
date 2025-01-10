@@ -11,7 +11,7 @@ using HAN.Blockchain.Services;
 using HAN.Utilities.Messaging.Abstractions;
 using HAN.Utilities.Messaging.RabbitMQ;
 
-Console.WriteLine("Node is up and running...");
+Console.WriteLine("Node is starting...");
 
 // Each console instance can have a unique ID
 var nodeId = args.Length > 0 ? args[0] : Guid.NewGuid().ToString().Substring(0, 8);
@@ -22,7 +22,7 @@ var localChain = new SimpleBlockchain();
 
 // 2) Setup RabbitMQ or your chosen messaging system
 IMessagePublisher publisher = new MessagePublisher("localhost");
-var subscriber = new RabbitMqSubscriber(/* config */);
+var subscriber = new RabbitMqSubscriber("localhost");
 
 // 3) Create the handlers
 var gradeService = new BlockchainGradeService(localChain, publisher);
@@ -30,14 +30,14 @@ var blockchainHandler = new BlockchainEventHandler(localChain, publisher);
 var nodeMonitorHandler = new NodeMonitorEventHandler();
 
 // 4) Subscribe to relevant queues
-subscriber.Subscribe(gradeService, "SaveGradeQueue");
-subscriber.Subscribe(gradeService, "GetGradeQueue");
+subscriber.SubscribeAsync<GenericMessage>("SaveGradeQueue", gradeService);
+subscriber.SubscribeAsync<GenericMessage>("GetGradeQueue", gradeService);
 
 // The queue that broadcasts new blocks or chain requests
-subscriber.Subscribe(blockchainHandler, "BlockchainBlockBroadcastQueue");
+subscriber.SubscribeAsync<GenericMessage>("BlockchainBlockBroadcastQueue", blockchainHandler);
 
 // The queue that monitors nodes
-subscriber.Subscribe(nodeMonitorHandler, "NodeMonitoringQueue");
+subscriber.SubscribeAsync<GenericMessage>("NodeMonitoringQueue", nodeMonitorHandler);
 
 // Optionally subscribe to "RequestNodeList" or other monitoring requests here
 

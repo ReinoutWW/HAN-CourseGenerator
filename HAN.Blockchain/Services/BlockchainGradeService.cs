@@ -1,5 +1,6 @@
 ﻿using HAN.Blockchain.Models;
 using HAN.Utilities.Messaging.Abstractions;
+using HAN.Utilities.Messaging.Models;
 
 namespace HAN.Blockchain.Services;
 
@@ -69,7 +70,7 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         var request = System.Text.Json.JsonSerializer.Deserialize<GetGradeRequest>(message.Payload);
         var matchingRecords = new List<GradeRecord>();
 
-        foreach (var block in _blockchain.Chain)
+        foreach (var block in _blockchain.GetChain())
         {
             foreach (var tx in block.Transactions)
             {
@@ -102,39 +103,4 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         // Publish to a queue or respond directly
         _publisher.Publish(responseMessage, "GradeRetrievedQueue");
     }
-}
-
-// Request/Response Models
-public class SaveGradeRequest
-{
-    public string StudentId { get; set; }
-    public string CourseId { get; set; }
-    public string Grade { get; set; }
-}
-
-public class GradeSavedResponse
-{
-    public string TransactionId { get; set; }
-    public int BlockIndex { get; set; }
-    public string BlockHash { get; set; }
-}
-
-public class GetGradeRequest
-{
-    public string StudentId { get; set; }
-}
-
-public class GetGradeResponse
-{
-    public string StudentId { get; set; }
-    public List<GradeRecord> Grades { get; set; }
-}
-
-public class GradeRecord
-{
-    public int BlockIndex { get; set; }
-    public string BlockHash { get; set; }
-    public string CourseId { get; set; }
-    public string Grade { get; set; }
-    public DateTime Timestamp { get; set; }
 }

@@ -67,7 +67,7 @@ namespace HAN.Blockchain.Networking;
         private void HandleRequestFullChain(IMessage message)
         {
             // Another node wants our full chain
-            var chainPayload = System.Text.Json.JsonSerializer.Serialize(_blockchain.Chain);
+            var chainPayload = System.Text.Json.JsonSerializer.Serialize(_blockchain.GetChain());
             var responseMsg = new GenericMessage
             {
                 Action = "FullChainResponse",
