@@ -65,7 +65,16 @@ public class BlockchainService : IBlockchainService
 
         // 5) Parse the result
         var json = await tcs.Task; // the GradeRetrieved payload
-        var blockResponse = System.Text.Json.JsonSerializer.Deserialize<GetBlockResponse>(json);
+        GetBlockResponse blockResponse;
+        try
+        {
+            blockResponse = System.Text.Json.JsonSerializer.Deserialize<GetBlockResponse>(json);
+        }
+        catch
+        {
+            throw new ArgumentException($"Could not parse message into {nameof(GetBlockResponse)} response");
+        }
+        
         return blockResponse ?? throw new Exception("Failed to parse GetBlockResponse");
     }
 }

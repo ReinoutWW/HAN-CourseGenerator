@@ -4,12 +4,14 @@ using RabbitMQ.Client;
 
 namespace HAN.Utilities.Messaging.RabbitMQ;
 
-public class RabbitMqPublisher(string hostname) : IMessagePublisher
+public class RabbitMqPublisher(string hostname, string nodeId) : IMessagePublisher
 {
     private readonly ConnectionFactory _factory = new() { HostName = hostname };
 
     public async void Publish<TMessage>(TMessage message, string queueName) where TMessage : IMessage
     {
+        message.NodeId = nodeId;
+        
         await using var connection = await _factory.CreateConnectionAsync();
         await using var channel = await connection.CreateChannelAsync();
 

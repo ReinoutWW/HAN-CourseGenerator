@@ -9,11 +9,13 @@ namespace HAN.Utilities.Messaging.RabbitMQ;
 public class RabbitMqSubscriber
 {
     private readonly string _hostName;
+    private readonly string _nodeId;
     private IConnection? _connection;
 
-    public RabbitMqSubscriber(string hostName)
+    public RabbitMqSubscriber(string hostName, string nodeId)
     {
         _hostName = hostName;
+        _nodeId = nodeId;
     }
 
     /// <summary>
@@ -31,25 +33,14 @@ public class RabbitMqSubscriber
     )
         where TMessage : IMessage
     {
-        // Create a connection factory with the desired host
-        var factory = new ConnectionFactory
-        {
-            HostName = _hostName
-            // You can specify other properties here (Username, Password, etc.)
-        };
+        var factory = new ConnectionFactory { HostName = _hostName };
 
-        // Create a connection and channel asynchronously
         _connection = await factory.CreateConnectionAsync(stoppingToken)
                                    .ConfigureAwait(false);
 
-        // NOTE: The RabbitMQ.Client library's CreateChannelAsync extension is in "RabbitMQ.Client.GracefulShutdown" 
-        // or your own extension. If not available, you can do this synchronously:
-        // var channel = _connection.CreateModel();
-        // but we'll assume you have an async method:
         var channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken)
                                        .ConfigureAwait(false);
 
-        // Declare the queue if it doesn't exist
         await channel.QueueDeclareAsync(
             queue: queueName,
             durable: false,
@@ -59,10 +50,8 @@ public class RabbitMqSubscriber
             cancellationToken: stoppingToken
         ).ConfigureAwait(false);
 
-        // Create an async consumer
         var consumer = new AsyncEventingBasicConsumer(channel);
 
-        // Attach the event handler for receiving messages
         consumer.ReceivedAsync += async (sender, ea) =>
         {
             try
@@ -76,35 +65,35 @@ public class RabbitMqSubscriber
                 {
                     PropertyNameCaseInsensitive = true
                 });
+                
+                if (messageObject == null)
+                    return;
 
-                if (messageObject != null)
-                {
-                    // Hand off to the provided handler
-                    handler.Handle(messageObject);
-                }
-                else
-                {
-                    Console.WriteLine($"[RabbitMqSubscriber] Failed to deserialize message from queue '{queueName}'.");
-                }
+                if (IsOwnMessage(messageObject))
+                    return;
+                
+                await channel.BasicAckAsync(deliveryTag: ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
+
+                handler.Handle(messageObject);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[RabbitMqSubscriber] Exception while handling message: {ex.Message}");
             }
 
-            // Since we're using autoAck=true in BasicConsumeAsync, 
-            // the broker won't wait for an ACK.
             await Task.CompletedTask;
         };
 
         // Start consuming
         await channel.BasicConsumeAsync(
             queue: queueName,
-            autoAck: true,  // or false if you want to manually ACK
+            autoAck: false,  // or false if you want to manually ACK
             consumer: consumer,
             cancellationToken: stoppingToken
         ).ConfigureAwait(false);
 
         Console.WriteLine($"[RabbitMqSubscriber] Subscribed to queue '{queueName}'");
     }
+
+    private bool IsOwnMessage(IMessage message) => message.NodeId == _nodeId;
 }

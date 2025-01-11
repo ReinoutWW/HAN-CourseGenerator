@@ -49,7 +49,7 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         };
         
         _publisher.Publish(responseMessage, "BlockRetrievedQueue");
-        Console.WriteLine("[GradeService] Queue 'BlockRetrievedQueue' event published");
+        //Console.WriteLine("[GradeService] Queue 'BlockRetrievedQueue' event published");
     }
 
     private void HandleSaveGrade(IMessage message)
@@ -60,7 +60,7 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
 
         // Create a new block (in a real system, you might batch multiple transactions)
         var newBlock = _blockchain.AddBlock(new List<Transaction> { tx });
-        Console.WriteLine($"[GradeService] New block created. Index={newBlock.Index}, Hash={newBlock.Hash}");
+        //Console.WriteLine($"[GradeService] New block created. Index={newBlock.Index}, Hash={newBlock.Hash}");
 
         // Broadcast the block to other nodes (via RabbitMQ)
         var blockPayload = System.Text.Json.JsonSerializer.Serialize(newBlock);
@@ -85,7 +85,7 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
             Payload = responsePayload
         };
         _publisher.Publish(responseMessage, "GradeSavedQueue");
-        Console.WriteLine("[GradeService] Queue 'GradeSavedQueue' event published");
+        //Console.WriteLine("[GradeService] Queue 'GradeSavedQueue' event published");
     }
 
     private void HandleGetGrade(IMessage message)
@@ -127,6 +127,6 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         };
         // Publish to a queue or respond directly
         _publisher.Publish(responseMessage, "GradeRetrievedQueue");
-        Console.WriteLine("[GradeService] Queue 'GradeRetrievedQueue' event published");
+        //Console.WriteLine("[GradeService] Queue 'GradeRetrievedQueue' event published");
     }
 }

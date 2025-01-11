@@ -22,8 +22,8 @@ Console.Title = $"Blockchain Node [{nodeId}]";
 var localChain = new SimpleBlockchain();
 
 // 2) Setup RabbitMQ or your chosen messaging system
-IMessagePublisher publisher = new RabbitMqPublisher("localhost");
-var subscriber = new RabbitMqSubscriber("localhost");
+IMessagePublisher publisher = new RabbitMqPublisher("localhost", nodeId);
+var subscriber = new RabbitMqSubscriber("localhost", nodeId);
 
 // 3) Create the handlers
 var gradeService = new BlockchainGradeService(localChain, publisher);

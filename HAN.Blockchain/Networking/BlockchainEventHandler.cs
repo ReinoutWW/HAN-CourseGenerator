@@ -16,6 +16,7 @@ namespace HAN.Blockchain.Networking;
 
         public void Handle(IMessage message)
         {
+            Console.WriteLine($"[BlockChainAction] Received Action: {message.Action}");
             switch (message.Action)
             {
                 case "NewBlockCreated":
