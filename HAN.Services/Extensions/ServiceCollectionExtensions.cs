@@ -6,6 +6,8 @@ using HAN.Services.Validation;
 using HAN.Services.VolatilityDecomposition;
 using HAN.Services.VolatilityDecomposition.Notifications.Engines;
 using HAN.Utilities;
+using HAN.Utilities.Messaging.Abstractions;
+using HAN.Utilities.Messaging.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Services.Extensions;
@@ -32,9 +34,19 @@ public static class ServiceCollectionExtensions
             .AddRepositories()
             .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies())
             .AddScoped<InternalNotificationStateService>()
-            .AddNotificationServices();
+            .AddNotificationServices()
+            .AddEventDrivenMessaging();
 
         return services;
+    }
+
+    private static IServiceCollection AddEventDrivenMessaging(this IServiceCollection services)
+    {
+        return services.AddSingleton(new RabbitMqSubscriber("localhost"))
+            .AddSingleton<IMessagePublisher>(sp => new RabbitMqPublisher("localhost"))
+            .AddSingleton<IResponseListener, ResponseListenerService>()
+            .AddScoped<IGradeService, GradeService>()
+            .AddScoped<IMonitorService, MonitorService>();
     }
 
     private static IServiceCollection AddNotificationServices(this IServiceCollection services)

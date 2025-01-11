@@ -9,6 +9,7 @@ using HAN.Blockchain.Models;
 using HAN.Blockchain.Networking;
 using HAN.Blockchain.Services;
 using HAN.Utilities.Messaging.Abstractions;
+using HAN.Utilities.Messaging.Models;
 using HAN.Utilities.Messaging.RabbitMQ;
 
 Console.WriteLine("Node is starting...");
@@ -21,13 +22,13 @@ Console.Title = $"Blockchain Node [{nodeId}]";
 var localChain = new SimpleBlockchain();
 
 // 2) Setup RabbitMQ or your chosen messaging system
-IMessagePublisher publisher = new MessagePublisher("localhost");
+IMessagePublisher publisher = new RabbitMqPublisher("localhost");
 var subscriber = new RabbitMqSubscriber("localhost");
 
 // 3) Create the handlers
 var gradeService = new BlockchainGradeService(localChain, publisher);
 var blockchainHandler = new BlockchainEventHandler(localChain, publisher);
-var nodeMonitorHandler = new NodeMonitorEventHandler();
+var nodeMonitorHandler = new NodeMonitorEventHandler(publisher);
 
 // 4) Subscribe to relevant queues
 subscriber.SubscribeAsync<GenericMessage>("SaveGradeQueue", gradeService);

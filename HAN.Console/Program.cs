@@ -6,7 +6,7 @@ using HAN.Utilities.Messaging.RabbitMQ;
 Console.Title = "Blockchain Test Client (Async)";
 
 // 1) Create or configure your RabbitMQ subscriber & publisher
-IMessagePublisher publisher = new MessagePublisher("localhost");
+IMessagePublisher publisher = new RabbitMqPublisher("localhost");
 var subscriber = new RabbitMqSubscriber("localhost");
 
 // 2) Prepare a CancellationTokenSource for graceful shutdown

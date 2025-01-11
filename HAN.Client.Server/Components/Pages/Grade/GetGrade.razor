@@ -1,0 +1,105 @@
+﻿@page "/grades"
+
+@using HAN.Services.Interfaces
+@using HAN.Utilities.Messaging.Models
+
+@inject IGradeService GradeService
+@inject IMonitorService MonitorService
+
+<h3>Grade Demo</h3>
+
+<div>
+    <label>Student ID: <input @bind="StudentId" /></label>
+    <label>Course ID: <input @bind="CourseId" /></label>
+    <label>Grade: <input @bind="GradeValue" /></label>
+    <button @onclick="SaveGrade">Save Grade</button>
+</div>
+
+<button @onclick="GetMyGrades">Get My Grades</button>
+
+@if (ErrorMessage != null)
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+@if (Grades != null)
+{
+    <table>
+        <thead>
+            <tr><th>Course</th><th>Grade</th><th>BlockHash</th><th>Timestamp</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var g in Grades)
+            {
+                <tr>
+                    <td>@g.CourseId</td>
+                    <td>@g.Grade</td>
+                    <td>@g.BlockHash</td>
+                    <td>@g.Timestamp</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4>Active Nodes</h4>
+<button @onclick="LoadActiveNodes">Load Active Nodes</button>
+@if (ActiveNodes != null)
+{
+    <ul>
+        @foreach (var node in ActiveNodes)
+        {
+            <li>@node.NodeId (Last heartbeat: @node.LastHeartbeat)</li>
+        }
+    </ul>
+}
+
+@code {
+    private string StudentId;
+    private string CourseId;
+    private string GradeValue;
+    private string ErrorMessage;
+    private List<GradeRecord> Grades;
+    private List<NodeStatus> ActiveNodes;
+
+    private async Task SaveGrade()
+    {
+        ErrorMessage = null;
+        try
+        {
+            await GradeService.SaveGradeAsync(StudentId, CourseId, GradeValue);
+        }
+        catch(Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    private async Task GetMyGrades()
+    {
+        ErrorMessage = null;
+        try
+        {
+            Grades = await GradeService.GetGradesAsync(StudentId);
+        }
+        catch(Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    private async Task LoadActiveNodes()
+    {
+        ErrorMessage = null;
+        try
+        {
+            ActiveNodes = await MonitorService.GetActiveNodesAsync();
+        }
+        catch(Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+}

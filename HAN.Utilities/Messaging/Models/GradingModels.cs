@@ -34,3 +34,9 @@ public class GradeRecord
     public string Grade { get; set; }
     public DateTime Timestamp { get; set; }
 }
+
+public class NodeStatus
+{
+    public string NodeId { get; set; }
+    public DateTime LastHeartbeat { get; set; }
+}
