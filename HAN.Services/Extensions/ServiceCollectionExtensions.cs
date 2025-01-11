@@ -46,6 +46,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IMessagePublisher>(sp => new RabbitMqPublisher("localhost"))
             .AddSingleton<IResponseListener, ResponseListenerService>()
             .AddScoped<IGradeService, GradeService>()
+            .AddScoped<IBlockchainService, BlockchainService>()
             .AddScoped<IMonitorService, MonitorService>();
     }
 
