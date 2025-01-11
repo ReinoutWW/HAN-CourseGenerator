@@ -4,7 +4,7 @@ using RabbitMQ.Client;
 
 namespace HAN.Utilities.Messaging.RabbitMQ;
 
-public class MessagePublisher(string hostname) : IMessagePublisher
+public class RabbitMqPublisher(string hostname) : IMessagePublisher
 {
     private readonly ConnectionFactory _factory = new() { HostName = hostname };
 

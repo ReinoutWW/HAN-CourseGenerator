@@ -1,5 +1,6 @@
 ﻿using HAN.Blockchain.Models;
 using HAN.Utilities.Messaging.Abstractions;
+using HAN.Utilities.Messaging.Models;
 
 namespace HAN.Blockchain.Services;
 
@@ -24,10 +25,31 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
             case "GetGrade":
                 HandleGetGrade(message);
                 break;
+            case "GetBlock":
+                HandleGetBlock(message);
+                break;
             default:
                 Console.WriteLine($"[GradeService] Unrecognized action: {message.Action}");
                 break;
         }
+    }
+
+    private void HandleGetBlock(IMessage message)
+    {
+        // e.g. { "Index": 3 }
+        var request = System.Text.Json.JsonSerializer.Deserialize<GetBlockRequest>(message.Payload);
+        var block = _blockchain.GetBlock(request.BlockIndex);
+        
+        var responsePayload = System.Text.Json.JsonSerializer.Serialize(block);
+        var responseMessage = new GenericMessage
+        {
+            Id = message.Id,
+            Action = "BlockRetrieved",
+            Payload = responsePayload
+        };
+        
+        _publisher.Publish(responseMessage, "BlockRetrievedQueue");
+        Console.WriteLine("[GradeService] Queue 'BlockRetrievedQueue' event published");
     }
 
     private void HandleSaveGrade(IMessage message)
@@ -58,10 +80,12 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         });
         var responseMessage = new GenericMessage
         {
+            Id = message.Id,
             Action = "GradeSaved",
             Payload = responsePayload
         };
         _publisher.Publish(responseMessage, "GradeSavedQueue");
+        Console.WriteLine("[GradeService] Queue 'GradeSavedQueue' event published");
     }
 
     private void HandleGetGrade(IMessage message)
@@ -69,15 +93,16 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         var request = System.Text.Json.JsonSerializer.Deserialize<GetGradeRequest>(message.Payload);
         var matchingRecords = new List<GradeRecord>();
 
-        foreach (var block in _blockchain.Chain)
+        foreach (var block in _blockchain.GetChain())
         {
             foreach (var tx in block.Transactions)
             {
                 var saveGradeReq = System.Text.Json.JsonSerializer.Deserialize<SaveGradeRequest>(tx.Data);
-                if (saveGradeReq.StudentId == request.StudentId)
+                if (saveGradeReq.StudentId == request.StudentId || string.IsNullOrEmpty(request.StudentId))
                 {
                     matchingRecords.Add(new GradeRecord
                     {
+                        StudentId = saveGradeReq.StudentId,
                         BlockIndex = block.Index,
                         BlockHash = block.Hash,
                         CourseId = saveGradeReq.CourseId,
@@ -96,45 +121,12 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
 
         var responseMessage = new GenericMessage
         {
+            Id = message.Id,
             Action = "GradeRetrieved",
             Payload = System.Text.Json.JsonSerializer.Serialize(response)
         };
         // Publish to a queue or respond directly
         _publisher.Publish(responseMessage, "GradeRetrievedQueue");
+        Console.WriteLine("[GradeService] Queue 'GradeRetrievedQueue' event published");
     }
-}
-
-// Request/Response Models
-public class SaveGradeRequest
-{
-    public string StudentId { get; set; }
-    public string CourseId { get; set; }
-    public string Grade { get; set; }
-}
-
-public class GradeSavedResponse
-{
-    public string TransactionId { get; set; }
-    public int BlockIndex { get; set; }
-    public string BlockHash { get; set; }
-}
-
-public class GetGradeRequest
-{
-    public string StudentId { get; set; }
-}
-
-public class GetGradeResponse
-{
-    public string StudentId { get; set; }
-    public List<GradeRecord> Grades { get; set; }
-}
-
-public class GradeRecord
-{
-    public int BlockIndex { get; set; }
-    public string BlockHash { get; set; }
-    public string CourseId { get; set; }
-    public string Grade { get; set; }
-    public DateTime Timestamp { get; set; }
 }

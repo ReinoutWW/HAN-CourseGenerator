@@ -6,16 +6,30 @@ namespace HAN.Blockchain.Models;
 public class SimpleBlockchain
 {
     private readonly List<Block> _chain;
-    public IReadOnlyList<Block> Chain => _chain;
+    private IReadOnlyList<Block> Chain => _chain;
+    public const string GenesisBlockName = "GenesisBlock";
 
     public SimpleBlockchain()
     {
         _chain = new List<Block> { CreateGenesisBlock() };
     }
+    
+    public IReadOnlyList<Block> GetChain()
+    {
+        // Exclude the genesis block
+        return Chain
+            .Where(b => b.Transactions.All(t => t.TransactionId != GenesisBlockName))
+            .ToList();
+    }
+    
+    public Block GetBlock(int index)
+    {
+        return Chain.FirstOrDefault(b => b.Index == index);
+    }
 
     private Block CreateGenesisBlock()
     {
-        var genesisTx = new Transaction("GENESIS", "GENESIS_BLOCK");
+        var genesisTx = new Transaction(GenesisBlockName, "GENESIS_BLOCK");
         var genesisBlock = new Block(0, new List<Transaction> { genesisTx }, "0");
         return genesisBlock;
     }

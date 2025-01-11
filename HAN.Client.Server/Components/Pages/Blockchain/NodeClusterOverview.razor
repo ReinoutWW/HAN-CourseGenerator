@@ -1,0 +1,125 @@
+﻿@page "/blockchain/cluster"
+@using HAN.Services.Interfaces
+@using HAN.Utilities.Messaging.Models
+@inject IMonitorService MonitorService
+
+<h3>Blockchain Node Monitor</h3>
+
+<RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12">
+    <RadzenCard Variant="Variant.Outlined">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Wrap="FlexWrap.Wrap">
+        </RadzenStack>
+    </RadzenCard>
+
+    <RadzenChart Style="height: 400px">
+        <RadzenLineSeries Data="@Stats" CategoryProperty="Timestamp"
+                          ValueProperty="ActiveCount" Title="Active Nodes"
+                          Smooth="true">
+            <RadzenMarkers Visible="true" MarkerType="MarkerType.Circle" />
+            <RadzenSeriesDataLabels Visible="true" />
+        </RadzenLineSeries>
+
+        <RadzenCategoryAxis Padding="10" FormatString="{0:HH:mm:ss}" />
+        <RadzenValueAxis>
+            <RadzenGridLines Visible="true" />
+            <RadzenAxisTitle Text="Number of Active Nodes" />
+        </RadzenValueAxis>
+    </RadzenChart>
+</RadzenStack>
+
+<hr />
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div style="color:red">@ErrorMessage</div>
+}
+
+<RadzenDataGrid TItem="NodeStatus" Data="@ActiveNodes"
+                ShowPager="false" ShowFilters="false"
+                class="rz-my-2" ColumnWidth="180px">
+    <Columns>
+        <RadzenDataGridColumn TItem="NodeStatus" Property="NodeId" Title="Node ID" />
+        <RadzenDataGridColumn TItem="NodeStatus" Property="LastHeartbeat"
+                              Title="Last Heartbeat" FormatString="{0:yyyy-MM-dd HH:mm:ss}" />
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private string ErrorMessage;
+    private List<NodeStatus> ActiveNodes = new List<NodeStatus>();
+    private List<NodeStats> Stats = new List<NodeStats>(); // For charting "active nodes per minute"
+
+    public class NodeStats
+    {
+        public DateTime Timestamp { get; set; }
+        public int ActiveCount { get; set; }
+    }
+    
+    private PeriodicTimer _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadActiveNodes();
+        
+        // Initialize the periodic timer to trigger every 10 seconds
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
+
+        // Start the periodic data fetch loop
+        _ = FetchDataPeriodicallyAsync();
+    }
+
+    private async Task FetchDataPeriodicallyAsync()
+    {
+        try
+        {
+            while (await _timer.WaitForNextTickAsync())
+            {
+                await LoadActiveNodes();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Timer was disposed, exit gracefully
+        }
+    }
+
+    private async Task LoadActiveNodes()
+    {
+        ErrorMessage = null;
+
+        try
+        {
+            // Fetch list of nodes from the blockchain node(s)
+            var nodes = await MonitorService.GetActiveNodesAsync();
+            ActiveNodes = nodes; // For the DataGrid
+
+            // Record a new data point for the line chart
+            Stats.Add(new NodeStats
+            {
+                Timestamp = DateTime.Now,
+                ActiveCount = nodes.Count
+            });
+
+            // Optional: Limit the number of data points to keep the chart manageable
+            if (Stats.Count > 100)
+            {
+                Stats.RemoveAt(0);
+            }
+
+            // Trigger UI refresh
+            InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+            // Optionally log the error or handle it as needed
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose()
+    {
+        // Dispose the timer when the component is disposed to free resources
+        _timer?.Dispose();
+    }
+}
