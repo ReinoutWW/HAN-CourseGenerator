@@ -24,6 +24,25 @@ public class GradeService : IGradeService
         _responseListener.GradeSavedReceived += OnGradeSavedReceived;
         _responseListener.GradeRetrievedReceived += OnGradeRetrievedReceived;
     }
+    
+    private void OnGradeSavedReceived(object sender, GradeSavedEventArgs e)
+    {
+        // e.MessageId -> correlation ID
+        if (_pendingRequests.TryRemove(e.MessageId, out var tcs))
+        {
+            // Complete the TCS with some success indicator if needed
+            tcs.SetResult("OK");
+        }
+    }
+
+    private void OnGradeRetrievedReceived(object sender, GradeRetrievedEventArgs e)
+    {
+        if (_pendingRequests.TryRemove(e.MessageId, out var tcs))
+        {
+            // The event args contain the JSON payload
+            tcs.SetResult(e.PayloadJson);
+        }
+    }
 
     public async Task SaveGradeAsync(string studentId, string courseId, string grade)
     {
@@ -97,24 +116,5 @@ public class GradeService : IGradeService
         var json = await tcs.Task; // the GradeRetrieved payload
         var gradeResponse = System.Text.Json.JsonSerializer.Deserialize<GetGradeResponse>(json);
         return gradeResponse.Grades;
-    }
-
-    private void OnGradeSavedReceived(object sender, GradeSavedEventArgs e)
-    {
-        // e.MessageId -> correlation ID
-        if (_pendingRequests.TryRemove(e.MessageId, out var tcs))
-        {
-            // Complete the TCS with some success indicator if needed
-            tcs.SetResult("OK");
-        }
-    }
-
-    private void OnGradeRetrievedReceived(object sender, GradeRetrievedEventArgs e)
-    {
-        if (_pendingRequests.TryRemove(e.MessageId, out var tcs))
-        {
-            // The event args contain the JSON payload
-            tcs.SetResult(e.PayloadJson);
-        }
     }
 }
