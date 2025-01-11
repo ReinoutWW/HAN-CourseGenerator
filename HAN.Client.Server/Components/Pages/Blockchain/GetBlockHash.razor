@@ -1,0 +1,99 @@
+﻿@page "/blockchain/block/{Id:int?}"
+@using HAN.Services.Interfaces
+@using HAN.Utilities.Messaging.Models
+
+@inject IBlockchainService BlockchainService
+@inject NavigationManager NavigationManager
+
+<h3>
+    <RadzenIcon Icon="account_tree" Style="vertical-align: middle; margin-right: 10px;" />
+    Blockchain Block Details
+</h3>
+
+<div class="block-page-container">
+    <RadzenCard Variant="Variant.Flat" Style="padding: 20px;">
+        @if (_block != null)
+        {
+            <div class="block-details">
+                <RadzenLabel Text="Block ID:" Class="block-label" />
+                <span class="block-value">@Id</span>
+
+                <RadzenLabel Text="Block Info:" Class="block-label" />
+                <span class="block-value">@_block.Index</span>
+
+                <RadzenLabel Text="Block Hash:" Class="block-label" />
+                <span class="block-value">@_block.Hash</span>
+
+                <RadzenLabel Text="Transactions:" Class="block-label" />
+                <RadzenDataList Data=@_block.Transactions Style="margin-top: 10px;">
+                    <Template Context="tx">
+                        <RadzenStack Gap="16px" Orientation="Orientation.Horizontal">
+                            <RadzenIcon Icon="receipt_long" Style="margin-right: 10px;" />
+                            <div class="block-details">
+                                <RadzenLabel Text="Transaction ID:" Class="block-label" />
+                                <span class="block-value">@tx.TransactionId</span>
+
+                                <RadzenLabel Text="Timestamp:" Class="block-label" />
+                                <span class="block-value">@tx.Timestamp</span>
+
+                                <RadzenLabel Text="Data:" Class="block-label" />
+                                <span class="block-value">@tx.Data</span>
+                            </div>
+                        </RadzenStack>
+                    </Template>
+                </RadzenDataList>
+            </div>
+        }
+        else
+        {
+            <RadzenAlert Text="Block not found." Severity="Error" />
+        }
+    </RadzenCard>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    
+    GetBlockResponse? _block;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _block = await BlockchainService.GetBlockAsync(Id);
+        
+        if (_block == null)
+        {
+            NavigationManager.NavigateTo("/404");
+        }
+    }
+}
+
+
+<style>
+.block-page-container {
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.block-details {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 10px;
+    margin-top: 20px;
+}
+
+.block-label {
+    font-weight: bold;
+}
+
+.block-value {
+    font-size: 1rem;
+    color: #555;
+}
+
+.radzen-listview {
+    margin-top: 10px;
+}
+</style>

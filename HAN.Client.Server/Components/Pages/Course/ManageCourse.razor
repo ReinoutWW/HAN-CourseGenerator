@@ -68,16 +68,22 @@
         </RadzenTemplateForm>
     </div>
     <div class="col-4">
-        <CourseValidationOverview
-            @ref="@_courseValidationOverview"
-            Course="@_course"
-            Schedule="@_course.Schedule"
-            HasValidateAction="false"
-            ShowValidationDetails="false">
-            <ChildContent>
-                <PrimaryButton Text="Go to Course Schedule" Style="width: 100%" Click="NavigateToSchedule" Icon="calendar_month"/>
-            </ChildContent>
-        </CourseValidationOverview>
+        <RadzenStack Gap="16px">
+            <CourseValidationOverview
+                @ref="@_courseValidationOverview"
+                Course="@_course"
+                Schedule="@_course.Schedule"
+                HasValidateAction="false"
+                ShowValidationDetails="false">
+                <ChildContent>
+                    <PrimaryButton Text="Go to Course Schedule" Style="width: 100%" Click="NavigateToSchedule" Icon="calendar_month"/>
+                </ChildContent>
+            </CourseValidationOverview>
+            <RadzenFieldset Text="Course Grades">
+                <PrimaryButton Text="Go to Course Grade Management" Style="width: 100%" Click="NavigateToGradeManagement" Icon="flag"/>
+            </RadzenFieldset>
+        </RadzenStack>
+
     </div>
 </div>
 
@@ -135,4 +141,5 @@
     
     private void Cancel() => NavigationManager.NavigateTo("/course/overview");
     private void NavigateToSchedule(MouseEventArgs obj) => NavigationManager.NavigateTo($"/course/{_course.Id}/schedule");
+    private void NavigateToGradeManagement(MouseEventArgs obj) => NavigationManager.NavigateTo($"/course/{_course.Id}/grade");
 }
