@@ -30,6 +30,7 @@ public class GradeRecord
 {
     public int BlockIndex { get; set; }
     public string BlockHash { get; set; }
+    public string StudentId { get; set; }
     public string CourseId { get; set; }
     public string Grade { get; set; }
     public DateTime Timestamp { get; set; }

@@ -1,105 +1,109 @@
-﻿@page "/grades"
+﻿@page "/course/{CourseId}/grade"
 
 @using HAN.Services.Interfaces
 @using HAN.Utilities.Messaging.Models
+@using HAN.Client.Server.Components.UI
 
 @inject IGradeService GradeService
-@inject IMonitorService MonitorService
+@inject NavigationManager NavigationManager
 
-<h3>Grade Demo</h3>
+<h3>Manage Grades for Course: @CourseId</h3>
 
-<div>
-    <label>Student ID: <input @bind="StudentId" /></label>
-    <label>Course ID: <input @bind="CourseId" /></label>
-    <label>Grade: <input @bind="GradeValue" /></label>
-    <button @onclick="SaveGrade">Save Grade</button>
+<!-- Form to Add a Grade -->
+<div class="row">
+    <div class="col-4">
+        <RadzenTemplateForm @ref="form" TItem="SaveGradeRequest" Model="@newGrade" Style="max-width: 400px;">
+            <ChildContent>
+                <RadzenFieldset Text="Add New Grade">
+                    <RadzenStack Gap="16px">
+                        <RadzenTextBox @bind-Value="newGrade.StudentId" Name="StudentId" Placeholder="Enter Student ID" Style="width:100%" />
+                        <RadzenTextBox @bind-Value="newGrade.Grade" Name="Grade" Placeholder="Enter Grade" Style="width:100%" />
+
+                        <PrimaryButton ButtonType="ButtonType.Submit" Text="Save Grade" Style="margin-top: 10px;" Click="@SaveGrade" />
+                    </RadzenStack>
+                </RadzenFieldset>
+            </ChildContent>
+        </RadzenTemplateForm>
+    </div>
+    <div class="col-8">
+        <!-- DataGrid to Display Grades -->
+        <RadzenDataGrid TItem="GradeRecord" Data="@Grades" Style="height: 400px;" ColumnWidth="200px" AllowPaging="true" PageSize="10">
+            <Columns>
+                <RadzenDataGridColumn Filterable="false" Frozen="true" Width="50px">
+                    <Template>
+                        <RadzenIcon Icon="military_tech"></RadzenIcon>
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="GradeRecord" Width="75px" Property="StudentId" Title="Student ID"/>
+                <RadzenDataGridColumn TItem="GradeRecord" Property="Grade" Title="Grade"/>
+                <RadzenDataGridColumn TItem="GradeRecord" Property="BlockHash" Title="Block Hash">
+                    <Template>
+                        <RadzenLink Text=@($"{context.BlockHash}") Path=@($"/blockchain/block/{context.BlockIndex}") />
+                    </Template>
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="GradeRecord" Property="Timestamp" Title="Timestamp" FormatString="{0:yyyy-MM-dd HH:mm:ss}"/>
+            </Columns>
+        </RadzenDataGrid>
+    </div>
 </div>
 
-<button @onclick="GetMyGrades">Get My Grades</button>
-
-@if (ErrorMessage != null)
+@if (!string.IsNullOrEmpty(_saveMessage))
 {
-    <p style="color:red">@ErrorMessage</p>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Text="@_saveMessage" Severity="Severity.Success" Style="margin-top: 10px;" />
 }
 
-@if (Grades != null)
+@if (!string.IsNullOrEmpty(_errorMessage))
 {
-    <table>
-        <thead>
-            <tr><th>Course</th><th>Grade</th><th>BlockHash</th><th>Timestamp</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var g in Grades)
-            {
-                <tr>
-                    <td>@g.CourseId</td>
-                    <td>@g.Grade</td>
-                    <td>@g.BlockHash</td>
-                    <td>@g.Timestamp</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-<hr />
-
-<h4>Active Nodes</h4>
-<button @onclick="LoadActiveNodes">Load Active Nodes</button>
-@if (ActiveNodes != null)
-{
-    <ul>
-        @foreach (var node in ActiveNodes)
-        {
-            <li>@node.NodeId (Last heartbeat: @node.LastHeartbeat)</li>
-        }
-    </ul>
+    <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Text="@_errorMessage" Severity="Severity.Error" Style="margin-top: 10px;" />
 }
 
 @code {
-    private string StudentId;
-    private string CourseId;
-    private string GradeValue;
-    private string ErrorMessage;
-    private List<GradeRecord> Grades;
-    private List<NodeStatus> ActiveNodes;
+    [Parameter]
+    public string CourseId { get; set; }
+
+    private SaveGradeRequest newGrade = new();
+    private RadzenTemplateForm<SaveGradeRequest> form;
+    private string _saveMessage;
+    private string _errorMessage;
+    private List<GradeRecord> Grades = new List<GradeRecord>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGrades();
+    }
 
     private async Task SaveGrade()
     {
-        ErrorMessage = null;
+        _saveMessage = string.Empty;
+        _errorMessage = string.Empty;
+
         try
         {
-            await GradeService.SaveGradeAsync(StudentId, CourseId, GradeValue);
+            await GradeService.SaveGradeAsync(newGrade.StudentId, CourseId, newGrade.Grade);
+            _saveMessage = "Grade saved successfully!";
+            newGrade = new SaveGradeRequest(); // Reset the form
+            await LoadGrades(); // Refresh the grades list
         }
-        catch(Exception ex)
+        catch (TimeoutException tex)
         {
-            ErrorMessage = ex.Message;
+            _errorMessage = "Operation timed out. Please try again.";
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error saving grade: {ex.Message}";
         }
     }
 
-    private async Task GetMyGrades()
+    private async Task LoadGrades()
     {
-        ErrorMessage = null;
         try
         {
-            Grades = await GradeService.GetGradesAsync(StudentId);
+            var allGrades = await GradeService.GetGradesAsync("");
+            Grades = allGrades.Where(g => g.CourseId == CourseId).ToList();
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
-        }
-    }
-
-    private async Task LoadActiveNodes()
-    {
-        ErrorMessage = null;
-        try
-        {
-            ActiveNodes = await MonitorService.GetActiveNodesAsync();
-        }
-        catch(Exception ex)
-        {
-            ErrorMessage = ex.Message;
+            _errorMessage = $"Error loading grades: {ex.Message}";
         }
     }
 }
