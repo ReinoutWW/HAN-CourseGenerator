@@ -1,4 +1,6 @@
-﻿namespace HAN.Services.Interfaces;
+﻿using HAN.Utilities.Messaging.Models;
+
+namespace HAN.Services.Interfaces;
 
 public class GradeSavedEventArgs : EventArgs
 {
@@ -17,9 +19,17 @@ public class NodeListResponseEventArgs : EventArgs
     public string MessageId { get; set; }
     public string PayloadJson { get; set; }
 }
+
+public class GetBlockResponseEventArgs : EventArgs
+{
+    public string MessageId { get; set; }
+    public string PayloadJson { get; set; }
+}
+
 public interface IResponseListener
 {
     event EventHandler<GradeSavedEventArgs> GradeSavedReceived;
     event EventHandler<GradeRetrievedEventArgs> GradeRetrievedReceived;
     event EventHandler<NodeListResponseEventArgs> NodeListResponseReceived;
+    event EventHandler<GetBlockResponseEventArgs> GetBlockResponseReceived;
 }

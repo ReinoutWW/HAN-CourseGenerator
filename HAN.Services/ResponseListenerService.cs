@@ -10,6 +10,7 @@ public class ResponseListenerService : IResponseListener
     public event EventHandler<GradeSavedEventArgs> GradeSavedReceived;
     public event EventHandler<GradeRetrievedEventArgs> GradeRetrievedReceived;
     public event EventHandler<NodeListResponseEventArgs> NodeListResponseReceived;
+    public event EventHandler<GetBlockResponseEventArgs> GetBlockResponseReceived;
 
     private readonly RabbitMqSubscriber _subscriber;
 
@@ -33,12 +34,27 @@ public class ResponseListenerService : IResponseListener
         );
 
         // Similarly for a "NodeListResponse" queue,
-        // or you might reuse the "NodeMonitoringQueue"
         _subscriber.SubscribeAsync<GenericMessage>(
             "NodeListResponseQueue",
             new GenericMessageHandler(OnNodeListResponse),
             default
         );
+        
+        // Similarly for a "BlockRetrievedQueue"
+        _subscriber.SubscribeAsync<GenericMessage>(
+            "BlockRetrievedQueue",
+            new GenericMessageHandler(OnBlockRetrieved),
+            default
+        );
+    }
+    
+    private void OnBlockRetrieved(GenericMessage message)
+    {
+        GetBlockResponseReceived?.Invoke(this, new GetBlockResponseEventArgs
+        {
+            MessageId = message.Id,
+            PayloadJson = message.Payload
+        });
     }
 
     private void OnGradeSaved(GenericMessage message)
