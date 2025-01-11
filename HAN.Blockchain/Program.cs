@@ -33,6 +33,7 @@ var nodeMonitorHandler = new NodeMonitorEventHandler(publisher);
 // 4) Subscribe to relevant queues
 subscriber.SubscribeAsync<GenericMessage>("SaveGradeQueue", gradeService);
 subscriber.SubscribeAsync<GenericMessage>("GetGradeQueue", gradeService);
+subscriber.SubscribeAsync<GenericMessage>("GetBlockQueue", gradeService);
 
 // The queue that broadcasts new blocks or chain requests
 subscriber.SubscribeAsync<GenericMessage>("BlockchainBlockBroadcastQueue", blockchainHandler);

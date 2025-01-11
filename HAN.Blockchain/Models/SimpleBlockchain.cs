@@ -21,6 +21,11 @@ public class SimpleBlockchain
             .Where(b => b.Transactions.All(t => t.TransactionId != GenesisBlockName))
             .ToList();
     }
+    
+    public Block GetBlock(int index)
+    {
+        return Chain.FirstOrDefault(b => b.Index == index);
+    }
 
     private Block CreateGenesisBlock()
     {

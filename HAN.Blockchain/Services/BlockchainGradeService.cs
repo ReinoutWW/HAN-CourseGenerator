@@ -25,10 +25,31 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
             case "GetGrade":
                 HandleGetGrade(message);
                 break;
+            case "GetBlock":
+                HandleGetBlock(message);
+                break;
             default:
                 Console.WriteLine($"[GradeService] Unrecognized action: {message.Action}");
                 break;
         }
+    }
+
+    private void HandleGetBlock(IMessage message)
+    {
+        // e.g. { "Index": 3 }
+        var request = System.Text.Json.JsonSerializer.Deserialize<GetBlockRequest>(message.Payload);
+        var block = _blockchain.GetBlock(request.BlockIndex);
+        
+        var responsePayload = System.Text.Json.JsonSerializer.Serialize(block);
+        var responseMessage = new GenericMessage
+        {
+            Id = message.Id,
+            Action = "BlockRetrieved",
+            Payload = responsePayload
+        };
+        
+        _publisher.Publish(responseMessage, "BlockRetrievedQueue");
+        Console.WriteLine("[GradeService] Queue 'BlockRetrievedQueue' event published");
     }
 
     private void HandleSaveGrade(IMessage message)
@@ -59,10 +80,12 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
         });
         var responseMessage = new GenericMessage
         {
+            Id = message.Id,
             Action = "GradeSaved",
             Payload = responsePayload
         };
         _publisher.Publish(responseMessage, "GradeSavedQueue");
+        Console.WriteLine("[GradeService] Queue 'GradeSavedQueue' event published");
     }
 
     private void HandleGetGrade(IMessage message)
@@ -75,10 +98,11 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
             foreach (var tx in block.Transactions)
             {
                 var saveGradeReq = System.Text.Json.JsonSerializer.Deserialize<SaveGradeRequest>(tx.Data);
-                if (saveGradeReq.StudentId == request.StudentId)
+                if (saveGradeReq.StudentId == request.StudentId || string.IsNullOrEmpty(request.StudentId))
                 {
                     matchingRecords.Add(new GradeRecord
                     {
+                        StudentId = saveGradeReq.StudentId,
                         BlockIndex = block.Index,
                         BlockHash = block.Hash,
                         CourseId = saveGradeReq.CourseId,
@@ -97,10 +121,12 @@ public class BlockchainGradeService : IServiceMessageHandler<IMessage>
 
         var responseMessage = new GenericMessage
         {
+            Id = message.Id,
             Action = "GradeRetrieved",
             Payload = System.Text.Json.JsonSerializer.Serialize(response)
         };
         // Publish to a queue or respond directly
         _publisher.Publish(responseMessage, "GradeRetrievedQueue");
+        Console.WriteLine("[GradeService] Queue 'GradeRetrievedQueue' event published");
     }
 }
