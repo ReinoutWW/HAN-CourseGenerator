@@ -3,10 +3,6 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
-ENV DOTNET_CLI_UI_LANGUAGE=en
-ENV DOTNET_ENABLE_PKG_CERT_CHAIN_BUILD_LOGGING=false
-
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -18,7 +14,7 @@ COPY ["HAN.Utilities/HAN.Utilities.csproj", "HAN.Utilities/"]
 RUN dotnet restore "HAN.Client.Server/HAN.Client.Server.csproj"
 COPY . .
 WORKDIR "/src/HAN.Client.Server"
-RUN dotnet build "HAN.Client.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build --no-incremental
+RUN dotnet build "HAN.Client.Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release

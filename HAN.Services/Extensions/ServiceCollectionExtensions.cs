@@ -43,8 +43,8 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddEventDrivenMessaging(this IServiceCollection services)
     {
         var nodeId = Guid.NewGuid().ToString("N");
-        return services.AddSingleton(new RabbitMqSubscriber("localhost", nodeId))
-            .AddSingleton<IMessagePublisher>(sp => new RabbitMqPublisher("localhost", nodeId))
+        return services.AddSingleton(new RabbitMqSubscriber("rabbitmq-service.han-coursegenerator.svc.cluster.local", nodeId))
+            .AddSingleton<IMessagePublisher>(sp => new RabbitMqPublisher("rabbitmq-service.han-coursegenerator.svc.cluster.local", nodeId))
             .AddSingleton<IResponseListener, ResponseListenerService>()
             .AddScoped<IGradeService, GradeService>()
             .AddScoped<IBlockchainService, BlockchainService>()
