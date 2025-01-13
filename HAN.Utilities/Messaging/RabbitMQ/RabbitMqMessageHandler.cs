@@ -1,19 +1,17 @@
 ﻿using System.Text;
 using System.Text.Json;
 using HAN.Utilities.Messaging.Abstractions;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace HAN.Utilities.Messaging.RabbitMQ;
 
-public abstract class RabbitMqMessageHandler<TMessage> : IMessageBackgroundListenerService where TMessage : IMessage
+public abstract class RabbitMqMessageHandler<TMessage>(IConfiguration configuration) : IMessageBackgroundListenerService where TMessage : IMessage
 {
     public async void Listen(CancellationToken stoppingToken)
     {
-        var factory = new ConnectionFactory
-        {
-            HostName = "localhost"
-        };
+        var factory = configuration.CreateConnectionFactory();
 
         await using var connection = await factory.CreateConnectionAsync(stoppingToken);
         await using var channel = await connection.CreateChannelAsync(cancellationToken: stoppingToken);

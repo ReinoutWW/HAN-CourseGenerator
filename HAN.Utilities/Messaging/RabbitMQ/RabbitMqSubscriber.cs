@@ -2,21 +2,14 @@
 using System.Text;
 using System.Text.Json;
 using HAN.Utilities.Messaging.Abstractions;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client.Events;
 
 namespace HAN.Utilities.Messaging.RabbitMQ;
 
-public class RabbitMqSubscriber
+public class RabbitMqSubscriber(IConfiguration configuration, string nodeId)
 {
-    private readonly string _hostName;
-    private readonly string _nodeId;
     private IConnection? _connection;
-
-    public RabbitMqSubscriber(string hostName, string nodeId)
-    {
-        _hostName = hostName;
-        _nodeId = nodeId;
-    }
 
     /// <summary>
     /// Subscribes to the specified queue and handles incoming messages
@@ -33,7 +26,7 @@ public class RabbitMqSubscriber
     )
         where TMessage : IMessage
     {
-        var factory = new ConnectionFactory { HostName = _hostName };
+        var factory = configuration.CreateConnectionFactory();
 
         _connection = await factory.CreateConnectionAsync(stoppingToken)
                                    .ConfigureAwait(false);
@@ -95,5 +88,5 @@ public class RabbitMqSubscriber
         Console.WriteLine($"[RabbitMqSubscriber] Subscribed to queue '{queueName}'");
     }
 
-    private bool IsOwnMessage(IMessage message) => message.NodeId == _nodeId;
+    private bool IsOwnMessage(IMessage message) => message.NodeId == nodeId;
 }

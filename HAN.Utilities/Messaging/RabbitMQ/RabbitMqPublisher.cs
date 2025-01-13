@@ -1,15 +1,16 @@
 ﻿using System.Text;
 using HAN.Utilities.Messaging.Abstractions;
+using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 
 namespace HAN.Utilities.Messaging.RabbitMQ;
 
-public class RabbitMqPublisher(string hostname, string nodeId) : IMessagePublisher
+public class RabbitMqPublisher(IConfiguration configuration, string nodeId) : IMessagePublisher
 {
-    private readonly ConnectionFactory _factory = new() { HostName = hostname };
-
     public async void Publish<TMessage>(TMessage message, string queueName) where TMessage : IMessage
     {
+        ConnectionFactory _factory = configuration.CreateConnectionFactory();
+        
         message.NodeId = nodeId;
         
         await using var connection = await _factory.CreateConnectionAsync();
