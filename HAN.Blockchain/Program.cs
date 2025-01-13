@@ -85,7 +85,6 @@ IMessagePublisher ConfigureNode(IConfiguration configuration1, string s)
     // 3) Create the handlers
     var gradeService = new BlockchainGradeService(localChain, messagePublisher);
     var blockchainHandler = new BlockchainEventHandler(localChain, messagePublisher);
-    var nodeMonitorHandler = new NodeMonitorEventHandler(messagePublisher);
 
     // 4) Subscribe to relevant queues
     subscriber.SubscribeAsync<GenericMessage>("SaveGradeQueue", gradeService);
@@ -96,6 +95,5 @@ IMessagePublisher ConfigureNode(IConfiguration configuration1, string s)
     subscriber.SubscribeAsync<GenericMessage>("BlockchainBlockBroadcastQueue", blockchainHandler);
 
     // The queue that monitors nodes
-    subscriber.SubscribeAsync<GenericMessage>("NodeMonitoringQueue", nodeMonitorHandler);
     return messagePublisher;
 }

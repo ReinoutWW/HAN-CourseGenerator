@@ -9,6 +9,7 @@ public class ResponseListenerService : IResponseListener
     // Implement the events
     public event EventHandler<GradeSavedEventArgs> GradeSavedReceived;
     public event EventHandler<GradeRetrievedEventArgs> GradeRetrievedReceived;
+    public event EventHandler<NodeMonitoringQueueEventArgs>? NodeMonitoringQueueReceived;
     public event EventHandler<NodeListResponseEventArgs> NodeListResponseReceived;
     public event EventHandler<GetBlockResponseEventArgs> GetBlockResponseReceived;
 
@@ -35,8 +36,8 @@ public class ResponseListenerService : IResponseListener
 
         // Similarly for a "NodeListResponse" queue,
         _subscriber.SubscribeAsync<GenericMessage>(
-            "NodeListResponseQueue",
-            new GenericMessageHandler(OnNodeListResponse),
+            "NodeMonitoringQueue",
+            new GenericMessageHandler(OnNodeMonitoringQueueReceived),
             default
         );
         
@@ -76,9 +77,9 @@ public class ResponseListenerService : IResponseListener
         });
     }
 
-    private void OnNodeListResponse(GenericMessage message)
+    private void OnNodeMonitoringQueueReceived(GenericMessage message)
     {
-        NodeListResponseReceived?.Invoke(this, new NodeListResponseEventArgs
+        NodeMonitoringQueueReceived?.Invoke(this, new NodeMonitoringQueueEventArgs
         {
             MessageId = message.Id,
             PayloadJson = message.Payload

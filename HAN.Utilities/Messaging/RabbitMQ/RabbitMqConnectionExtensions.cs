@@ -15,6 +15,10 @@ public static class RabbitMqConnectionExtensions
         if (!configuration.HasRabbitMqCredentials())
             return factory;
 
+#if DEBUG
+        return factory;
+#endif
+        
         factory.UserName = configuration.GetRabbitMqUsername();
         factory.Password = configuration.GetRabbitMqPassword();
 

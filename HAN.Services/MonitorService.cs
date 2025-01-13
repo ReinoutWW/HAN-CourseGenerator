@@ -7,61 +7,53 @@ namespace HAN.Services;
 
 public class MonitorService : IMonitorService
 {
-    private readonly IMessagePublisher _publisher;
     private readonly IResponseListener _responseListener;
 
-    private static ConcurrentDictionary<string, TaskCompletionSource<string>> _pendingRequests
-        = new ConcurrentDictionary<string, TaskCompletionSource<string>>();
+    // Track active node IDs and their last heartbeat time
+    // (If you only need node IDs, a simple ConcurrentDictionary<string, bool> or a HashSet<string> would suffice)
+    private static readonly ConcurrentDictionary<string, DateTime> _activeNodes 
+        = new ConcurrentDictionary<string, DateTime>();
 
-    public MonitorService(IMessagePublisher publisher, IResponseListener responseListener)
+    // Expose an event or callback so the Blazor UI can react when the list of unique node IDs changes
+    public event Action<int>? OnNodeCountUpdated;
+
+    public MonitorService(IResponseListener responseListener)
     {
-        _publisher = publisher;
         _responseListener = responseListener;
 
-        // Subscribe to the NodeListResponse event
-        _responseListener.NodeListResponseReceived += OnNodeListResponseReceived;
+        // Subscribe to the NodeMonitoringQueue event (instead of NodeListResponse)
+        _responseListener.NodeMonitoringQueueReceived += NodeMonitoringQueueReceived;
     }
 
-    public async Task<List<NodeStatus>> GetActiveNodesAsync()
+    /// <summary>
+    /// Handles new heartbeat messages from the NodeMonitoringQueue.
+    /// </summary>
+    private void NodeMonitoringQueueReceived(object sender, NodeMonitoringQueueEventArgs e)
     {
-        // 1) Construct the request message
-        var message = new GenericMessage
-        {
-            Id = Guid.NewGuid().ToString(),
-            Action = "RequestNodeList",
-            Payload = "" // Might be empty or have some additional data
-        };
+        // Example: The event arg might contain NodeId (string) and possibly
+        // additional information about the node status.
+        var payload = System.Text.Json.JsonSerializer.Deserialize<GenericMessage>(e.PayloadJson) ?? throw new ArgumentException($"Invalid payload: {e.PayloadJson}");
+        
+        var nodeId = payload.NodeId; 
+        var timeStamp = DateTime.UtcNow; 
 
-        // 2) Create TCS
-        var tcs = new TaskCompletionSource<string>();
-        _pendingRequests[message.Id] = tcs;
+        // Store/Update the node's last active time
+        _activeNodes.AddOrUpdate(nodeId, timeStamp, (id, oldValue) => timeStamp);
 
-        // 3) Publish (could be to "NodeMonitoringQueue" or a dedicated queue)
-        _publisher.Publish(message, "NodeMonitoringQueue");
-
-        // 4) Wait for response or time out
-        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-        using (cts)
-        {
-            var completedTask = await Task.WhenAny(tcs.Task, Task.Delay(-1, cts.Token));
-            if (completedTask != tcs.Task)
-            {
-                _pendingRequests.TryRemove(message.Id, out _);
-                throw new TimeoutException("No node list response in time.");
-            }
-        }
-
-        // 5) Parse the JSON result
-        var json = await tcs.Task;
-        var nodeList = System.Text.Json.JsonSerializer.Deserialize<List<NodeStatus>>(json);
-        return nodeList;
+        // If the Blazor UI needs the entire list, you can also pass it along
+        // but for demonstration we only pass the count
+        OnNodeCountUpdated?.Invoke(_activeNodes.Count);
     }
 
-    private void OnNodeListResponseReceived(object sender, NodeListResponseEventArgs e)
+    public List<NodeStatus> GetActiveNodesAsync()
     {
-        if (_pendingRequests.TryRemove(e.MessageId, out var tcs))
+        // Parse to list of NodeStatus objects
+        var activeNodes = _activeNodes.Select(kvp => new NodeStatus
         {
-            tcs.SetResult(e.PayloadJson);
-        }
+            NodeId = kvp.Key,
+            LastHeartbeat = kvp.Value
+        }).ToList();
+        
+        return activeNodes;
     }
 }

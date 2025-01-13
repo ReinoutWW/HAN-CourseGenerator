@@ -4,5 +4,6 @@ namespace HAN.Services.Interfaces;
 
 public interface IMonitorService
 {
-    Task<List<NodeStatus>> GetActiveNodesAsync();
+    List<NodeStatus> GetActiveNodesAsync();
+    public event Action<int>? OnNodeCountUpdated;
 }

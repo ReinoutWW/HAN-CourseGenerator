@@ -26,10 +26,16 @@ public class GetBlockResponseEventArgs : EventArgs
     public string PayloadJson { get; set; }
 }
 
+public class NodeMonitoringQueueEventArgs
+{
+    public string MessageId { get; set; }
+    public string PayloadJson { get; set; }
+}
+
 public interface IResponseListener
 {
     event EventHandler<GradeSavedEventArgs> GradeSavedReceived;
     event EventHandler<GradeRetrievedEventArgs> GradeRetrievedReceived;
-    event EventHandler<NodeListResponseEventArgs> NodeListResponseReceived;
+    event EventHandler<NodeMonitoringQueueEventArgs> NodeMonitoringQueueReceived;
     event EventHandler<GetBlockResponseEventArgs> GetBlockResponseReceived;
 }
