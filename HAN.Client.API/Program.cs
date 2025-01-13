@@ -73,7 +73,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddCourseServices();
+builder.Services.AddCourseServices(builder.Configuration);
 
 builder.Services.AddSingleton<IServiceMessageHandler<CourseMessage>, CourseMessageHandler>(sp =>
 {

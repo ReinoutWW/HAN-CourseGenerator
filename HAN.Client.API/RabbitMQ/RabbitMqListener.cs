@@ -5,7 +5,7 @@ using HAN.Utilities.Messaging.RabbitMQ;
 
 namespace HAN.Client.API.RabbitMQ;
 
-public class RabbitMqListenerService(IServiceMessageHandler<CourseMessage> courseMessageHandler) : RabbitMqMessageHandler<CourseMessage>
+public class RabbitMqListenerService(IServiceMessageHandler<CourseMessage> courseMessageHandler, IConfiguration configuration) : RabbitMqMessageHandler<CourseMessage>(configuration)
 {
     public override void Handle(IMessage message)
     {

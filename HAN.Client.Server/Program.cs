@@ -15,7 +15,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddRadzenComponents();
-builder.Services.AddCourseServices();
+builder.Services.AddCourseServices(builder.Configuration);
 builder.Services.AddScoped<SystemFeedbackNotificationService>();
 
 var app = builder.Build();

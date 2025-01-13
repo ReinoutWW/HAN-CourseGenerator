@@ -8,13 +8,14 @@ using HAN.Services.VolatilityDecomposition.Notifications.Engines;
 using HAN.Utilities;
 using HAN.Utilities.Messaging.Abstractions;
 using HAN.Utilities.Messaging.RabbitMQ;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Services.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCourseServices(this IServiceCollection services)
+    public static IServiceCollection AddCourseServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IValidationService, ValidationService>()
             .AddScoped<ICourseService, CourseService>()
@@ -35,16 +36,16 @@ public static class ServiceCollectionExtensions
             .AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies())
             .AddScoped<InternalNotificationStateService>()
             .AddNotificationServices()
-            .AddEventDrivenMessaging();
+            .AddEventDrivenMessaging(configuration);
 
         return services;
     }
 
-    private static IServiceCollection AddEventDrivenMessaging(this IServiceCollection services)
+    private static IServiceCollection AddEventDrivenMessaging(this IServiceCollection services, IConfiguration configuration)
     {
         var nodeId = Guid.NewGuid().ToString("N");
-        return services.AddSingleton(new RabbitMqSubscriber("rabbitmq-service.han-coursegenerator.svc.cluster.local", nodeId))
-            .AddSingleton<IMessagePublisher>(sp => new RabbitMqPublisher("rabbitmq-service.han-coursegenerator.svc.cluster.local", nodeId))
+        return services.AddSingleton(new RabbitMqSubscriber(configuration, nodeId))
+            .AddSingleton<IMessagePublisher>(sp => new RabbitMqPublisher(configuration, nodeId))
             .AddSingleton<IResponseListener, ResponseListenerService>()
             .AddScoped<IGradeService, GradeService>()
             .AddScoped<IBlockchainService, BlockchainService>()

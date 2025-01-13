@@ -2,13 +2,21 @@
 
 using HAN.Utilities.Messaging.Abstractions;
 using HAN.Utilities.Messaging.RabbitMQ;
+using Microsoft.Extensions.Configuration;
+
+IConfiguration configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .AddCommandLine(args)
+    .Build();
 
 var nodeId = args.Length > 0 ? args[0] : Guid.NewGuid().ToString().Substring(0, 8);
 Console.Title = "Blockchain Test Client (Async)";
 
 // 1) Create or configure your RabbitMQ subscriber & publisher
-IMessagePublisher publisher = new RabbitMqPublisher("localhost", nodeId);
-var subscriber = new RabbitMqSubscriber("localhost", nodeId);
+IMessagePublisher publisher = new RabbitMqPublisher(configuration, nodeId);
+var subscriber = new RabbitMqSubscriber(configuration, nodeId);
 
 // 2) Prepare a CancellationTokenSource for graceful shutdown
 using var cts = new CancellationTokenSource();

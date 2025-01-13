@@ -8,6 +8,7 @@ using HAN.Services.Extensions;
 using HAN.Services.Interfaces;
 using HAN.Tests.Mocks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HAN.Tests.Base;
@@ -25,7 +26,7 @@ public static class TestServiceProvider
 
         services.AddScoped<PersistHelper>();
         services.AddScoped<IGenericRepository<ExampleEntity>, ExampleGenericRepository>();
-        services.AddCourseServices();
+        services.AddCourseServices(new ConfigurationBuilder().Build());
 
         return services.BuildServiceProvider();
     }
