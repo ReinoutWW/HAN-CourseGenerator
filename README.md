@@ -3,7 +3,8 @@ This project is a course generator and validator system.
 It is a project for the course I-OOSE at the HAN University of Applied Sciences.
 
 ## Architecture
-![Design-phase-ClassDiagram-Page-9 drawio (1)](https://github.com/user-attachments/assets/d0fe015c-3091-4917-b92d-c4c4e63e3599)
+![Design-phase-ClassDiagram-Page-9 drawio (2)](https://github.com/user-attachments/assets/048613d3-8df4-4275-b0f1-0bb635575135)
+
 
 > [!IMPORTANT]  
 > Since the architecture is experimental, it's currently already deprecated, and will be changed over time. 
