@@ -14,12 +14,6 @@ public class GradeRetrievedEventArgs : EventArgs
     public string PayloadJson { get; set; }
 }
 
-public class NodeListResponseEventArgs : EventArgs
-{
-    public string MessageId { get; set; }
-    public string PayloadJson { get; set; }
-}
-
 public class GetBlockResponseEventArgs : EventArgs
 {
     public string MessageId { get; set; }
