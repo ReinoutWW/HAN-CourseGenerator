@@ -3,7 +3,8 @@ This project is a course generator and validator system.
 It is a project for the course I-OOSE at the HAN University of Applied Sciences.
 
 ## Architecture
-![Design-phase-ClassDiagram-Page-9 drawio (1)](https://github.com/user-attachments/assets/d0fe015c-3091-4917-b92d-c4c4e63e3599)
+![Design-phase-ClassDiagram-Page-9 drawio (2)](https://github.com/user-attachments/assets/048613d3-8df4-4275-b0f1-0bb635575135)
+
 
 > [!IMPORTANT]  
 > Since the architecture is experimental, it's currently already deprecated, and will be changed over time. 
@@ -21,6 +22,27 @@ It is a project for the course I-OOSE at the HAN University of Applied Sciences.
 [![Git](https://img.shields.io/badge/Git-Version_Control-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Code_Hosting-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
 [![Obsidian](https://img.shields.io/badge/Obsidian-Knowledge_Management-483699?style=for-the-badge&logo=obsidian&logoColor=white)](https://obsidian.md/)
+
+## Preview
+
+### Home
+![image](https://github.com/user-attachments/assets/589f6a74-44b3-404f-8d7c-e8a373c01f9d)
+
+### Easily create schedules!
+![image](https://github.com/user-attachments/assets/afcfddbd-c9c2-439e-a179-fe3bf7d01348)
+
+### And get instant feedback on your courses' schedule quality!
+![image](https://github.com/user-attachments/assets/b18fdab6-54e0-4b7a-bac0-53b0ea4d79c0)
+
+### Save grades directly in Blockchain to ensure transparancy!
+![image](https://github.com/user-attachments/assets/b74d0e72-d001-4e5c-bdc6-9ef06796db9f)
+
+### Then, you can always see your Blockchain history
+![image](https://github.com/user-attachments/assets/1c698172-75cf-40dc-a1f5-9a4f5af3e3d4)
+
+### And, always live monitoring on the Blockchain network!
+![image](https://github.com/user-attachments/assets/6f0f88f1-cc14-4280-83a7-d07bf86c457f)
+
 
 ## Authors
 - [Reinout Wijnholds](https://github.com/ReinoutWW)

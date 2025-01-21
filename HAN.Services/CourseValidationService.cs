@@ -1,5 +1,4 @@
 ﻿using HAN.Services.DTOs;
-using HAN.Services.DTOs.CourseComponents;
 using HAN.Services.Interfaces;
 using HAN.Services.Validation;
 
@@ -8,18 +7,15 @@ namespace HAN.Services;
 public class CourseValidationService : ICourseValidationService
 {
     private readonly ICourseService _courseService;
-    private readonly CourseComponentService _courseComponentService;
     private readonly ICourseCompletenessValidator _completenessValidator;
     private readonly ICourseOrderValidator _orderValidator;
 
     public CourseValidationService(
         ICourseService courseService,
-        CourseComponentService courseComponentService,
         ICourseCompletenessValidator completenessValidator,
         ICourseOrderValidator orderValidator)
     {
         _courseService = courseService;
-        _courseComponentService = courseComponentService;
         _completenessValidator = completenessValidator;
         _orderValidator = orderValidator;
     }

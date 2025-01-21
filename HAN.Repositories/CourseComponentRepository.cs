@@ -16,8 +16,8 @@ public class CourseComponentRepository<TEntity>(AppDbContext context)
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
         
-        entity.EvlIds = ValidateAndResolveEvlIds(entity.EvlIds);
-        entity.FileIds = ValidateAndResolveFileIds(entity.FileIds);
+        entity.EvlIds = ValidateEvls(entity.EvlIds);
+        entity.FileIds = ValidateFiles(entity.FileIds);
 
         Entity.Add(entity);
         _context.SaveChanges();
@@ -111,7 +111,7 @@ public class CourseComponentRepository<TEntity>(AppDbContext context)
         }
     }
     
-    private List<int> ValidateAndResolveEvlIds(List<int> evlIds)
+    private List<int> ValidateEvls(List<int> evlIds)
     {
         if (evlIds == null)
             throw new ArgumentNullException(nameof(evlIds));
@@ -126,7 +126,7 @@ public class CourseComponentRepository<TEntity>(AppDbContext context)
         return evlIds;
     }
 
-    private List<int> ValidateAndResolveFileIds(List<int> fileIds)
+    private List<int> ValidateFiles(List<int> fileIds)
     {
         if (fileIds == null)
             throw new ArgumentNullException(nameof(fileIds));
