@@ -1,6 +1,4 @@
-﻿using HAN.Utilities.Messaging.Models;
-
-namespace HAN.Services.Interfaces;
+﻿namespace HAN.Services.Interfaces;
 
 public class GradeSavedEventArgs : EventArgs
 {
