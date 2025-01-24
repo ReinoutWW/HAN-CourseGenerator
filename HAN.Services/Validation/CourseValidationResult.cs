@@ -23,5 +23,7 @@ public enum ErrorCategory
     [Description("Invalid")]
     Invalid,
     [Description("Out of order")]
-    OutOfOrder
+    OutOfOrder,
+    [Description("Extra component")]
+    ExtraComponent
 }
