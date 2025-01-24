@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
+﻿
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using HAN.Services.DTOs;
-using Document = System.Reflection.Metadata.Document;
 
 namespace HAN.Services.Exporters
 {
