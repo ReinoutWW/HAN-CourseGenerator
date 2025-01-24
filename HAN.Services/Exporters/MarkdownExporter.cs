@@ -4,11 +4,9 @@ namespace HAN.Services.Exporters;
 
 public class MarkdownExporter() : FileExporter()
 {
-    protected override FileDto WriteContent(FileDto fileDto)
+    public override FileDto Export(FileDto fileDto)
     {
-        if (fileDto == null) throw new ArgumentNullException(nameof(fileDto), "FileDto cannot be null.");
-        if (string.IsNullOrWhiteSpace(fileDto.Name)) throw new ArgumentException("File name cannot be empty.", nameof(fileDto.Name));
-        if (string.IsNullOrWhiteSpace(fileDto.Content)) throw new ArgumentException("File content cannot be empty.", nameof(fileDto.Content));
+        ValidateFile(fileDto);
         
         var fileName = fileDto.Name.EndsWith(".md") ? fileDto.Name : $"{fileDto.Name}.md";
         var markdownContent = TransformToMarkdown(fileDto);

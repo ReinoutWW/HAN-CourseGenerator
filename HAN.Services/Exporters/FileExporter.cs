@@ -8,14 +8,10 @@ namespace HAN.Services.Exporters;
 public abstract class FileExporter()
 {
     public const string ExportDirectory = "Downloads";
-    
-    public FileDto Export(FileDto fileDto)
-    {
-        ValidateFile(fileDto);
-        return WriteContent(fileDto);
-    }
 
-    private static void ValidateFile(FileDto fileDto)
+    public abstract FileDto Export(FileDto fileDto);
+
+    protected static void ValidateFile(FileDto fileDto)
     {
         var validationContext = new ValidationContext(fileDto);
         var validationResults = new System.Collections.Generic.List<ValidationResult>();
@@ -24,6 +20,10 @@ public abstract class FileExporter()
         {
             throw new ValidationException($"FileDto validation failed: ", validationResults);
         }
+        
+        if (fileDto == null) throw new ArgumentNullException(nameof(fileDto), "FileDto cannot be null.");
+        if (string.IsNullOrWhiteSpace(fileDto.Name)) throw new ArgumentException("File name cannot be empty.", nameof(fileDto.Name));
+        if (string.IsNullOrWhiteSpace(fileDto.Content)) throw new ArgumentException("File content cannot be empty.", nameof(fileDto.Content));
     }
     
     protected static string GetExportFilePath(string fileName)
@@ -36,6 +36,4 @@ public abstract class FileExporter()
         
         return Path.Combine(exportDirectory, fileName);
     }
-
-    protected abstract FileDto WriteContent(FileDto fileDto);
 }

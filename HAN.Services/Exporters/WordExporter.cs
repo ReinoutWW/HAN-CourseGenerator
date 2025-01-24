@@ -10,26 +10,21 @@ namespace HAN.Services.Exporters
 {
     public class WordExporter : FileExporter
     {
-        protected override FileDto WriteContent(FileDto fileDto)
+        public override FileDto Export(FileDto fileDto)
         {
-            if (fileDto == null) throw new ArgumentNullException(nameof(fileDto), "FileDto cannot be null.");
-            if (string.IsNullOrWhiteSpace(fileDto.Name)) throw new ArgumentException("File name cannot be empty.", nameof(fileDto.Name));
-            if (string.IsNullOrWhiteSpace(fileDto.Content)) throw new ArgumentException("File content cannot be empty.", nameof(fileDto.Content));
+            ValidateFile(fileDto);
     
             var fileName = fileDto.Name.EndsWith(".docx") ? fileDto.Name : $"{fileDto.Name}.docx";
             var filePath = GetExportFilePath(fileName);
 
             Console.WriteLine($"Generating Word file at: {filePath}");
-
-            using (var wordDocument = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document))
-            {
-                var mainPart = wordDocument.AddMainDocumentPart();
-                mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
-                var body = mainPart.Document.AppendChild(new Body());
-                var paragraph = body.AppendChild(new Paragraph());
-                var run = paragraph.AppendChild(new Run());
-                run.AppendChild(new Text(fileDto.Content));
-            }
+            using var wordDocument = WordprocessingDocument.Create(filePath, WordprocessingDocumentType.Document);
+            var mainPart = wordDocument.AddMainDocumentPart();
+            mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document();
+            var body = mainPart.Document.AppendChild(new Body());
+            var paragraph = body.AppendChild(new Paragraph());
+            var run = paragraph.AppendChild(new Run());
+            run.AppendChild(new Text(fileDto.Content));
 
             return fileDto;
         }

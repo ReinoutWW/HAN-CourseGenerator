@@ -1,4 +1,5 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.Exporters;
 using HAN.Services.Interfaces;
 using HAN.Tests.Base;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +44,7 @@ public class FileExporterServiceTests : TestBase
         try
         {
             // Act
-            _exporterService.ExportToMarkdown(fileDto);
+            _exporterService.ExportToFile(fileDto, ExporterType.Markdown);
 
             // Assert
             Assert.True(File.Exists(expectedFileName), $"Markdown file was not created at {expectedFileName}.");
@@ -71,7 +72,7 @@ public class FileExporterServiceTests : TestBase
         try
         {
             // Act
-            _exporterService.ExportToWord(fileDto);
+            _exporterService.ExportToFile(fileDto, ExporterType.Word);
 
             // Assert
             Assert.True(File.Exists(expectedFileName), $"Word file was not created at {expectedFileName}.");
@@ -102,7 +103,7 @@ public class FileExporterServiceTests : TestBase
         try
         {
             // Act
-            _exporterService.ExportToPdf(fileDto);
+            _exporterService.ExportToFile(fileDto, ExporterType.Pdf);
 
             // Assert
             Assert.True(File.Exists(expectedFileName), $"PDF file was not created at {expectedFileName}.");

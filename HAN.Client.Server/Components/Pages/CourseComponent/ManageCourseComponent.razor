@@ -5,6 +5,7 @@
 @using HAN.Services.DTOs
 @using HAN.Services.Interfaces
 @using HAN.Client.Server.Components.UI
+@using HAN.Data.Entities
 @using HAN.Services
 @using HAN.Services.DTOs.CourseComponents
 @using NotificationService = HAN.Client.Server.Components.Base.SystemFeedbackNotificationService
@@ -49,7 +50,7 @@
             </RadzenFieldset>
             <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Left" Gap="1rem"
                          class="rz-mt-8 rz-mb-4">
-                <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel"/>
+                <SecondaryButton Size="ButtonSize.Large" Icon="cancel" Text="Cancel" Click="@Cancel" />
                 <PrimaryButton ButtonType="ButtonType.Submit" Size="ButtonSize.Large" Icon="save" Text="Save"/>
             </RadzenStack>
         </RadzenTemplateForm>
@@ -120,17 +121,14 @@
             ? CourseComponentService.CreateCourseComponent(arg)
             : CourseComponentService.UpdateCourseComponent(arg);
 
-        NavigationManager.NavigateTo("/course-component/overview");
+        NavigationManager.NavigateTo($"/course-component/{courseComponent.Id}");
         SystemFeedbackNotificationService.AddNotification($"Course Component ({componentDto.Id}) saved successfully!");
     }
 
     void Cancel()
     {
-        NavigationManager.NavigateTo("/course-component/overview");
+        NavigationManager.NavigateTo($"/");
     }
-
-    private void NavigateToEditEvl(DataGridRowMouseEventArgs<EvlDto> args)
-        => NavigationManager.NavigateTo($"/evl/{args.Data.Id}");
 
     private async void FileExportDialog(DataGridRowMouseEventArgs<FileDto> args)
     {

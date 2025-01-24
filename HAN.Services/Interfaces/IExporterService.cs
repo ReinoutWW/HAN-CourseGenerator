@@ -1,12 +1,9 @@
 ﻿using HAN.Services.DTOs;
+using HAN.Services.Exporters;
 
 namespace HAN.Services.Interfaces;
 
 public interface IExporterService
 {
-
-    public void ExportToMarkdown(FileDto file) {}
-    public void ExportToWord(FileDto file) {}
-    public void ExportToPdf(FileDto file) {}
-    
+    void ExportToFile(FileDto file, ExporterType type);
 }
