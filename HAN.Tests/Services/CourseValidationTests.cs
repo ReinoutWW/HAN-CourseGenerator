@@ -118,7 +118,42 @@ public class CourseValidationTests : TestBase
         
         Assert.False(complete);
     }
-    
+
+    [Fact]
+    public void ValidateSchedule_AddExtraComponent_ShouldBeInvalid()
+    {
+        var evls = _persistHelper.SeedEvls();
+        var course = new CourseDtoBuilder()
+            .WithName("Course name")
+            .WithEvls(evls)
+            .Build();
+
+        course = _courseService.CreateCourse(course);
+
+        _persistHelper.SeedLessonToEvls(course.Evls);
+        _persistHelper.SeedExamToEvls(course.Evls);
+
+        var evlIds = course.Evls.Select(x => x.Id).ToList();
+        var courseComponents = _courseComponentService.GetAllCourseComponentByEvlIds(evlIds);
+
+        var extraCourseComponent = new CourseComponentDto()
+        {
+            Name = "Extra component",
+            Description = "Extra component description",
+        };
+
+        courseComponents.Add(extraCourseComponent);
+
+        course = new CourseDtoBuilder(course)
+            .WithValidSchedule(courseComponents)
+            .Build();
+
+        var result = _courseValidationService.IsCourseComplete(course);
+
+        Assert.Contains(result.Errors, err => err.ErrorCategory == HAN.Services.Validation.ErrorCategory.ExtraComponent);
+        Assert.False(result.IsValid);
+    }
+
     private static void ScheduleShouldContainAllCourseComponents(ScheduleDto schedule, List<CourseComponentDto> courseComponents)
     {
         foreach (var courseComponent in courseComponents)
